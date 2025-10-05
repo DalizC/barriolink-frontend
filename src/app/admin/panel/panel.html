@@ -1,0 +1,62 @@
+<div class="card">
+  <h2>Solicitudes de vecinos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Vecino</th>
+        <th>Tipo</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of solicitudes">
+        <td>{{ s.id }}</td>
+        <td>{{ s.vecino }}</td>
+        <td>{{ s.tipo }}</td>
+        <td>
+          <select [(ngModel)]="s.estado" (change)="cambiarEstado(s.id, s.estado)">
+            <option value="Pendiente">Pendiente</option>
+            <option value="En Proceso">En Proceso</option>
+            <option value="Rechazado">Rechazado</option>
+            <option value="Completado">Completado</option>
+          </select>
+        </td>
+        <td>
+          <button (click)="cambiarEstado(s.id, 'Rechazado')">❌ Rechazar</button>
+          <button (click)="cambiarEstado(s.id, 'Completado')">✅ Completar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Notificaciones</h2>
+  <ul>
+    <li *ngFor="let n of notificaciones">
+      📢 {{ n.mensaje }} <small>({{ n.fecha }})</small>
+    </li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>Lista de vecinos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Dirección</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let v of vecinos">
+        <td>{{ v.id }}</td>
+        <td>{{ v.nombre }}</td>
+        <td>{{ v.direccion }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,18 @@
+<h2>Bienvenido vecino 👋</h2>
+
+<!-- Formulario para generar solicitud -->
+<section>
+  <h3>Generar nueva solicitud</h3>
+  <input [(ngModel)]="nuevoTipo" placeholder="Ej: Certificado de residencia">
+  <button (click)="generarSolicitud()">Enviar</button>
+</section>
+
+<!-- Listado de solicitudes -->
+<section>
+  <h3>Mis solicitudes</h3>
+  <ul>
+    <li *ngFor="let s of solicitudes">
+      {{ s.tipo }} - Estado: {{ s.estado }}
+    </li>
+  </ul>
+</section>
