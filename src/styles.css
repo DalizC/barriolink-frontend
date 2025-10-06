@@ -1,0 +1,201 @@
+/* === VARIABLES INSTITUCIONALES === */
+:root {
+  --color-azul-oscuro: #003366;  /* Azul institucional */
+  --color-azul: #006699;         /* Azul complementario */
+  --color-rojo: #d32f2f;         /* Rojo gobierno */
+  --color-gris-fondo: #f4f6f9;   /* Gris claro */
+  --color-texto: #2e2e2e;        /* Texto general */
+  --color-blanco: #ffffff;
+  --radius: 6px;
+}
+
+/* === RESETEO Y TIPOGRAFÍA === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background-color: var(--color-gris-fondo);
+  color: var(--color-texto);
+  line-height: 1.6;
+}
+
+/* === HEADER GUBERNAMENTAL === */
+.header {
+  background: linear-gradient(90deg, var(--color-rojo) 0%, var(--color-blanco) 50%, var(--color-azul-oscuro) 100%);
+  padding: 14px;
+  text-align: center;
+  color: var(--color-azul-oscuro);
+  font-weight: bold;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+}
+
+/* === NAVBAR === */
+.navbar {
+  background-color: var(--color-azul-oscuro);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+}
+
+.navbar .logo {
+  color: var(--color-blanco);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.navbar nav {
+  display: flex;
+  gap: 18px;
+}
+
+.navbar nav a {
+  color: var(--color-blanco);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  transition: background-color 0.3s ease;
+}
+
+.navbar nav a:hover {
+  background-color: var(--color-azul);
+}
+
+.navbar nav a.active {
+  background-color: var(--color-rojo);
+  font-weight: bold;
+}
+
+/* === CONTENEDOR === */
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+/* === TARJETAS === */
+.card {
+  background-color: var(--color-blanco);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card h2, .card h3, .card h4 {
+  color: var(--color-azul-oscuro);
+  margin-bottom: 12px;
+}
+
+/* === FORMULARIOS === */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+input, textarea, select {
+  padding: 12px;
+  border: 1px solid #cccccc;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--color-azul);
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 102, 153, 0.4);
+}
+
+button, .button {
+  background: linear-gradient(180deg, var(--color-azul) 0%, var(--color-azul-oscuro) 100%);
+  color: var(--color-blanco);
+  border: none;
+  padding: 12px 18px;
+  font-size: 1rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+button:hover, .button:hover {
+  background: var(--color-rojo);
+  transform: scale(1.02);
+}
+
+/* === TABLAS === */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 0.95rem;
+}
+
+table th, table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+table th {
+  background-color: var(--color-azul);
+  color: var(--color-blanco);
+  text-align: left;
+}
+
+/* === AVISOS / ALERTAS === */
+.alert {
+  padding: 14px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.alert-info {
+  background-color: #e3f2fd;
+  color: #0d47a1;
+}
+
+.alert-success {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+}
+
+.alert-danger {
+  background-color: #ffebee;
+  color: #b71c1c;
+}
+
+/* === FOOTER === */
+.footer {
+  background-color: var(--color-azul-oscuro);
+  color: var(--color-blanco);
+  text-align: center;
+  padding: 18px;
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--color-blanco);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .container {
+    padding: 0 10px;
+  }
+}

@@ -1,0 +1,27 @@
+<!-- filepath: src/app/app.html -->
+<!-- Oculta navbar SOLO en login -->
+<header class="navbar" *ngIf="!isLoginPage">
+  <div class="logo">🌐 BarrioLink</div>
+  <nav>
+    <a routerLink="/noticias" routerLinkActive="active">Noticias</a>
+    <a routerLink="/eventos" routerLinkActive="active">Eventos</a>
+    <a routerLink="/proyectos" routerLinkActive="active">Proyectos</a>
+    <a routerLink="/certificados" routerLinkActive="active">Certificados</a>
+
+    <!-- Nuevo botón Reservas -->
+    <a routerLink="/reservas" routerLinkActive="active">Reservas</a>
+
+    <!-- Solo admin ve esta opción -->
+    <a *ngIf="rol === 'admin'" routerLink="/admin" routerLinkActive="active">Admin</a>
+
+    <a (click)="logout()" class="button">Salir</a>
+  </nav>
+</header>
+
+<main class="container">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="footer" *ngIf="!isLoginPage">
+  © {{ year }} BarrioLink - Todos los derechos reservados
+</footer>

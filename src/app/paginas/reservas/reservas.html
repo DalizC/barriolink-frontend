@@ -1,0 +1,30 @@
+<div class="reserva-container">
+  <h2>Reservar espacio</h2>
+
+  <form [formGroup]="reservaForm" (ngSubmit)="reservar()">
+    <label for="tipo">Tipo de reserva</label>
+    <select formControlName="tipo">
+      <option value="">Seleccione...</option>
+      <option value="cancha">Cancha de fútbol</option>
+      <option value="sede">Sede vecinal</option>
+    </select>
+
+    <label for="fecha">Fecha</label>
+    <input type="date" formControlName="fecha" />
+
+    <label for="hora">Hora</label>
+    <input type="time" formControlName="hora" />
+
+    <label for="nombre">Nombre del solicitante</label>
+    <input type="text" formControlName="nombre" />
+
+    <button type="submit" [disabled]="!reservaForm.valid">Reservar</button>
+  </form>
+
+  <h3>Reservas existentes</h3>
+  <ul>
+    <li *ngFor="let r of reservas">
+      {{ r.tipo | titlecase }} - {{ r.fecha }} {{ r.hora }} ({{ r.nombre }})
+    </li>
+  </ul>
+</div>
