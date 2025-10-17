@@ -1,0 +1,27 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include: [ main, develop, release/* ]
+  tags:
+    include: [ 'v*' ]
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+  fetchDepth: 0
+
+- script: |
+    git config user.name  "ci-mirror"
+    git config user.email "ci-mirror@example.com"
+    git remote add github https://$(GITHUB_USER):$(GITHUB_PAT)@github.com/DalizC/barriolink-frontend.git
+    # Espejo no destructivo: crea/actualiza ramas y tags en GitHub
+    git push github --all
+    git push github --tags
+  displayName: 'Mirror to GitHub (DalizC/barriolink-frontend)'
