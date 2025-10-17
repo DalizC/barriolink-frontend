@@ -1,1 +1,38 @@
-<p>noticias works!</p>
+<div class="card">
+  <h2>Noticias</h2>
+
+  <!-- Formulario solo visible para admin -->
+  <div *ngIf="esAdmin" class="admin-form">
+    <h3>Agregar nueva noticia</h3>
+    <form (ngSubmit)="agregarNoticia()" #noticiaForm="ngForm">
+      <label>Título:</label>
+      <input
+        type="text"
+        name="titulo"
+        [(ngModel)]="nuevaNoticia.titulo"
+        placeholder="Título de la noticia"
+        required
+      />
+
+      <label>Contenido:</label>
+      <textarea
+        name="cuerpo"
+        [(ngModel)]="nuevaNoticia.cuerpo"
+        placeholder="Contenido de la noticia"
+        rows="3"
+        required
+      ></textarea>
+
+      <button type="submit" [disabled]="!noticiaForm.form.valid">Publicar</button>
+    </form>
+
+    <div *ngIf="enviado" class="mensaje">
+      ✅ Noticia publicada correctamente
+    </div>
+  </div>
+
+  <article *ngFor="let n of noticias" class="noticia">
+    <h4>{{ n.titulo }}</h4>
+    <p><small>{{ n.cuerpo }}</small></p>
+  </article>
+</div>
