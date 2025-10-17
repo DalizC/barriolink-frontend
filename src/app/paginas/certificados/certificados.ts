@@ -1,12 +1,23 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-certificados',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="card">
       <h2>Solicitud de certificados</h2>
       <form (submit)="enviar()">
-        <input type="text" [value]="nombre" (input)="nombre = $event.target.value" name="nombre" placeholder="Nombre completo" required />
+        <input
+          type="text"
+          [value]="nombre"
+          (input)="nombre = $event.target.value"
+          name="nombre"
+          placeholder="Nombre completo"
+          required
+        />
         <select #tipoSelect (change)="tipo = tipoSelect.value" name="tipo">
           <option value="residencia">Residencia</option>
           <option value="buen_conducta">Buen comportamiento</option>
@@ -14,7 +25,7 @@ import { Component } from '@angular/core';
         <button type="submit" class="button">Solicitar</button>
       </form>
     </div>
-  `
+  `,
 })
 export class CertificadosComponent {
   nombre = '';
