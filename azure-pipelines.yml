@@ -10,8 +10,8 @@ trigger:
     include: [ 'v*' ]
 pr: none
 
-pool:
-  vmImage: ubuntu-latest
+pool: home-office
+  #vmImage: ubuntu-latest
 
 steps:
 - checkout: self
