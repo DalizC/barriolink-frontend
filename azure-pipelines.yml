@@ -3,12 +3,12 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-  branches:
-    include: [ main, develop, feature/*, release/* ]
-  tags:
-    include: [ 'v*' ]
-pr: none
+#trigger:
+#  branches:
+#    include: [ main, develop, release/* ]
+#  tags:
+#    include: [ 'v*' ]
+#pr: none
 
 pool: 
   name: home-office
@@ -31,6 +31,10 @@ steps:
     $url  = "https://github.com/DalizC/barriolink-frontend.git"
 
     # Espejo no destructivo: crea/actualiza ramas y tags
-    git -c http.extraheader="Authorization: Basic $b64" push $url --all
+    # 1) Trae TODAS las ramas y tags desde Azure (origin)
+    git fetch --prune --tags origin +refs/heads/*:refs/remotes/origin/*
+    # 2) Push TODAS las ramas remotas de origin a heads de GitHub
+    git -c http.extraheader="Authorization: Basic $b64" push $url --prune refs/remotes/origin/*:refs/heads/*
+    # 3) Push tags
     git -c http.extraheader="Authorization: Basic $b64" push $url --tags
-  displayName: 'Mirror to GitHub (DalizC/barriolink-frontend)'
+  displayName: 'Mirror ALL branches & tags to GitHub'
