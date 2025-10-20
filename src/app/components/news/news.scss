@@ -1,0 +1,13 @@
+// Estilos específicos para noticias
+.news-card {
+  transition: box-shadow 0.3s ease-in-out;
+  border-left: 4px solid #28a745;
+  
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+}
+
+.btn-group-vertical .btn {
+  margin-bottom: 0.25rem;
+}

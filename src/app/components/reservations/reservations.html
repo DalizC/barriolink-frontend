@@ -1,0 +1,73 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h5>Reservas de Espacios Comunitarios</h5>
+          <p>Gestiona las reservas de espacios comunes del barrio</p>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <button class="btn btn-primary">
+                <i class="fa fa-calendar-plus me-2"></i>Nueva Reserva
+              </button>
+            </div>
+            <div class="col-md-6 text-end">
+              <select class="form-select" style="width: 200px; display: inline-block;">
+                <option>Todos los espacios</option>
+                <option>Salón Comunitario</option>
+                <option>Cancha de Fútbol</option>
+                <option>Sala de Reuniones</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Espacio</th>
+                  <th>Solicitante</th>
+                  <th>Fecha</th>
+                  <th>Horario</th>
+                  <th>Propósito</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let reservation of reservations">
+                  <td>{{ reservation.id }}</td>
+                  <td><strong>{{ reservation.space }}</strong></td>
+                  <td>{{ reservation.requester }}</td>
+                  <td>{{ reservation.date }}</td>
+                  <td>{{ reservation.time }}</td>
+                  <td>{{ reservation.purpose }}</td>
+                  <td>
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-success': reservation.status === 'Aprobada',
+                            'bg-warning': reservation.status === 'Pendiente',
+                            'bg-danger': reservation.status === 'Rechazada'
+                          }">
+                      {{ reservation.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <button class="btn btn-sm btn-outline-info">Ver</button>
+                      <button class="btn btn-sm btn-outline-success">Aprobar</button>
+                      <button class="btn btn-sm btn-outline-danger">Rechazar</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

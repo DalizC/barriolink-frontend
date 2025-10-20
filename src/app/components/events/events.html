@@ -1,0 +1,67 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h5>Eventos del Barrio</h5>
+          <p>Gestiona eventos y actividades comunitarias</p>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <button class="btn btn-primary">
+                <i class="fa fa-calendar-plus me-2"></i>Nuevo Evento
+              </button>
+            </div>
+            <div class="col-md-6 text-end">
+              <select class="form-select" style="width: 200px; display: inline-block; margin-right: 10px;">
+                <option>Todas las categorías</option>
+                <option>Comunitario</option>
+                <option>Comercial</option>
+                <option>Voluntariado</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-3" *ngFor="let event of events">
+              <div class="card event-card h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="card-title">{{ event.title }}</h6>
+                    <span class="badge" 
+                          [ngClass]="{
+                            'bg-primary': event.category === 'Comunitario',
+                            'bg-success': event.category === 'Comercial',
+                            'bg-warning': event.category === 'Voluntariado'
+                          }">
+                      {{ event.category }}
+                    </span>
+                  </div>
+                  <p class="card-text text-muted small mb-2">{{ event.description }}</p>
+                  <hr class="my-2">
+                  <p class="card-text mb-1">
+                    <i class="fa fa-calendar me-2 text-primary"></i><strong>{{ event.date }}</strong>
+                  </p>
+                  <p class="card-text mb-1">
+                    <i class="fa fa-clock me-2 text-success"></i>{{ event.time }}
+                  </p>
+                  <p class="card-text mb-3">
+                    <i class="fa fa-map-marker me-2 text-danger"></i>{{ event.location }}
+                  </p>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-primary flex-fill">Ver</button>
+                    <button class="btn btn-sm btn-outline-success flex-fill">Asistir</button>
+                    <button class="btn btn-sm btn-outline-warning">
+                      <i class="fa fa-edit"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
