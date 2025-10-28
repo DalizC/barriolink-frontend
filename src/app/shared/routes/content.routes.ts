@@ -11,6 +11,17 @@ export const content: Routes = [
       import("../../components/pages/pages.routes").then((r) => r.pages),
   },
   {
+    path: "projects",
+    data: {
+      title: "Proyectos",
+      breadcrumb: "Proyectos",
+    },
+    loadChildren: () =>
+      import("../../components/projects/projects.routes").then(
+        (r) => r.projects,
+      ),
+  },
+  {
     path: "certificates",
     loadComponent: () => import("../../components/certificates/certificates").then((m) => m.Certificates),
     data: {
@@ -32,14 +43,6 @@ export const content: Routes = [
     data: {
       title: "Noticias",
       breadcrumb: "Noticias",
-    },
-  },
-  {
-    path: "projects",
-    loadComponent: () => import("../../components/projects/projects").then((m) => m.ProjectsManage),
-    data: {
-      title: "Proyectos Comunitarios",
-      breadcrumb: "Proyectos Comunitarios",
     },
   },
   {

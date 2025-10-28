@@ -1,25 +1,34 @@
 import { Routes } from "@angular/router";
 
-export const pages: Routes = [
+export const projects: Routes = [
   {
     path: "",
     children: [
       {
-        path: "sample-page1",
+        path: "my-projects",
         loadComponent: () =>
-          import("./sample-page1/sample-page1").then((m) => m.SamplePage1),
+          import("./my-projects/my-projects").then((m) => m.MyProjectsComponent),
         data: {
-          title: "Sample-page1",
-          breadcrumb: "Sample-page1",
+          title: "Mis Proyectos",
+          breadcrumb: "Mis Proyectos",
         },
       },
       {
-        path: "sample-page2",
+        path: "projects-list",
         loadComponent: () =>
-          import("./sample-page2/sample-page2").then((m) => m.SamplePage2),
+          import("./projects-list/projects-list").then((m) => m.ProjectsListComponent),
         data: {
-          title: "Sample-page2",
-          breadcrumb: "Sample-page2",
+          title: "Listado de Proyectos",
+          breadcrumb: "Listado de Proyectos",
+        },
+      },
+      {
+        path: "projects-create",
+        loadComponent: () =>
+          import("./projects-create/projects-create").then((m) => m.ProjectsCreateComponent),
+        data: {
+          title: "Crear Proyecto",
+          breadcrumb: "Crear Proyecto",
         },
       },
     ],
