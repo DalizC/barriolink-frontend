@@ -19,11 +19,15 @@ export const menuItems: IMenu[] = [
   },
   {
     title: "Proyectos",
-    icon: "folder",
-    type: "link",
-    bookmark: true,
-    path: "/pages/projects",
+    icon: "kanban",
+    type: "sub",
+    active: false,
     level: 1,
+    children: [
+      { path: "/projects/my-projects", title: "Mis Proyectos", type: "link" },
+      { path: "/projects/projects-list", title: "Listado de Proyectos", type: "link" },
+      { path: "/projects/projects-create", title: "Crear Proyecto", type: "link" },
+    ],
   },
   {
     title: "Reservaciones",
