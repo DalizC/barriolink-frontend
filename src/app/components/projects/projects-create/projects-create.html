@@ -90,23 +90,16 @@
                     >Project Type</label
                   >
                   <select2
-                    [data]="projectType"
+                    [data]="projectTypeOptions"
                     formControlName="projectType"
-                    [templates]="template"
                     placeholder="Select projectType"
                     [ngClass]="{
                       'is-invalid':
                         projectForm.controls['projectType'].touched &&
-                        projectForm.controls['projectType'].errors?.[
-                          'required'
-                        ],
+                        projectForm.controls['projectType'].errors?.['required'],
                       'is-valid': projectForm.controls['projectType'].valid,
                     }"
-                  >
-                    <ng-template #template let-item="label">
-                      {{ item }}
-                    </ng-template>
-                  </select2>
+                  ></select2>
                   @if (
                     projectForm.controls["projectType"].touched &&
                     projectForm.controls["projectType"].errors?.["required"]
@@ -121,9 +114,8 @@
                     >Category</label
                   >
                   <select2
-                    [data]="projectCategory"
+                    [data]="projectCategoryOptions"
                     formControlName="category"
-                    [templates]="template"
                     placeholder="Select category"
                     [ngClass]="{
                       'is-invalid':
@@ -131,11 +123,7 @@
                         projectForm.controls['category'].errors?.['required'],
                       'is-valid': projectForm.controls['category'].valid,
                     }"
-                  >
-                    <ng-template #template let-item="label">
-                      {{ item }}
-                    </ng-template>
-                  </select2>
+                  ></select2>
                   @if (
                     projectForm.controls["category"].touched &&
                     projectForm.controls["category"].errors?.["required"]
@@ -150,9 +138,8 @@
                     >Priority</label
                   >
                   <select2
-                    [data]="projectPriority"
+                    [data]="projectPriorityOptions"
                     formControlName="priority"
-                    [templates]="template"
                     placeholder="Select priority"
                     [ngClass]="{
                       'is-invalid':
@@ -160,11 +147,7 @@
                         projectForm.controls['priority'].errors?.['required'],
                       'is-valid': projectForm.controls['priority'].valid,
                     }"
-                  >
-                    <ng-template #template let-item="label">
-                      {{ item }}
-                    </ng-template>
-                  </select2>
+                  ></select2>
                   @if (
                     projectForm.controls["priority"].touched &&
                     projectForm.controls["priority"].errors?.["required"]
@@ -179,9 +162,8 @@
                     >Select Team Leader</label
                   >
                   <select2
-                    [data]="details"
+                    [data]="teamLeaderOptions"
                     formControlName="teamLeader"
-                    [templates]="template"
                     placeholder="Select team leader"
                     [ngClass]="{
                       'is-invalid':
@@ -189,11 +171,7 @@
                         projectForm.controls['teamLeader'].errors?.['required'],
                       'is-valid': projectForm.controls['teamLeader'].valid,
                     }"
-                  >
-                    <ng-template #template let-item="label">
-                      {{ item }}
-                    </ng-template>
-                  </select2>
+                  ></select2>
                   @if (
                     projectForm.controls["teamLeader"].touched &&
                     projectForm.controls["teamLeader"].errors?.["required"]
@@ -208,10 +186,9 @@
                     >Select Members</label
                   >
                   <select2
-                    [data]="details"
+                    [data]="teamMemberOptions"
                     formControlName="teamMember"
-                    [templates]="template"
-                    multiple="true"
+                    [multiple]="true"
                     placeholder="Select users"
                     [ngClass]="{
                       'is-invalid':
@@ -219,11 +196,7 @@
                         projectForm.controls['teamMember'].errors?.['required'],
                       'is-valid': projectForm.controls['teamMember'].valid,
                     }"
-                  >
-                    <ng-template #template let-item="label">
-                      {{ item }}
-                    </ng-template>
-                  </select2>
+                  ></select2>
                   @if (
                     projectForm.controls["teamMember"].touched &&
                     projectForm.controls["teamMember"].errors?.["required"]
@@ -236,9 +209,8 @@
                 <div class="col-xxl-4 col-lg-6">
                   <label class="form-label" for="projectSize">Size</label>
                   <select2
-                    [data]="projectSize"
+                    [data]="projectSizeOptions"
                     formControlName="size"
-                    [templates]="template"
                     placeholder="Select size"
                     [ngClass]="{
                       'is-invalid':
@@ -246,11 +218,7 @@
                         projectForm.controls['size'].errors?.['required'],
                       'is-valid': projectForm.controls['size'].valid,
                     }"
-                  >
-                    <ng-template #template let-item="label">
-                      {{ item }}
-                    </ng-template>
-                  </select2>
+                  ></select2>
                   @if (
                     projectForm.controls["size"].touched &&
                     projectForm.controls["size"].errors?.["required"]
