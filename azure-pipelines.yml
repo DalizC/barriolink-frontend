@@ -146,9 +146,11 @@ stages:
         # Obtener el nombre completo de la rama desde Build.SourceBranch
         $sourceBranch = "$(Build.SourceBranch)"
         $branch = $sourceBranch -replace "refs/heads/", ""
+        $remoteRef = "refs/heads/$branch"
 
         Write-Host "Source Branch: $sourceBranch"
-        Write-Host "Rama extraída: $branch"
+        Write-Host "Rama extraida: $branch"
+        Write-Host "Destino remoto: $remoteRef"
 
         $maxRetries = $(maxRetries)
         $retryCount = 0
@@ -197,12 +199,12 @@ stages:
                         $success = $true
                     } else {
                         Write-Host "Push con --force-with-lease para seguridad..."
-                        git push github "HEAD:$branch" --force-with-lease 2>&1
+                        git push github "HEAD:$remoteRef" --force-with-lease 2>&1
                     }
                 } else {
                     # Si la rama no existe, crearla directamente
                     Write-Host "Creando nueva rama '$branch' en GitHub..."
-                    git push github "HEAD:$branch" 2>&1
+                    git push github "HEAD:$remoteRef" 2>&1
                 }
 
                 if ($LASTEXITCODE -eq 0) {
@@ -276,3 +278,4 @@ stages:
         GITHUB_OWNER: $(GITHUB_OWNER)
         GITHUB_REPO: $(GITHUB_REPO)
       condition: always()
+
