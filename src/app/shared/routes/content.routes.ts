@@ -8,7 +8,7 @@ export const content: Routes = [
       breadcrumb: "sample-page",
     },
     loadChildren: () =>
-      import("../../components/pages/pages.routes").then((r) => r.pages),
+      import("../../pages/pages.routes").then((r) => r.pages),
   },
   {
     path: "projects",
@@ -17,13 +17,13 @@ export const content: Routes = [
       breadcrumb: "Proyectos",
     },
     loadChildren: () =>
-      import("../../components/projects/projects.routes").then(
+      import("../../pages/projects/projects.routes").then(
         (r) => r.projects,
       ),
   },
   {
     path: "certificates",
-    loadComponent: () => import("../../components/certificates/certificates").then((m) => m.Certificates),
+    loadComponent: () => import("../../pages/certificates/certificates").then((m) => m.Certificates),
     data: {
       title: "Certificaciones",
       breadcrumb: "Certificaciones",
@@ -31,7 +31,7 @@ export const content: Routes = [
   },
   {
     path: "events",
-    loadComponent: () => import("../../components/events/events").then((m) => m.Events),
+    loadComponent: () => import("../../pages/events/events").then((m) => m.Events),
     data: {
       title: "Eventos",
       breadcrumb: "Eventos",
@@ -39,7 +39,7 @@ export const content: Routes = [
   },
   {
     path: "news",
-    loadComponent: () => import("../../components/news/news").then((m) => m.News),
+    loadComponent: () => import("../../pages/news/news").then((m) => m.News),
     data: {
       title: "Noticias",
       breadcrumb: "Noticias",
@@ -47,7 +47,7 @@ export const content: Routes = [
   },
   {
     path: "community-reservations",
-    loadComponent: () => import("../../components/reservations/reservations").then((m) => m.ReservationsManage),
+    loadComponent: () => import("../../pages/reservations/reservations").then((m) => m.ReservationsManage),
     data: {
       title: "Reservas Comunitarias",
       breadcrumb: "Reservas Comunitarias",
@@ -60,7 +60,7 @@ export const content: Routes = [
       breadcrumb: "sample-page",
     },
     loadChildren: () =>
-      import("../../components/sample-page/sample-pages.routes").then(
+      import("../../pages/sample-page/sample-pages.routes").then(
         (r) => r.samplePages,
       ),
   },

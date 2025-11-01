@@ -1,0 +1,83 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h5>Calendario</h5>
+          <p>Gestiona eventos y actividades comunitarias</p>
+        </div>
+        <div class="card-body">
+          <button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+            (viewDateChange)="closeOpenMonthViewDay()">Previous</button>
+          <button mwlCalendarToday [(viewDate)]="viewDate">Today</button>
+          <button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+            (viewDateChange)="closeOpenMonthViewDay()">Next</button>
+          <h3>{{ viewDate | calendarDate: view + 'ViewTitle' : 'en' }}</h3>
+          <button (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month">Month</button>
+          <button (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week">Week</button>
+          <button (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">Day</button>
+          <div [ngSwitch]="view">
+            <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+              [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+              [openDayEventsTemplate]="emptyOpenDay"
+              (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+            </mwl-calendar-month-view>
+            <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
+              [refresh]="refresh">
+            </mwl-calendar-week-view>
+            <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events"
+              [refresh]="refresh">
+            </mwl-calendar-day-view>
+          </div>
+        </div>
+      </div>
+      <ng-template #modalContent let-modal>
+        <div class="modal-header">
+          <h4 class="modal-title">{{ modalData?.event?.title }}</h4>
+          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Descripción:</strong> {{ modalData?.event?.meta?.description }}</p>
+          <p><strong>Ubicación:</strong> {{ modalData?.event?.meta?.location }}</p>
+          <p><strong>Categoría:</strong> {{ modalData?.event?.meta?.category }}</p>
+          <p><strong>Acción:</strong> {{ modalData?.action }}</p>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h5>Calendario</h5>
+          <p>Gestiona eventos y actividades comunitarias</p>
+        </div>
+        <div class="card-body">
+          <h2>Próximos Eventos</h2>
+          <ng-container *ngIf="openDayEvents.length > 0; else noSelectedEvents">
+            <p class="text-muted mb-2" *ngIf="openDayDate">
+              {{ openDayDate | date: 'fullDate' : undefined : 'es' }}
+            </p>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-3" *ngFor="let event of openDayEvents">
+                <button type="button" class="btn btn-link p-0" (click)="handleEvent('Clicked', event)">
+                  {{ event.title }}
+                </button>
+                <small class="d-block text-muted">
+                  {{ event.start | date: 'shortTime' : undefined : 'es' }}
+                  <span *ngIf="event.end">
+                    &nbsp;-&nbsp;{{ event.end | date: 'shortTime' : undefined : 'es' }}
+                  </span>
+                </small>
+              </li>
+            </ul>
+          </ng-container>
+          <ng-template #noSelectedEvents>
+            <p class="text-muted mb-0">Selecciona un día con eventos en el calendario.</p>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #emptyOpenDay let-day="day"></ng-template>
