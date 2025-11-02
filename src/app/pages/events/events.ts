@@ -109,6 +109,46 @@ export class Events {
       },
     },
     {
+      start: new Date("2025-11-05T10:00:00"),
+      end: new Date("2024-11-05T12:00:00"),
+      title: "Feria de Servicios",
+      meta: {
+        description: "Muestra de servicios locales",
+        location: "Centro Comunitario",
+        category: "Comercial",
+      },
+    },
+    {
+      start: new Date("2025-11-05T10:00:00"),
+      end: new Date("2024-11-05T12:00:00"),
+      title: "Feria de Servicios",
+      meta: {
+        description: "Muestra de servicios locales",
+        location: "Centro Comunitario",
+        category: "Comercial",
+      },
+    },
+    {
+      start: new Date("2025-11-05T10:00:00"),
+      end: new Date("2024-11-05T12:00:00"),
+      title: "Feria de Servicios",
+      meta: {
+        description: "Muestra de servicios locales",
+        location: "Centro Comunitario",
+        category: "Comercial",
+      },
+    },
+    {
+      start: new Date("2025-11-05T10:00:00"),
+      end: new Date("2024-11-05T12:00:00"),
+      title: "Feria de Servicios",
+      meta: {
+        description: "Muestra de servicios locales",
+        location: "Centro Comunitario",
+        category: "Comercial",
+      },
+    },
+    {
       start: new Date("2025-10-30T08:00:00"),
       title: "Limpieza del Parque",
       meta: {
@@ -200,5 +240,9 @@ export class Events {
     this.activeDayIsOpen = false;
     this.openDayEvents = [];
     this.openDayDate = null;
+  }
+
+  trackByEventTitle(index: number, event: CalendarEvent): string {
+    return `${event.title}-${event.start?.toString() ?? index}`;
   }
 }

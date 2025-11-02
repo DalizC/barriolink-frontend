@@ -1,67 +1,109 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-sm-12">
-      <div class="card">
+    <div class="col-sm-8">
+      <div class="card calender-wrapper">
         <div class="card-header pb-0">
-          <h5>Eventos del Barrio</h5>
+          <h5>Calendario</h5>
           <p>Gestiona eventos y actividades comunitarias</p>
         </div>
         <div class="card-body">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <button class="btn btn-primary">
-                <i class="fa fa-calendar-plus me-2"></i>Nuevo Evento
-              </button>
+          <div class="row g-sm-3 g-2">
+            <div class="col-md-4">
+              <div class="btn-group">
+                <button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+                  (viewDateChange)="closeOpenMonthViewDay()" class="btn btn-outline-primary">Previous</button>
+                <button mwlCalendarToday [(viewDate)]="viewDate" class="btn btn-outline-primary">Today</button>
+                <button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+                  (viewDateChange)="closeOpenMonthViewDay()" class="btn btn-outline-primary">Next</button>
+              </div>
             </div>
-            <div class="col-md-6 text-end">
-              <select class="form-select" style="width: 200px; display: inline-block; margin-right: 10px;">
-                <option>Todas las categorías</option>
-                <option>Comunitario</option>
-                <option>Comercial</option>
-                <option>Voluntariado</option>
-              </select>
+            <div class="col-md-4 text-md-center">
+              <h3>{{ viewDate | calendarDate: view + "ViewTitle" : "en" }}</h3>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <div class="btn-group">
+                <button (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month"
+                  class="btn btn-outline-primary">Mes</button>
+                <button (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week"
+                  class="btn btn-outline-primary">Semana</button>
+                <button (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day"
+                  class="btn btn-outline-primary">Día</button>
+              </div>
             </div>
           </div>
-          
-          <div class="row">
-            <div class="col-lg-4 col-md-6 col-sm-12 mb-3" *ngFor="let event of events">
-              <div class="card event-card h-100">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h6 class="card-title">{{ event.title }}</h6>
-                    <span class="badge" 
-                          [ngClass]="{
-                            'bg-primary': event.category === 'Comunitario',
-                            'bg-success': event.category === 'Comercial',
-                            'bg-warning': event.category === 'Voluntariado'
-                          }">
-                      {{ event.category }}
-                    </span>
-                  </div>
-                  <p class="card-text text-muted small mb-2">{{ event.description }}</p>
-                  <hr class="my-2">
-                  <p class="card-text mb-1">
-                    <i class="fa fa-calendar me-2 text-primary"></i><strong>{{ event.date }}</strong>
-                  </p>
-                  <p class="card-text mb-1">
-                    <i class="fa fa-clock me-2 text-success"></i>{{ event.time }}
-                  </p>
-                  <p class="card-text mb-3">
-                    <i class="fa fa-map-marker me-2 text-danger"></i>{{ event.location }}
-                  </p>
-                  <div class="d-flex gap-1">
-                    <button class="btn btn-sm btn-outline-primary flex-fill">Ver</button>
-                    <button class="btn btn-sm btn-outline-success flex-fill">Asistir</button>
-                    <button class="btn btn-sm btn-outline-warning">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                  </div>
+          <br />
+          <div [ngSwitch]="view">
+            <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+              [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+              [openDayEventsTemplate]="emptyOpenDay" (eventClicked)="handleEvent('Clicked', $event.event)"
+              (eventTimesChanged)="eventTimesChanged($event)">
+            </mwl-calendar-month-view>
+            <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
+              [refresh]="refresh">
+            </mwl-calendar-week-view>
+            <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day" [viewDate]="viewDate" [events]="events"
+              [refresh]="refresh">
+            </mwl-calendar-day-view>
+          </div>
+        </div>
+      </div>
+      <ng-template #modalContent let-modal>
+        <div class="modal-header">
+          <h4 class="modal-title">{{ modalData?.event?.title }}</h4>
+          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Descripción:</strong> {{ modalData?.event?.meta?.description }}</p>
+          <p><strong>Ubicación:</strong> {{ modalData?.event?.meta?.location }}</p>
+          <p><strong>Categoría:</strong> {{ modalData?.event?.meta?.category }}</p>
+          <p><strong>Acción:</strong> {{ modalData?.action }}</p>
+        </div>
+      </ng-template>
+    </div>
+    <div class="col-sm-4">
+      <div class="events-sidebar">
+        <h2 class="events-sidebar__title">Próximos Eventos</h2>
+        <ng-container *ngIf="openDayEvents.length > 0; else noSelectedEvents">
+          <p class="text-muted mb-3" *ngIf="openDayDate">
+            {{ openDayDate | date: 'fullDate' : undefined : 'es' }}
+          </p>
+          <div class="events-scroll-container">
+            <div class="card event-card events-scroll-card mb-3"
+              *ngFor="let event of openDayEvents; trackBy: trackByEventTitle">
+              <div class="card-body p-3">
+                <h6 class="mb-1">{{ event.title }}</h6>
+                <small class="text-muted d-block mb-2">
+                  {{ event.start | date: 'shortTime' : undefined : 'es' }}
+                  <span *ngIf="event.end">
+                    &nbsp;-&nbsp;{{ event.end | date: 'shortTime' : undefined : 'es' }}
+                  </span>
+                </small>
+                <p class="mb-2 small" *ngIf="event.meta?.description">
+                  {{ event.meta.description }}
+                </p>
+                <p class="mb-2 small text-muted" *ngIf="event.meta?.location">
+                  <i class="fa fa-map-marker me-2"></i>{{ event.meta.location }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge bg-light text-dark" *ngIf="event.meta?.category">
+                    {{ event.meta.category }}
+                  </span>
+                  <button type="button" class="btn btn-sm btn-outline-primary"
+                    (click)="handleEvent('Clicked', event)">
+                    Ver detalle
+                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </ng-container>
+        <ng-template #noSelectedEvents>
+          <p class="text-muted mb-0">Selecciona un día con eventos en el calendario.</p>
+        </ng-template>
       </div>
     </div>
   </div>
 </div>
+<ng-template #emptyOpenDay let-day="day"></ng-template>

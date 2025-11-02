@@ -1,26 +1,42 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm-8">
-      <div class="card">
+      <div class="card calender-wrapper">
         <div class="card-header pb-0">
           <h5>Calendario</h5>
           <p>Gestiona eventos y actividades comunitarias</p>
         </div>
         <div class="card-body">
-          <button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
-            (viewDateChange)="closeOpenMonthViewDay()">Previous</button>
-          <button mwlCalendarToday [(viewDate)]="viewDate">Today</button>
-          <button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
-            (viewDateChange)="closeOpenMonthViewDay()">Next</button>
-          <h3>{{ viewDate | calendarDate: view + 'ViewTitle' : 'en' }}</h3>
-          <button (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month">Month</button>
-          <button (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week">Week</button>
-          <button (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">Day</button>
+          <div class="row g-sm-3 g-2">
+            <div class="col-md-4">
+              <div class="btn-group">
+                <button mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+                  (viewDateChange)="closeOpenMonthViewDay()" class="btn btn-outline-primary">Previous</button>
+                <button mwlCalendarToday [(viewDate)]="viewDate" class="btn btn-outline-primary">Today</button>
+                <button mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+                  (viewDateChange)="closeOpenMonthViewDay()" class="btn btn-outline-primary">Next</button>
+              </div>
+            </div>
+            <div class="col-md-4 text-md-center">
+              <h3>{{ viewDate | calendarDate: view + "ViewTitle" : "en" }}</h3>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <div class="btn-group">
+                <button (click)="setView(CalendarView.Month)" [class.active]="view === CalendarView.Month"
+                  class="btn btn-outline-primary">Mes</button>
+                <button (click)="setView(CalendarView.Week)" [class.active]="view === CalendarView.Week"
+                  class="btn btn-outline-primary">Semana</button>
+                <button (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day"
+                  class="btn btn-outline-primary">Día</button>
+              </div>
+            </div>
+          </div>
+          <br />
           <div [ngSwitch]="view">
             <mwl-calendar-month-view *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
               [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
-              [openDayEventsTemplate]="emptyOpenDay"
-              (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)">
+              [openDayEventsTemplate]="emptyOpenDay" (eventClicked)="handleEvent('Clicked', $event.event)"
+              (eventTimesChanged)="eventTimesChanged($event)">
             </mwl-calendar-month-view>
             <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
               [refresh]="refresh">
@@ -48,33 +64,38 @@
     </div>
     <div class="col-sm-4">
       <div class="card">
-        <div class="card-header pb-0">
-          <h5>Calendario</h5>
-          <p>Gestiona eventos y actividades comunitarias</p>
-        </div>
-        <div class="card-body">
-          <h2>Próximos Eventos</h2>
-          <ng-container *ngIf="openDayEvents.length > 0; else noSelectedEvents">
-            <p class="text-muted mb-2" *ngIf="openDayDate">
-              {{ openDayDate | date: 'fullDate' : undefined : 'es' }}
-            </p>
-            <ul class="list-unstyled mb-0">
-              <li class="mb-3" *ngFor="let event of openDayEvents">
-                <button type="button" class="btn btn-link p-0" (click)="handleEvent('Clicked', event)">
-                  {{ event.title }}
-                </button>
-                <small class="d-block text-muted">
+        <div class="card-header"></div>
+        <div class="card-body vertical-scroll scroll-demo scroll-b-none">
+          <!--<div tabindex="0" ngbscrollspy="" class="scrollspy-example-5 custom-scrollbar">-->
+          <ul class="schedule-list p-3">
+            <li class="common-hover warning ng-star-inserted" *ngFor="let event of openDayEvents; trackBy: trackByEventTitle">
+              <img alt="profile" src="assets/images/dashboard/user/4.jpg">
+              <div>
+                <h6 class="mb-1">{{ event.title }}</h6>
+                <small class="text-muted d-block mb-2">
                   {{ event.start | date: 'shortTime' : undefined : 'es' }}
                   <span *ngIf="event.end">
                     &nbsp;-&nbsp;{{ event.end | date: 'shortTime' : undefined : 'es' }}
                   </span>
                 </small>
-              </li>
-            </ul>
-          </ng-container>
-          <ng-template #noSelectedEvents>
-            <p class="text-muted mb-0">Selecciona un día con eventos en el calendario.</p>
-          </ng-template>
+                <p class="mb-2 small" *ngIf="event.meta?.description">
+                  {{ event.meta.description }}
+                </p>
+                <p class="mb-2 small text-muted" *ngIf="event.meta?.location">
+                  <i class="fa fa-map-marker me-2"></i>{{ event.meta.location }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge bg-light text-dark" *ngIf="event.meta?.category">
+                    {{ event.meta.category }}
+                  </span>
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="handleEvent('Clicked', event)">
+                    Ver detalle
+                  </button>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <!--</div>-->
         </div>
       </div>
     </div>
