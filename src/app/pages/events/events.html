@@ -1,6 +1,6 @@
 <div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-8">
+  <div class="row align-items-stretch">
+    <div class="col-lg-8">
       <div class="card calender-wrapper">
         <div class="card-header pb-0">
           <h5>Calendario</h5>
@@ -62,13 +62,14 @@
         </div>
       </ng-template>
     </div>
-    <div class="col-sm-4">
-      <div class="card">
+    <div class="col-lg-4">
+      <div class="card h-100">
         <div class="card-header"></div>
         <div class="card-body vertical-scroll scroll-demo scroll-b-none">
           <!--<div tabindex="0" ngbscrollspy="" class="scrollspy-example-5 custom-scrollbar">-->
-          <ul class="schedule-list p-3">
-            <li class="common-hover warning ng-star-inserted" *ngFor="let event of openDayEvents; trackBy: trackByEventTitle">
+          <ul class="p-3">
+            <li class="common-hover warning ng-star-inserted"
+              *ngFor="let event of openDayEvents; trackBy: trackByEventTitle">
               <img alt="profile" src="assets/images/dashboard/user/4.jpg">
               <div>
                 <h6 class="mb-1">{{ event.title }}</h6>
@@ -93,7 +94,24 @@
                   </button>
                 </div>
               </div>
+
             </li>
+            <li class="common-hover" *ngFor="let event of openDayEvents; trackBy: trackByEventTitle">
+              <div class="card b-r-0">
+              <div class="card-body border-l-primary border-4">
+                  <img class="card-img-top1 img-fluid" src="assets/images/other-images/profile-style-img3.png"
+                    alt="nature" />
+                  <div class="p-t-10">
+                    <h5 class="card-title">{{ event.title }}</h5>
+                    <p class="card-text c-light">{{ event.meta.description }}</p>
+                  </div>
+                </div>
+            </div>
+            </li>
+              <div class="card">
+                <div class="card-body border-l-primary border-4">
+                </div>
+              </div>
           </ul>
           <!--</div>-->
         </div>

@@ -1,7 +1,7 @@
 <div class="container-fluid">
-  <div class="row">
+  <div class="row align-items-stretch">
     <div class="col-sm-8">
-      <div class="card calender-wrapper">
+      <div class="card calender-wrapper h-100">
         <div class="card-header pb-0">
           <h5>Calendario</h5>
           <p>Gestiona eventos y actividades comunitarias</p>
@@ -63,16 +63,14 @@
       </ng-template>
     </div>
     <div class="col-sm-4">
-      <div class="events-sidebar">
-        <h2 class="events-sidebar__title">Próximos Eventos</h2>
-        <ng-container *ngIf="openDayEvents.length > 0; else noSelectedEvents">
-          <p class="text-muted mb-3" *ngIf="openDayDate">
-            {{ openDayDate | date: 'fullDate' : undefined : 'es' }}
-          </p>
-          <div class="events-scroll-container">
-            <div class="card event-card events-scroll-card mb-3"
-              *ngFor="let event of openDayEvents; trackBy: trackByEventTitle">
-              <div class="card-body p-3">
+      <div class="card h-100">
+        <div class="card-header"></div>
+        <div class="card-body vertical-scroll scroll-demo scroll-b-none">
+          <!--<div tabindex="0" ngbscrollspy="" class="scrollspy-example-5 custom-scrollbar">-->
+          <ul class="schedule-list p-3">
+            <li class="common-hover warning ng-star-inserted" *ngFor="let event of openDayEvents; trackBy: trackByEventTitle">
+              <img alt="profile" src="assets/images/dashboard/user/4.jpg">
+              <div>
                 <h6 class="mb-1">{{ event.title }}</h6>
                 <small class="text-muted d-block mb-2">
                   {{ event.start | date: 'shortTime' : undefined : 'es' }}
@@ -90,18 +88,15 @@
                   <span class="badge bg-light text-dark" *ngIf="event.meta?.category">
                     {{ event.meta.category }}
                   </span>
-                  <button type="button" class="btn btn-sm btn-outline-primary"
-                    (click)="handleEvent('Clicked', event)">
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="handleEvent('Clicked', event)">
                     Ver detalle
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        </ng-container>
-        <ng-template #noSelectedEvents>
-          <p class="text-muted mb-0">Selecciona un día con eventos en el calendario.</p>
-        </ng-template>
+            </li>
+          </ul>
+          <!--</div>-->
+        </div>
       </div>
     </div>
   </div>
