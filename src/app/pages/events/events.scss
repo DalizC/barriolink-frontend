@@ -1,3 +1,7 @@
-.row.align-items-stretch > .col-sm-4{
+.row.align-items-stretch > .col-sm-4,.col-lg-4,.col-md-4 {
   margin-bottom: 20px;
+}
+
+.d-flex small > span {
+  margin-left: 5px;
 }
