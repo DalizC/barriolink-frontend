@@ -1,13 +1,45 @@
-// Estilos específicos para noticias
-.news-card {
-  transition: box-shadow 0.3s ease-in-out;
-  border-left: 4px solid #28a745;
-  
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.list-behavior-1 {
+  img {
+    height: 250px;
+    object-fit: cover;
+
+    @media (max-width: 1999px) {
+      height: 250px;
+    }
+
+    @media (max-width: 1199px) {
+      height: 200px;
+    }
+
+    @media (max-width: 992px) {
+      height: 195px;
+    }
+
+    @media (max-width: 767px) {
+      height: 150px;
+    }
+
+    @media (max-width: 576px) {
+      height: 100px;
+      margin-bottom: 0px !important;
+    }
   }
+  margin-bottom: 0px !important;
 }
 
-.btn-group-vertical .btn {
-  margin-bottom: 0.25rem;
+.d-flex small > span {
+  margin-left: 5px;
+}
+
+.badge-spacing .badge {
+  padding: 1px 10px;
+  font-size: 12px;
+}
+
+h1>span.badge {
+  margin-left: 10px;
+}
+
+.card.b-r-0{
+  padding-left: 0px;
 }
