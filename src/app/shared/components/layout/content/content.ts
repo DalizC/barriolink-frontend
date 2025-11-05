@@ -48,15 +48,10 @@ export class Content {
 
     if (window.innerWidth < 1200) {
       this.layoutService.closeSidebar = true;
-    } else {
-      this.layoutService.closeSidebar = false;
-    }
-
-    if (window.innerWidth <= 992) {
       this.layoutService.config.settings.sidebar_type = "compact-wrapper";
     } else {
-      this.layoutService.config.settings.sidebar_type =
-        this.layoutService.config.settings.sidebar_type;
+      this.layoutService.closeSidebar = false;
+      this.layoutService.config.settings.sidebar_type = "horizontal-wrapper";
     }
   }
 
@@ -64,14 +59,10 @@ export class Content {
   onResize() {
     if (window.innerWidth < 1200) {
       this.layoutService.closeSidebar = true;
-    } else {
-      this.layoutService.closeSidebar = false;
-    }
-    if (window.innerWidth <= 992) {
       this.layoutService.config.settings.sidebar_type = "compact-wrapper";
     } else {
-      this.layoutService.config.settings.sidebar_type =
-        this.layoutService.config.settings.sidebar_type;
+      this.layoutService.closeSidebar = false;
+      this.layoutService.config.settings.sidebar_type = "horizontal-wrapper";
     }
   }
 }

@@ -1,121 +1,176 @@
 <div class="container-fluid">
+  <div class="row main-divider mb-4">
+    <div class="divider-body divider-body-1 divider-primary">
+      <div class="divider-p-primary">
+        <i class="f-20 fa-solid fa-star me-2 txt-primary"></i>
+        <span class="txt-primary">Noticias Destacadas</span>
+      </div>
+    </div>
+  </div>
+  <!-- Carrusel -->
   <div class="row">
+    <div class="col-xl-8 ps-0 mt-4">
+      <div class="card height-equal b-r-0">
+        <div class="card-body">
+          <div class="carousel slide carousel-fade common-carousel carousel-dark" data-bs-ride="carousel">
+            <div class="carousel-indicators"></div>
+            <div class="carousel-inner">
+              <owl-carousel-o [options]="customOptions">
+                @for (item of carouselItems; track item) {
+                <ng-template carouselSlide>
+                  <div class="carousel-item active">
+                    <img class="d-block w-100" [src]="item.image" alt="drawing-room" />
+                    <div class="carousel-caption d-none d-md-block carousel-opacity">
+                      <h5>{{ item.title }}</h5>
+                      <p>{{ item.description }}</p>
+                    </div>
+                  </div>
+                </ng-template>
+                }
+              </owl-carousel-o>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 d-flex flex-column gap-0 p-0">
+      <div class="card b-r-0 flex-fill w-100">
+        <div class="card-body">
+          <div class="carousel carousel-dark slide common-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators"></div>
+            <div class="carousel-inner">
+              <owl-carousel-o [options]="customOptions">
+                @for (item of carouselItems; track item) {
+                <ng-template carouselSlide>
+                  <div class="carousel-item active">
+                    <img class="d-block w-100" [src]="item.image" alt="drawing-room" />
+                    <div class="carousel-caption d-none d-md-block carousel-opacity">
+                      <h5>{{ item.title }}</h5>
+                      <p>{{ item.description }}</p>
+                    </div>
+                  </div>
+                </ng-template>
+                }
+              </owl-carousel-o>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card b-r-0 flex-fill w-100">
+        <div class="card-body">
+          <div class="carousel carousel-dark slide common-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators"></div>
+            <div class="carousel-inner">
+              <owl-carousel-o [options]="customOptions">
+                @for (item of carouselItems; track item) {
+                <ng-template carouselSlide>
+                  <div class="carousel-item active">
+                    <img class="d-block w-100" [src]="item.image" alt="drawing-room" />
+                    <div class="carousel-caption d-none d-md-block carousel-opacity">
+                      <h5>{{ item.title }}</h5>
+                      <p>{{ item.description }}</p>
+                    </div>
+                  </div>
+                </ng-template>
+                }
+              </owl-carousel-o>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row main-divider mb-4">
+    <div class="divider-body divider-body-1 divider-primary">
+      <div class="divider-p-primary">
+        <i class="f-20 fa-solid fa-newspaper me-2 txt-primary"></i>
+        <span class="txt-primary">Todas las Noticias</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-3">
     <div class="col-12">
-      <div class="card b-r-0 shadow-none">
-<div class="ribbon ribbon-success ribbon-bookmark"><span>Nueva</span></div>
-          <div class="d-flex list-behavior-1 align-items-center">
-            <div class="">
-              <img alt="home" class="tab-img img-fluid" src="assets/images/blog/blog.jpg">
-            </div>
-            <div class="flex-grow-1">
-
-              <h1 class="link-dark">Absolute Card</h1>
-              <div class="badge-spacing">
-                <h5 class="txt-info">Info</h5>
-              </div>
-              <p class="mb-xl-0 mb-sm-4 d-none d-md-block">Absolute card is made by using <b>flex-shrink-0, flex-grow-1 &amp;
-                  card-absolute </b> classes. you can do any of your designs using these classes. Subtracting the total
-                size of all the flex items from the size of the flex container yields the leftover space.
-              </p>
-
-
-              <small class="d-none d-lg-block">
-                <i class="fa-regular fa-clock"></i>
-                <span class="card-text c-light">Hace 2 días</span>
-                <br>
-                <i class="fa-solid fa-user"></i>
-                <span class="card-text c-light">Gabriel Soto</span>
-              </small>
-
-
+      <div class="card">
+        <div class="card-body d-flex flex-wrap align-items-center gap-3">
+          <div class="news-select2 flex-grow-1">
+            <select2
+              [data]="categoryOptions"
+              [multiple]="true"
+              placeholder="Categorías"
+              [ngModel]="stagedCategories"
+              (ngModelChange)="onCategoriesChange($event)"
+              resettable>
+            </select2>
           </div>
-        </div>
-</div>
 
-  </div>
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="card b-r-0 shadow-none">
-        <div class="card-body">
-          <div class="d-flex list-behavior-1 align-items-center gap-3">
-            <div class="flex-shrink-0"><img alt="home" class="tab-img img-fluid" src="assets/images/blog/blog.jpg">
-            </div>
-            <div class="flex-grow-1">
-              <h1>Absolute Card</h1>
-              <p class="mb-xl-0 mb-sm-4 d-none d-md-block">Absolute card is made by using <b>flex-shrink-0, flex-grow-1 &amp;
-                  card-absolute </b> classes. you can do any of your designs using these classes. Subtracting the total
-                size of all the flex items from the size of the flex container yields the leftover space.</p>
-              <div class="row ">
-                <div class="col-sm-6">
-                  <small>
-                    <i class="fa-regular fa-clock"></i>
-                    <span class="card-text c-light">Hace 2 días</span>
-                    <br>
-                    <i class="fa-solid fa-user"></i>
-                    <span class="card-text c-light">Gabriel Soto</span>
-                  </small>
-                </div>
-              </div>
-            </div>
+          <div class="input-group w-auto">
+            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+            <input type="date" class="form-control" [ngModel]="stagedDateFrom" (ngModelChange)="onDateFromChange($event)" />
+          </div>
+
+          <div class="input-group w-auto">
+            <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+            <input type="date" class="form-control" [ngModel]="stagedDateTo" (ngModelChange)="onDateToChange($event)" />
+          </div>
+
+          <select class="form-select w-auto" [ngModel]="stagedSortOrder" (ngModelChange)="onSortOrderChange($event)">
+            <option value="newest">Más recientes primero</option>
+            <option value="oldest">Más antiguas primero</option>
+          </select>
+
+          <button type="button" class="btn btn-primary" (click)="applyFilters()">
+            Filtrar
+          </button>
+
+          <div class="d-flex flex-wrap gap-2 ms-auto" *ngIf="stagedCategories.length > 0">
+            @for (category of stagedCategories; track category) {
+            <span class="badge badge-light-primary d-flex align-items-center gap-2">
+              {{ category }}
+              <button class="btn btn-icon btn-xs btn-link p-0" type="button"
+                (click)="clearCategory(category, $event)">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </span>
+            }
           </div>
         </div>
       </div>
     </div>
   </div>
+
+ <!-- Noticias -->
+ <!-- Noticias -->
+  @for (item of filteredNews; track item.id) {
   <div class="row">
-    <div class="col-sm-12">
-      <div class="card b-r-0 shadow-none">
-        <div class="card-body">
-          <div class="d-flex list-behavior-1 align-items-center">
-            <div class="flex-shrink-0"><img alt="home" class="tab-img img-fluid" src="assets/images/blog/blog.jpg">
-            </div>
-            <div class="flex-grow-1">
-              <h1>Absolute Card</h1>
-              <p class="mb-xl-0 mb-sm-4 d-none d-md-block">Absolute card is made by using <b>flex-shrink-0, flex-grow-1 &amp;
-                  card-absolute </b> classes. you can do any of your designs using these classes. Subtracting the total
-                size of all the flex items from the size of the flex container yields the leftover space.</p>
+
+    <div class="card b-r-0">
+      <div class="blog-box blog-list row">
+        <div class="col-sm-4"><img class="img-fluid sm-100-w p-0" [src]="item.image"
+            [alt]="item.title"></div>
+        <div class="col-sm-8">
+          <div class="blog-details">
+            <div class="blog-date">{{ item.category }}</div>
+            <h1>{{ item.title }}</h1>
+            <div class="blog-bottom-content">
+              <ul class="blog-social">
+                <li><small><i class="fa-solid fa-user"></i>{{ item.author }}</small></li>
+                <li><small><i class="fa-regular fa-clock"></i>{{ item.date | date: 'mediumDate' : undefined : 'es' }}</small></li>
+              </ul>
+              <hr>
+              <p class="mt-0">{{ item.summary }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
+
   </div>
+  }
   <div class="row">
-    <div class="col-sm-12">
-      <div class="card b-r-0 shadow-none card-absolute">
-        <div class="card-body">
-          <div class="d-flex list-behavior-1 align-items-center">
-            <div class="flex-shrink-0"><img alt="home" class="img-fluid" src="assets/images/blog/blog.jpg">
-            </div>
-            <div class="flex-grow-1">
-              <h1>Absolute Card</h1>
-              <p class="mb-xl-0 mb-sm-4 d-none d-md-block">Absolute card is made by using <b>flex-shrink-0, flex-grow-1 &amp;
-                  card-absolute </b> classes. you can do any of your designs using these classes. Subtracting the total
-                size of all the flex items from the size of the flex container yields the leftover space.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  <nav aria-label="Page navigation example"><ul class="pagination pagination-dark pagin-border-dark gap-2 justify-content-center"><li class="page-item"><a href="javascript:void(0)" aria-label="Previous" class="page-link rounded-circle"><span aria-hidden="true">«</span><span class="sr-only">Previous</span></a></li><li class="page-item"><a href="javascript:void(0)" class="page-link rounded-circle">1</a></li><li class="page-item"><a href="javascript:void(0)" class="page-link rounded-circle">2</a></li><li class="page-item"><a href="javascript:void(0)" class="page-link rounded-circle">...</a></li><li class="page-item"><a href="javascript:void(0)" class="page-link rounded-circle">20</a></li><li class="page-item"><a href="javascript:void(0)" aria-label="Next" class="page-link rounded-circle"><span aria-hidden="true">»</span><span class="sr-only">Next</span></a></li></ul></nav>
   </div>
-  <nav aria-label="Page navigation example">
-    <ul class="pagination pagination-primary pagin-border-primary justify-content-center">
-      <li class="page-item">
-        <a class="page-link" href="javascript:void(0)">Previous</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:void(0)">1</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:void(0)">2</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:void(0)">3</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:void(0)">Next</a>
-      </li>
-    </ul>
-  </nav>
   <br>
 </div>

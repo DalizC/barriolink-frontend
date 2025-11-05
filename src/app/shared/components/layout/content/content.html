@@ -1,7 +1,7 @@
 <!-- page-wrapper Start-->
 <div
   class="page-wrapper"
-  [ngClass]="layoutService.config.settings.sidebar_type"
+  [ngClass]="[layoutService.config.settings.sidebar_type, layoutService.config.settings.layout_type]"
   id="pageWrapper"
 >
   <!-- Page Header Start-->
@@ -22,8 +22,10 @@
     </div>
     <!-- Page Sidebar Ends-->
     <div class="page-body">
-      <app-breadcrumbs />
-      <router-outlet />
+      <div [ngClass]="layoutService.config.settings.layout">
+        <app-breadcrumbs />
+        <router-outlet />
+      </div>
     </div>
 
     <!-- Footer Start -->
