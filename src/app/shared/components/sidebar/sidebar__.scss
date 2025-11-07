@@ -1,0 +1,113 @@
+// ========================================
+// Horizontal Menu Customizations
+// ========================================
+
+@media (min-width: 992px) {
+  // Disable hover to show submenu - only show on click
+  .page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links > li:hover > .sidebar-submenu {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  // Only show submenu when explicitly activated (clicked)
+  .page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links > li.activated > .sidebar-submenu {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  // Disable hover on nested submenus (second level) - only click
+  .page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu > li:hover > .sidebar-submenu {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+
+  // Only show nested submenu when explicitly activated (clicked)
+  .page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu > li.activated > .sidebar-submenu {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  // Remove margin-top animation and transform effects
+  .page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links > li > .sidebar-submenu,
+  .page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links > li.activated > .sidebar-submenu {
+    margin-top: 0 !important;
+    transform: none !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+  }
+
+  // Make nested submenus (level 2+) appear inline instead of floating
+  .page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu .sidebar-submenu {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding-left: 20px !important;
+
+    li a {
+      padding: 6px 15px !important;
+      font-size: 13px !important;
+    }
+  }
+}
+
+// Show cursor pointer on menu items with submenu
+.page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links > li > a {
+  cursor: pointer !important;
+}
+
+// Cursor pointer also on submenu items with children
+.page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu > li > a {
+  cursor: pointer !important;
+}
+
+// 3. Remove animations from submenu links
+.page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a {
+  transition: color 0.3s ease !important;
+  letter-spacing: 0.06em !important;
+}
+
+.page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu li a:hover {
+  letter-spacing: 0.06em !important;
+}
+
+// Remove all hover animations and transitions from submenus
+.page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links .sidebar-submenu {
+  transition: none !important;
+  transform: none !important;
+
+  li {
+    transition: none !important;
+    transform: none !important;
+
+    a {
+      transition: color 0.3s ease !important;
+      transform: none !important;
+    }
+
+    .sidebar-submenu {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+}
+
+// 5. Close nested submenus when parent closes
+.page-wrapper.horizontal-wrapper .sidebar-wrapper .sidebar-main .sidebar-links > li:not(.activated) {
+  .sidebar-submenu li {
+    // Remove activated class styling when parent is closed
+    &.activated > .sidebar-submenu {
+      display: none !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+  }
+}
