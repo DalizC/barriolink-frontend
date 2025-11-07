@@ -130,6 +130,21 @@ export class Sidebar {
       });
     }
     item.active = !item.active;
+
+    // Close all nested submenus when parent menu closes
+    if (!item.active && item.children) {
+      this.closeNestedMenus(item.children);
+    }
+  }
+
+  // Helper method to recursively close nested menus
+  closeNestedMenus(children: IMenu[]) {
+    children.forEach(child => {
+      child.active = false;
+      if (child.children) {
+        this.closeNestedMenus(child.children);
+      }
+    });
   }
 
   scrollLeft() {

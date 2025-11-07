@@ -1,0 +1,117 @@
+:host-context(.page-wrapper.horizontal-wrapper) {
+  ::ng-deep .sidebar-wrapper {
+    .sidebar-main .sidebar-links {
+      > li {
+        > .sidebar-submenu {
+          display: none !important;
+          opacity: 0;
+          visibility: hidden;
+        }
+
+        &.activated > .sidebar-submenu {
+          display: block !important;
+          opacity: 1;
+          visibility: visible;
+        }
+
+        > a {
+          letter-spacing: normal;
+          transition: color 0.2s ease;
+
+          &:hover,
+          &:focus {
+            letter-spacing: normal;
+            transform: none;
+          }
+        }
+      }
+
+      .sidebar-submenu {
+        list-style: none;
+        margin: 6px 0 0 18px;
+        padding-left: 18px;
+        border-left: 1px solid rgba(var(--bs-dark-rgb), 0.25);
+
+        [dir="rtl"] & {
+          margin-left: 0;
+          margin-right: 18px;
+          padding-left: 0;
+          padding-right: 18px;
+          border-left: none;
+          border-right: 1px solid rgba(var(--bs-dark-rgb), 0.25);
+        }
+
+        > li {
+          position: relative;
+          padding-left: 12px;
+          margin-bottom: 4px;
+
+          [dir="rtl"] & {
+            padding-left: 0;
+            padding-right: 12px;
+          }
+
+          &::before,
+          &::after {
+            content: "";
+            position: absolute;
+            left: -18px;
+            border-color: rgba(var(--bs-dark-rgb), 0.3);
+
+            [dir="rtl"] & {
+              left: auto;
+              right: -18px;
+            }
+          }
+
+          &::before {
+            top: 14px;
+            width: 16px;
+            border-top: 1px solid currentColor;
+          }
+
+          &::after {
+            top: -12px;
+            bottom: -12px;
+            border-left: 1px solid currentColor;
+
+            [dir="rtl"] & {
+              border-left: none;
+              border-right: 1px solid currentColor;
+            }
+          }
+
+          &:last-child::after {
+            bottom: 12px;
+          }
+
+          > a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 0;
+            letter-spacing: normal;
+            transition: color 0.2s ease;
+
+            &:hover,
+            &:focus {
+              color: var(--theme-default);
+            }
+          }
+
+          > .sidebar-submenu {
+            display: none !important;
+            opacity: 0;
+            visibility: hidden;
+          }
+
+          &.activated > .sidebar-submenu {
+            display: block !important;
+            opacity: 1;
+            visibility: visible;
+          }
+        }
+      }
+    }
+  }
+}

@@ -7,51 +7,156 @@ export const menuItems: IMenu[] = [
     main_title: "General",
   },
   {
-    title: "Dashboard",
+    title: "Inicio",
     icon: "home",
     type: "link",
-    bookmark: true,
-    path: "/pages/dashboard",
+    path: "/home",
+    active: false,
     level: 1,
   },
   {
-    main_title: "Gestión de Servicios",
+    title: "Noticias",
+    icon: "blog",
+    type: "link",
+    level: 1,
+    children: [
+      { path: "/news", title: "Ver Noticias", type: "link" },
+      { path: "/news/create", title: "Publicar Noticia", type: "link" },
+      {
+        title: "Mis Noticias",
+        id: "my-news",
+        type: "sub",
+        level: 2,
+        active: false,
+        children: [
+          { path: "/news/my-news", title: "Ver Mis Noticias", type: "link" },
+        ],
+      },
+      {
+        title: "Administrar Noticias",
+        id: "admin-news",
+        type: "sub",
+        level: 2,
+        active: false,
+        children: [
+          { path: "/news/admin", title: "Ver Todas las Noticias", type: "link" },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Eventos",
+    icon: "calendar",
+    type: "link",
+    active: false,
+    level: 1,
+    children: [
+      { path: "/events", title: "Ver Eventos", type: "link" },
+      { path: "/events/create", title: "Publicar Evento", type: "link" },
+      {
+        title: "Mis Eventos",
+        id: "my-events",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/events/my-events", title: "Mis Eventos Creados", type: "link"},
+          { path: "/events/my-registrations", title: "Mis Inscripciones", type: "link" },
+        ]
+      },
+      {
+        title: "Administrar Eventos",
+        id: "admin-events",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/events/admin", title: "Ver Todos los Eventos", type: "link" },
+        ]
+      },
+    ],
   },
   {
     title: "Proyectos",
-    icon: "kanban",
+    icon: "form",
     type: "sub",
     active: false,
     level: 1,
     children: [
-      { path: "/projects/my-projects", title: "Mis Proyectos", type: "link" },
-      { path: "/projects/projects-list", title: "Listado de Proyectos", type: "link" },
-      { path: "/projects/projects-create", title: "Crear Proyecto", type: "link" },
+      { path: "/projects", title: "Ver Proyectos", type: "link" },
+      { path: "/projects/create", title: "Crear Proyecto", type: "link" },
+      {
+        title: "Mis Proyectos",
+        id: "my-projects",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/projects/my-applications", title: "Mis Postulaciones", type: "link" },
+        ]
+      },
+      {
+        title: "Administrar Proyectos",
+        id: "admin-projects",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/projects/admin", title: "Ver Todos los Proyectos", type: "link" },
+        ]
+      },
     ],
   },
   {
-    title: "Reservaciones",
-    icon: "calendar",
-    type: "link",
-    bookmark: true,
-    path: "/pages/reservations",
+    title: "Espacios Comunitarios",
+    icon: "maps",
+    type: "sub",
+    active: false,
     level: 1,
+    children: [
+      { path: "/facilities", title: "Ver Espacios", type: "link" },
+      {
+        title: "Mis Reservas",
+        id: "my-bookings",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/facilities/my-bookings", title: "Ver Mis Reservas", type: "link" },
+        ]
+      },
+      {
+        title: "Administrar Espacios",
+        id: "admin-facilities",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/facilities/create", title: "Registrar Espacio", type: "link" },
+          { path: "/facilities/admin", title: "Ver Todos los Espacios", type: "link" },
+        ]
+      },
+    ],
   },
   {
-    title: "Usuarios",
-    icon: "users",
+    title: "Miembros",
+    icon: "user",
     type: "link",
-    bookmark: true,
-    path: "/pages/users",
     level: 1,
-  },
-  {
-    title: "Servicios",
-    icon: "settings",
-    type: "link",
-    bookmark: true,
-    path: "/pages/services",
-    level: 1,
+    children: [
+      { path: "/users", title: "Ver Miembros", type: "link" },
+      {
+        title: "Administrar Usuarios",
+        id: "admin-users",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/users/create", title: "Registrar Usuario", type: "link" },
+          { path: "/users/admin", title: "Ver Todos los Usuarios", type: "link" },
+        ]
+      },
+    ],
   },
   {
     main_title: "Comunidad",
@@ -59,44 +164,36 @@ export const menuItems: IMenu[] = [
   {
     title: "Certificaciones",
     icon: "award",
-    type: "link",
-    bookmark: true,
-    path: "/certificates",
+    type: "sub",
+    active: false,
     level: 1,
+    children: [
+      { path: "/certificates", title: "Ver Certificados", type: "link" },
+      { path: "/certificates/request", title: "Solicitar Certificado", type: "link" },
+      {
+        title: "Mis Certificados",
+        id: "my-certificates",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/certificates/my-certificates", title: "Mis Certificados", type: "link" },
+          { path: "/certificates/my-requests", title: "Mis Solicitudes", type: "link" },
+        ]
+      },
+      {
+        title: "Administrar Certificados",
+        id: "admin-certificates",
+        type: "sub",
+        active: false,
+        level: 2,
+        children: [
+          { path: "/certificates/admin", title: "Ver Todas las Solicitudes", type: "link" },
+        ]
+      },
+    ],
   },
-  {
-    title: "Eventos",
-    icon: "calendar",
-    type: "link",
-    bookmark: true,
-    path: "/events",
-    level: 1,
-  },
-  {
-    title: "Noticias",
-    icon: "file-text",
-    type: "link",
-    bookmark: true,
-    path: "/news",
-    level: 1,
-  },
-  {
-    title: "Proyectos",
-    icon: "tool",
-    type: "link",
-    bookmark: true,
-    path: "/projects",
-    level: 1,
-  },
-  {
-    title: "Reservas Comunitarias",
-    icon: "bookmark",
-    type: "link",
-    bookmark: true,
-    path: "/community-reservations",
-    level: 1,
-  },
-  {
+  /*{
     main_title: "Ejemplos",
   },
   {
@@ -117,7 +214,7 @@ export const menuItems: IMenu[] = [
     bookmark: false,
     path: "/sample-page",
     level: 1,
-  },
+  },*/
 ];
 
 // Array

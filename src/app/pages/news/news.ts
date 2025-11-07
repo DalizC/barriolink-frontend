@@ -49,7 +49,7 @@ export class News {
       date: "2024-10-18",
       category: "Seguridad",
       status: "Publicado",
-      image: "assets/images/blog/blog-1.jpg"
+      image: "assets/images/blog/blog-5.jpg"
     },
     {
       id: 2,
@@ -60,7 +60,7 @@ export class News {
       date: "2024-10-15",
       category: "Infraestructura",
       status: "Publicado",
-      image: "assets/images/blog/blog-2.jpg"
+      image: "assets/images/blog/blog-6.jpg"
     },
     {
       id: 3,
@@ -82,7 +82,7 @@ export class News {
       date: "2024-10-22",
       category: "Comunidad",
       status: "Programado",
-      image: "assets/images/blog/blog-4.jpg"
+      image: "assets/images/blog/blog-2.jpg"
     },
   ];
 
@@ -167,7 +167,10 @@ export class News {
 
   clearCategory(categoryValue: string, event: MouseEvent): void {
     event.stopPropagation();
-    this.stagedCategories = this.stagedCategories.filter((category) => category !== categoryValue);
+    this.stagedCategories = this.stagedCategories.filter(
+      (category) => category !== categoryValue
+    );
+    this.stagedCategories = [...this.stagedCategories];
   }
 
   trackByNews(_: number, item: { id: number }): number {

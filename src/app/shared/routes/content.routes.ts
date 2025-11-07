@@ -2,15 +2,6 @@ import { Routes } from "@angular/router";
 
 export const content: Routes = [
   {
-    path: "pages",
-    data: {
-      title: "sample-page",
-      breadcrumb: "sample-page",
-    },
-    loadChildren: () =>
-      import("../../pages/pages.routes").then((r) => r.pages),
-  },
-  {
     path: "projects",
     data: {
       title: "Proyectos",
@@ -23,45 +14,47 @@ export const content: Routes = [
   },
   {
     path: "certificates",
-    loadComponent: () => import("../../pages/certificates/certificates").then((m) => m.Certificates),
     data: {
       title: "Certificaciones",
       breadcrumb: "Certificaciones",
     },
+    loadChildren: () =>
+      import("../../pages/certificates/certificates.routes").then((r) => r.certificatesRoutes),
   },
   {
     path: "events",
-    loadComponent: () => import("../../pages/events/events").then((m) => m.Events),
     data: {
       title: "Eventos",
       breadcrumb: "Eventos",
     },
+    loadChildren: () =>
+      import("../../pages/events/events.routes").then((r) => r.eventsRoutes),
   },
   {
     path: "news",
-    loadComponent: () => import("../../pages/news/news").then((m) => m.News),
     data: {
       title: "Noticias",
       breadcrumb: "Noticias",
     },
+    loadChildren: () =>
+      import("../../pages/news/news.routes").then((r) => r.newsRoutes),
   },
   {
-    path: "community-reservations",
-    loadComponent: () => import("../../pages/reservations/reservations").then((m) => m.ReservationsManage),
+    path: "facilities",
     data: {
-      title: "Reservas Comunitarias",
-      breadcrumb: "Reservas Comunitarias",
-    },
-  },
-  {
-    path: "sample-page",
-    data: {
-      title: "sample-page",
-      breadcrumb: "sample-page",
+      title: "Instalaciones",
+      breadcrumb: "Instalaciones",
     },
     loadChildren: () =>
-      import("../../pages/sample-page/sample-pages.routes").then(
-        (r) => r.samplePages,
-      ),
+      import("../../pages/facilities/facilities.routes").then((r) => r.facilitiesRoutes),
+  },
+  {
+    path: "users",
+    data: {
+      title: "Usuarios",
+      breadcrumb: "Usuarios",
+    },
+    loadChildren: () =>
+      import("../../pages/users/users.routes").then((r) => r.usersRoutes),
   },
 ];

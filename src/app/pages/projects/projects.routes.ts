@@ -3,34 +3,58 @@ import { Routes } from "@angular/router";
 export const projects: Routes = [
   {
     path: "",
-    children: [
-      {
-        path: "my-projects",
-        loadComponent: () =>
-          import("./my-projects/my-projects").then((m) => m.MyProjectsComponent),
-        data: {
-          title: "Mis Proyectos",
-          breadcrumb: "Mis Proyectos",
-        },
-      },
-      {
-        path: "projects-list",
-        loadComponent: () =>
-          import("./projects-list/projects-list").then((m) => m.ProjectsListComponent),
-        data: {
-          title: "Listado de Proyectos",
-          breadcrumb: "Listado de Proyectos",
-        },
-      },
-      {
-        path: "projects-create",
-        loadComponent: () =>
-          import("./projects-create/projects-create").then((m) => m.ProjectsCreateComponent),
-        data: {
-          title: "Crear Proyecto",
-          breadcrumb: "Crear Proyecto",
-        },
-      },
-    ],
+    loadComponent: () => import("./projects").then((m) => m.Projects),
+    data: {
+      title: "Proyectos",
+      breadcrumb: "Proyectos",
+    },
+  },
+  {
+    path: "my-applications",
+    loadComponent: () => import("./my-applications/my-applications").then((m) => m.MyApplications),
+    data: {
+      title: "Mis Postulaciones",
+      breadcrumb: "Mis Postulaciones",
+    },
+  },
+  {
+    path: "admin",
+    loadComponent: () => import("./projects-admin/projects-admin").then((m) => m.ProjectsAdmin),
+    data: {
+      title: "Gestión de Proyectos",
+      breadcrumb: "Gestión",
+    },
+  },
+  {
+    path: "create",
+    loadComponent: () => import("./projects-form/projects-form").then((m) => m.ProjectsForm),
+    data: {
+      title: "Crear Proyecto",
+      breadcrumb: "Crear",
+    },
+  },
+  {
+    path: "edit/:id",
+    loadComponent: () => import("./projects-form/projects-form").then((m) => m.ProjectsForm),
+    data: {
+      title: "Editar Proyecto",
+      breadcrumb: "Editar",
+    },
+  },
+  {
+    path: ":id/apply",
+    loadComponent: () => import("./projects-apply/projects-apply").then((m) => m.ProjectsApply),
+    data: {
+      title: "Postular a Proyecto",
+      breadcrumb: "Postular",
+    },
+  },
+  {
+    path: ":id",
+    loadComponent: () => import("./projects-detail/projects-detail").then((m) => m.ProjectsDetail),
+    data: {
+      title: "Detalle de Proyecto",
+      breadcrumb: "Detalle",
+    },
   },
 ];
