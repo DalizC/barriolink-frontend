@@ -3,3 +3,33 @@
 // ========================================
 // This file contains custom CSS overrides for the application.
 // It is imported AFTER the template styles in src/styles.scss
+
+body.dark-only .page-wrapper.horizontal-wrapper .page-body-wrapper .sidebar-wrapper {
+    box-shadow: none;
+}
+
+.page-title-alt {
+    margin-bottom: 1rem;
+    h1 {
+        font-size: 2rem;
+    }
+    h6 {
+        font-size: 1rem;
+        color: var(--bs-secondary-text);
+        font-weight: lighter;
+    }
+}
+
+/* Wrapper agrupado para destacadas + filtros sin alterar espaciados internos */
+.app-group-card {
+  background-color: #ffffff; /* blanco */
+  border-radius: 15px;
+  /* No padding/margin extra para conservar layout responsivo original */
+  margin: 0;
+  padding: 0;
+  /* Evitar que elementos internos se recorten si usan sombras */
+  overflow: visible;
+}
+
+/* Asegurar que no se impongan estilos de .card (no usamos .card aquí) */
+.app-group-card > .row { margin: 0; }

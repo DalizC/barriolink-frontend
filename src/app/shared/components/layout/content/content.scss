@@ -1,1 +1,23 @@
+.page-wrapper .page-body-wrapper .page-body, .container-lg
+{
+    padding: 0;
+}
 
+/*
+.container-lg {
+    background-color: white;
+    border-radius: 15px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+*/
+/* Hide spacing helper on screens <= 991px */
+
+@media (max-width: 1055px) {
+    .body-spacing {
+        display: none !important;
+    }
+    .container-lg {
+        border-radius: 0 !important;
+    }
+}

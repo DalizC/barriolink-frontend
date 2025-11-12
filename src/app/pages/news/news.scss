@@ -1,5 +1,49 @@
 
-.blog-list {
+.blog-box .blog-details-main .blog-social li {
+  padding: 0 12px;
+}
+.pinned-news > div.row {
+  height: 100%;
+  margin-top: 0px;
+}
+
+/* Solo desde XL: la columna derecha llena el alto y reparte A arriba / B abajo */
+@media (min-width: 1200px) {
+  .pinned-news { display: flex; }                    /* hace que la col sea flex */
+  .pinned-news .pinned-stack {
+    display: flex;                                   /* el "row" se vuelve columna flex */
+    flex-direction: column;
+    justify-content: space-between;                  /* A arriba, B abajo */
+    flex: 1 1 auto;                                  /* que llene el alto del padre */
+  }
+  /* (opcional) evita problemas de overflow en algunos navegadores */
+  .pinned-news .pinned-stack { min-height: 0; }
+}
+
+/* Alinear bordes: quitar margen superior del primer .pinned y margen inferior del último .pinned */
+.pinned-news .pinned-stack > .pinned:first-child { margin-top: 0 !important; }
+.pinned-news .pinned-stack > .pinned:last-child  { margin-bottom: 0 !important; }
+.pinned-news .pinned-stack > .pinned:last-child > .card  { margin-bottom: 10px !important; }
+
+/*Ajuste a altura del carrusel*/
+//owl-carousel-o { align-self: stretch; }
+
+/* Carousel rounded corners */
+.rounded-carousel {
+  border-radius: 15px;
+  overflow: hidden; /* ensure children respect rounding */
+}
+.rounded-carousel .carousel-inner,
+.rounded-carousel .carousel-item,
+.rounded-carousel .carousel-item img {
+  border-radius: 15px;
+}
+.carousel-caption {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+/*.blog-list {
   img {
     height: 350px;
     object-fit: cover;
@@ -20,14 +64,21 @@
       height: 150px;
     }
 
+
+
     @media (max-width: 576px) {
       height: 100px;
       margin-bottom: 0px !important;
     }
   }
   margin-bottom: 0px !important;
-}
 
+  // Sobrescribir el comportamiento del tema que oculta el contenido
+  .blog-bottom-content {
+    display: block !important;
+  }
+}*/
+/*
 .d-flex small > span {
   margin-left: 5px;
 }
@@ -44,11 +95,7 @@ h1 > span.badge {
 .card.b-r-0 {
   padding-left: 0px;
 }
-
-.blog-box img {
-  border-radius: 0px;
-}
-
+*/
 :host ::ng-deep .news-select2 {
   .select2-container {
     width: 100% !important;
@@ -57,22 +104,47 @@ h1 > span.badge {
   .select2-container--default .select2-selection--multiple {
     border-radius: 0.5rem;
     font-size: 0.95rem;
-    border: 1px solid var(--bs-border-color) !important;
     min-height: 42px;
     padding: 6px 10px;
   }
 
   .select2-selection__placeholder {
-    color: rgba(var(--bs-dark-rgb), 0.65) !important;
-    font-style: italic;
+    display: none !important;
   }
 
   .select2-search__field::placeholder {
-    color: rgba(var(--bs-dark-rgb), 0.45);
+    color: transparent;
   }
 
   .select2-selection__rendered {
     display: flex !important;
     gap: 8px;
+  }
+
+  .select2-option-checkbox {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .form-check-input {
+      pointer-events: none;
+      margin: 0;
+    }
+
+    .select2-option-label {
+      flex: 1;
+    }
+  }
+}
+
+.d-inline-block.select2-secondary.dropdown {
+  button {
+    width: 100%;
+    border: 0;
+    min-width: 120px;
+  }
+  i {
+    margin-right: 5px;
   }
 }

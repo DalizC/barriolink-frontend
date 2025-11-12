@@ -26,6 +26,8 @@ export class LayoutService {
       sidebar_type: "horizontal-wrapper",
       icon: "stroke-svg",
       layout: "container-lg",
+      // Toggle to show/hide breadcrumbs globally
+      showBreadcrumbs: false,
     },
     color: {
       primary: "#7366ff",

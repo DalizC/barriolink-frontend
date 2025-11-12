@@ -22,10 +22,16 @@
     </div>
     <!-- Page Sidebar Ends-->
     <div class="page-body">
+      <br class="body-spacing">
       <div [ngClass]="layoutService.config.settings.layout">
-        <app-breadcrumbs />
+        @if (layoutService.config.settings.showBreadcrumbs) {
+          <app-breadcrumbs />
+        } @else {
+          <br>
+        }
         <router-outlet />
       </div>
+      <br class="body-spacing">
     </div>
 
     <!-- Footer Start -->

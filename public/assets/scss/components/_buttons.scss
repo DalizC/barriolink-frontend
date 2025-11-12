@@ -918,3 +918,28 @@ button {
 /**=====================
     2.9 Buttons CSS end
 ==========================**/
+// Input group dropdown fix for secondary buttons
+
+.input-group {
+  [ngbDropdown] {
+    display: flex !important;
+
+    button {
+      border-radius: 0 !important;
+      border-left: 0 !important;
+    }
+
+    .btn-secondary {
+      background-color: $secondary-color !important;
+      border-color: $secondary-color !important;
+      color: #fff !important;
+
+      &:hover,
+      &:focus,
+      &:active {
+        background-color: darken($secondary-color, 10%) !important;
+        border-color: darken($secondary-color, 10%) !important;
+      }
+    }
+  }
+}

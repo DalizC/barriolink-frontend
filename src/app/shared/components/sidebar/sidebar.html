@@ -92,11 +92,6 @@
                     [class.enable-active]="menu.active"
                     routerLinkActive="active"
                     [routerLink]="menu.path"
-                    [queryParams]="
-                      layoutService.config.settings.layout
-                        ? { layout: layoutService.config.settings.layout }
-                        : {}
-                    "
                     (click)="toggleMenu(menu)"
                   >
                     @if (menu.icon) {

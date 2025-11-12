@@ -1,22 +1,44 @@
-import { CommonModule, registerLocaleData } from "@angular/common";
-import { Component } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import localeEs from "@angular/common/locales/es";
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
-import { Select2Data, Select2Module } from "ng-select2-component";
 import { CarouselModule, OwlOptions } from "ngx-owl-carousel-o";
-
-registerLocaleData(localeEs);
+import { NewsService, NewsFilters } from "../../shared/services/news.service";
+import { NewsItem } from "../../shared/data/news-mock.data";
 
 @Component({
-  selector: "app-news",
+  selector: 'app-news',
   standalone: true,
-  imports: [CommonModule, FormsModule, Select2Module, CarouselModule],
+  imports: [CommonModule, FormsModule, NgbModule, CarouselModule],
   templateUrl: "./news.html",
-  styleUrl: "./news.scss",
+  styleUrl: "./news.scss"
 })
-export class News {
-  customOptions: OwlOptions = {
+export class News implements OnInit {
+  // Expose Math to template
+  Math = Math;
+
+  // UI state
+  searchText: string = '';
+  sortOrder: 'asc' | 'desc' = 'desc';
+  loading: boolean = false;
+
+  // Data from service
+  carouselItems: NewsItem[] = [];
+  pinnedItems: NewsItem[] = [];
+  newsList: NewsItem[] = [];
+
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalItems: number = 0;
+  totalPages: number = 0;
+
+  // Available tags for filters (loaded dynamically)
+  availableTags: string[] = [];
+  options: { value: string; label: string; selected: boolean }[] = [];
+
+  carouselOptions: OwlOptions = {
     loop: true,
     autoplay: true,
     autoplayTimeout: 7000,
@@ -31,149 +53,185 @@ export class News {
     responsive: { 0: { items: 1 } },
   };
 
-  carouselItems = [
-    { image: 'assets/images/slider/1.jpg', title: 'Slide 1', description: 'Description for Slide 1' },
-    { image: 'assets/images/slider/2.jpg', title: 'Slide 2', description: 'Description for Slide 2' },
-    { image: 'assets/images/slider/3.jpg', title: 'Slide 3', description: 'Description for Slide 3' },
-    { image: 'assets/images/slider/4.jpg', title: 'Slide 4', description: 'Description for Slide 4' }
-  ];
+  constructor(private newsService: NewsService) { }
 
-  readonly news = [
-    {
-      id: 1,
-      title: "Nuevo Sistema de Seguridad",
-      summary:
-        "Se instalaron cámaras de seguridad en las principales calles del barrio.",
-      content: "La municipalidad ha instalado un moderno sistema de videovigilancia...",
-      author: "Administrador",
-      date: "2024-10-18",
-      category: "Seguridad",
-      status: "Publicado",
-      image: "assets/images/blog/blog-5.jpg"
-    },
-    {
-      id: 2,
-      title: "Mejoras en el Alumbrado Público",
-      summary: "Reemplazo de luminarias LED en toda la zona residencial.",
-      content: "Como parte del plan de modernización urbana...",
-      author: "María García",
-      date: "2024-10-15",
-      category: "Infraestructura",
-      status: "Publicado",
-      image: "assets/images/blog/blog-6.jpg"
-    },
-    {
-      id: 3,
-      title: "Próximo Corte de Agua Programado",
-      summary: "Mantenimiento de la red de agua potable el próximo fin de semana.",
-      content: "La empresa de servicios públicos anuncia...",
-      author: "Carlos López",
-      date: "2024-10-20",
-      category: "Servicios",
-      status: "Borrador",
-      image: "assets/images/blog/blog-3.jpg"
-    },
-    {
-      id: 4,
-      title: "Feria Gastronómica Comunitaria",
-      summary: "Los emprendedores locales se reúnen para compartir sabores.",
-      content: "La feria contará con más de 40 stands de comida...",
-      author: "Ana Torres",
-      date: "2024-10-22",
-      category: "Comunidad",
-      status: "Programado",
-      image: "assets/images/blog/blog-2.jpg"
-    },
-  ];
-
-  categoryOptions: Select2Data = [];
-
-  selectedCategories: string[] = [];
-  stagedCategories: string[] = [];
-
-  selectedDateFrom: string | null = null;
-  selectedDateTo: string | null = null;
-  stagedDateFrom: string | null = null;
-  stagedDateTo: string | null = null;
-
-  selectedSortOrder: 'newest' | 'oldest' = 'newest';
-  stagedSortOrder: 'newest' | 'oldest' = 'newest';
-
-  filteredNews = [...this.news];
-
-  constructor() {
-    this.categoryOptions = Array.from(new Set(this.news.map((item) => item.category))).map(
-      (category) => ({
-        value: category,
-        label: category
-      })
-    );
-    this.stagedCategories = [...this.selectedCategories];
-    this.stagedDateFrom = this.selectedDateFrom;
-    this.stagedDateTo = this.selectedDateTo;
-    this.stagedSortOrder = this.selectedSortOrder;
+  ngOnInit(): void {
+    this.loadAllData();
   }
 
+  /**
+   * Load all initial data: carousel, pinned, and news list
+   */
+  private loadAllData(): void {
+    this.loadCarouselNews();
+    this.loadPinnedNews();
+    this.loadTags();
+    this.loadNewsList();
+  }
+
+  /**
+   * Load carousel news (5 most recent)
+   */
+  private loadCarouselNews(): void {
+    this.newsService.getCarouselNews().subscribe({
+      next: (data) => {
+        this.carouselItems = data;
+      },
+      error: (err) => console.error('Error loading carousel news:', err)
+    });
+  }
+
+  /**
+   * Load pinned news (2 most recent with pinned=true)
+   */
+  private loadPinnedNews(): void {
+    this.newsService.getPinnedNews().subscribe({
+      next: (data) => {
+        this.pinnedItems = data;
+      },
+      error: (err) => console.error('Error loading pinned news:', err)
+    });
+  }
+
+  /**
+   * Load all available tags for filter options
+   */
+  private loadTags(): void {
+    this.newsService.getAllTags().subscribe({
+      next: (tags) => {
+        this.availableTags = tags;
+        // Convert to options format for checkboxes
+        this.options = tags.map(tag => ({
+          value: tag,
+          label: tag.charAt(0).toUpperCase() + tag.slice(1),
+          selected: false
+        }));
+      },
+      error: (err) => console.error('Error loading tags:', err)
+    });
+  }
+
+  /**
+   * Load paginated news list
+   */
+  private loadNewsList(): void {
+    this.loading = true;
+
+    const filters: NewsFilters = {
+      searchText: this.searchText,
+      tags: this.selectedValues,
+      sortOrder: this.sortOrder
+    };
+
+    this.newsService.getNewsList(this.currentPage, this.pageSize, filters).subscribe({
+      next: (response) => {
+        this.newsList = response.data;
+        this.totalItems = response.total;
+        this.totalPages = response.totalPages;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading news list:', err);
+        this.loading = false;
+      }
+    });
+  }
+
+  get selectedValues(): string[] {
+    return this.options
+      .filter(opt => opt.selected)
+      .map(opt => opt.value);
+  }
+
+  /**
+   * Apply filters and reload news list
+   */
   applyFilters(): void {
-    this.selectedCategories = [...this.stagedCategories];
-    this.selectedDateFrom = this.stagedDateFrom;
-    this.selectedDateTo = this.stagedDateTo;
-    this.selectedSortOrder = this.stagedSortOrder;
-
-    const from = this.selectedDateFrom ? new Date(this.selectedDateFrom) : null;
-    const to = this.selectedDateTo ? new Date(this.selectedDateTo) : null;
-
-    const filtered = this.news.filter((item) => {
-      const matchesCategory =
-        this.selectedCategories.length === 0 || this.selectedCategories.includes(item.category);
-
-      const itemDate = new Date(item.date);
-      const matchesFrom = !from || itemDate >= from;
-      const matchesTo = !to || itemDate <= to;
-
-      return matchesCategory && matchesFrom && matchesTo;
-    });
-
-    filtered.sort((a, b) => {
-      const timeA = new Date(a.date).getTime();
-      const timeB = new Date(b.date).getTime();
-      return this.selectedSortOrder === 'newest' ? timeB - timeA : timeA - timeB;
-    });
-
-    this.filteredNews = filtered;
+    this.currentPage = 1; // Reset to first page when applying filters
+    this.loadNewsList();
   }
 
-  onCategoriesChange(value: string[] | string | null): void {
-    if (Array.isArray(value)) {
-      this.stagedCategories = value;
-    } else if (typeof value === "string") {
-      this.stagedCategories = value ? [value] : [];
-    } else {
-      this.stagedCategories = [];
+  /**
+   * Refresh all data
+   */
+  refresh(): void {
+    this.loadAllData();
+  }
+
+  /**
+   * Toggle filters panel (placeholder for future implementation)
+   */
+  toggleFilters(): void {
+    console.log('Toggle de panel de filtros solicitado');
+    // TODO: Abrir/cerrar panel lateral o mostrar modal según diseño futuro
+  }
+
+  /**
+   * Navigate to create news form
+   */
+  createNews(): void {
+    console.log('Navegar a crear nueva noticia');
+    // TODO: Implementar navegación a formulario de creación
+  }
+
+  /**
+   * Go to specific page
+   */
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      this.loadNewsList();
     }
   }
 
-  onDateFromChange(value: string | null): void {
-    this.stagedDateFrom = value && value.length > 0 ? value : null;
+  /**
+   * Go to previous page
+   */
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.goToPage(this.currentPage - 1);
+    }
   }
 
-  onDateToChange(value: string | null): void {
-    this.stagedDateTo = value && value.length > 0 ? value : null;
+  /**
+   * Go to next page
+   */
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.goToPage(this.currentPage + 1);
+    }
   }
 
-  onSortOrderChange(value: 'newest' | 'oldest'): void {
-    this.stagedSortOrder = value;
+  /**
+   * Get array of page numbers for pagination
+   */
+  get pageNumbers(): number[] {
+    const pages: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(this.totalPages, start + maxVisible - 1);
+
+    // Adjust start if we're near the end
+    if (end - start < maxVisible - 1) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    return pages;
   }
 
-  clearCategory(categoryValue: string, event: MouseEvent): void {
-    event.stopPropagation();
-    this.stagedCategories = this.stagedCategories.filter(
-      (category) => category !== categoryValue
-    );
-    this.stagedCategories = [...this.stagedCategories];
-  }
-
-  trackByNews(_: number, item: { id: number }): number {
-    return item.id;
+  /**
+   * Format date for display
+   */
+  formatDate(date: Date): string {
+    return new Date(date).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 }
