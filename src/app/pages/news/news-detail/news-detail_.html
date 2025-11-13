@@ -1,0 +1,68 @@
+<div class="container-fluid">
+  @if (newsItem) {
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="blog-single">
+              <div class="blog-box blog-details">
+                <!--<img class="img-fluid w-100" [src]="newsItem.image" [alt]="newsItem.title" />-->
+                <img class="img-fluid w-100" src="assets/images/blog/blog-single.jpg" alt="{{ newsItem.title }}" />
+                <div class="blog-details">
+                  <ul class="blog-social">
+                    <li>{{ newsItem.date }}</li>
+                    <li>
+                      <i class="fa-solid fa-user"></i>
+                      {{ newsItem.author }}
+                    </li>
+                    <li>
+                      <span class="badge bg-primary">{{ newsItem.category }}</span>
+                    </li>
+                  </ul>
+                  <h4 class="pt-2 mt-0">{{ newsItem.title }}</h4>
+                  <div class="single-blog-content-top">
+                    <p class="lead">{{ newsItem.summary }}</p>
+                    <hr>
+                    <p>{{ newsItem.content }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="alert alert-warning">
+      Noticia no encontrada
+    </div>
+  }
+
+  <!-- Carousel de imágenes relacionadas -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card b-r-0">
+        <div class="card-body">
+          <div class="carousel carousel-dark slide common-carousel" data-bs-ride="carousel">
+            <div class="carousel-indicators"></div>
+            <div class="carousel-inner">
+              <owl-carousel-o [options]="customOptions">
+                @for (item of carouselItems; track item) {
+                <ng-template carouselSlide>
+                  <div class="carousel-item active">
+                    <img class="d-block w-100" [src]="item.image" alt="drawing-room" />
+                    <div class="carousel-caption d-none d-md-block carousel-opacity">
+                      <h5>{{ item.title }}</h5>
+                      <p>{{ item.description }}</p>
+                    </div>
+                  </div>
+                </ng-template>
+                }
+              </owl-carousel-o>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

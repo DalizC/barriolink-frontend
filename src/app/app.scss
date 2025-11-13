@@ -4,32 +4,129 @@
 // This file contains custom CSS overrides for the application.
 // It is imported AFTER the template styles in src/styles.scss
 
-body.dark-only .page-wrapper.horizontal-wrapper .page-body-wrapper .sidebar-wrapper {
-    box-shadow: none;
+/**
+ * ============================================================================
+ * UTILITY CLASSES - RESPONSIVE IMAGE CONTAINERS
+ * ============================================================================
+ * Clases reutilizables para manejar imágenes de diferentes resoluciones
+ * con aspect ratios constantes y comportamiento responsive.
+ *
+ * USO:
+ * <div class="img-container-16-9">
+ *   <img src="..." class="img-responsive" alt="...">
+ * </div>
+ * ============================================================================
+ */
+
+// Contenedor base para imágenes responsive
+.img-container-base {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: #f8f9fa;
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
 }
 
-.page-title-alt {
-    margin-bottom: 1rem;
-    h1 {
-        font-size: 2rem;
+// Variantes de aspect ratio
+.img-container-16-9 {
+  @extend .img-container-base;
+  aspect-ratio: 16 / 9;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 56.25%; // Fallback
+  }
+}
+
+.img-container-4-3 {
+  @extend .img-container-base;
+  aspect-ratio: 4 / 3;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 75%; // Fallback
+  }
+}
+
+.img-container-3-2 {
+  @extend .img-container-base;
+  aspect-ratio: 3 / 2;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 66.66%; // Fallback
+  }
+}
+
+.img-container-square {
+  @extend .img-container-base;
+  aspect-ratio: 1 / 1;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 100%; // Fallback
+  }
+}
+
+.img-container-21-9 {
+  @extend .img-container-base;
+  aspect-ratio: 21 / 9;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 42.85%; // Fallback
+  }
+}
+
+// Clase auxiliar para imágenes dentro de contenedores
+.img-responsive {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+// Variante con object-fit: contain (muestra imagen completa)
+.img-responsive-contain {
+  @extend .img-responsive;
+  object-fit: contain;
+}
+
+
+//Sobreescribir el estilo de news detail (artículo)
+.blog-box .blog-details .single-blog-content-top {
+    margin-top: 0px;
+    border-top: none;
+    padding-left: 100px;
+    padding-right: 100px;
+    p {
+        text-align: justify;
+        font-size: medium;
+        color: var(--bs-heading-color);
     }
-    h6 {
-        font-size: 1rem;
-        color: var(--bs-secondary-text);
-        font-weight: lighter;
-    }
 }
-
-/* Wrapper agrupado para destacadas + filtros sin alterar espaciados internos */
-.app-group-card {
-  background-color: #ffffff; /* blanco */
-  border-radius: 15px;
-  /* No padding/margin extra para conservar layout responsivo original */
-  margin: 0;
-  padding: 0;
-  /* Evitar que elementos internos se recorten si usan sombras */
-  overflow: visible;
-}
-
-/* Asegurar que no se impongan estilos de .card (no usamos .card aquí) */
-.app-group-card > .row { margin: 0; }

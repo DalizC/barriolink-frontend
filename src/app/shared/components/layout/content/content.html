@@ -1,7 +1,7 @@
 <!-- page-wrapper Start-->
 <div
   class="page-wrapper"
-  [ngClass]="[layoutService.config.settings.sidebar_type, layoutService.config.settings.layout_type]"
+  [ngClass]="layoutService.config.settings.sidebar_type"
   id="pageWrapper"
 >
   <!-- Page Header Start-->
@@ -22,16 +22,8 @@
     </div>
     <!-- Page Sidebar Ends-->
     <div class="page-body">
-      <br class="body-spacing">
-      <div [ngClass]="layoutService.config.settings.layout">
-        @if (layoutService.config.settings.showBreadcrumbs) {
-          <app-breadcrumbs />
-        } @else {
-          <br>
-        }
-        <router-outlet />
-      </div>
-      <br class="body-spacing">
+      <app-breadcrumbs />
+      <router-outlet />
     </div>
 
     <!-- Footer Start -->

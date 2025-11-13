@@ -15,6 +15,40 @@ export class NewsDetail implements OnInit {
   newsId: string | null = null;
   newsItem: any = null;
 
+  // Etiquetas calculadas para la noticia actual (deriva de newsItem.tags o de category/status)
+  get computedTags(): string[] {
+    if (!this.newsItem) return [];
+    const base: string[] = Array.isArray(this.newsItem.tags) && this.newsItem.tags.length
+      ? this.newsItem.tags
+      : [this.newsItem.category, this.newsItem.status];
+    // Normaliza: elimina falsos, trim y evita duplicados (case-insensitive)
+    const seen = new Set<string>();
+    return base
+      .filter(Boolean)
+      .map((t: string) => String(t).trim())
+      .filter((t: string) => {
+        const key = t.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return t.length > 0;
+      });
+  }
+
+  // Mapea cada tag a una clase de badge de Bootstrap
+  tagBadgeClass(tag: string): string {
+    const t = (tag || '').toLowerCase();
+    // Mapeo simple; ajusta según tu paleta/semántica
+    if (['seguridad', 'security'].includes(t)) return 'bg-primary';
+    if (['comunidad', 'community'].includes(t)) return 'bg-success';
+    if (['anuncio', 'aviso', 'scheduled', 'programado'].includes(t)) return 'bg-warning text-dark';
+    if (['infraestructura', 'infrastructure'].includes(t)) return 'bg-info';
+    if (['servicios', 'services'].includes(t)) return 'bg-secondary';
+    if (['publicado', 'published'].includes(t)) return 'bg-success';
+    if (['borrador', 'draft'].includes(t)) return 'bg-secondary';
+    if (['urgente', 'important', 'alerta'].includes(t)) return 'bg-danger';
+    return 'bg-light text-dark';
+  }
+
   customOptions: OwlOptions = {
     loop: true,
     autoplay: true,
@@ -56,7 +90,8 @@ export class NewsDetail implements OnInit {
       date: "2024-10-18",
       category: "Seguridad",
       status: "Publicado",
-      image: "assets/images/blog/blog-2.jpg"
+      image: "assets/images/blog/blog-2.jpg",
+      tags: ["Seguridad", "Anuncio"]
     },
     {
       id: 2,
@@ -67,7 +102,8 @@ export class NewsDetail implements OnInit {
       date: "2024-10-15",
       category: "Infraestructura",
       status: "Publicado",
-      image: "assets/images/blog/blog-2.jpg"
+      image: "assets/images/blog/blog-2.jpg",
+      tags: ["Infraestructura", "Comunidad"]
     },
     {
       id: 3,
@@ -78,7 +114,8 @@ export class NewsDetail implements OnInit {
       date: "2024-10-20",
       category: "Servicios",
       status: "Borrador",
-      image: "assets/images/blog/blog-3.jpg"
+      image: "assets/images/blog/blog-3.jpg",
+      tags: ["Servicios", "Programado"]
     },
     {
       id: 4,
@@ -89,7 +126,8 @@ export class NewsDetail implements OnInit {
       date: "2024-10-22",
       category: "Comunidad",
       status: "Programado",
-      image: "assets/images/blog/blog-4.jpg"
+      image: "assets/images/blog/blog-4.jpg",
+      tags: ["Comunidad", "Anuncio"]
     },
   ];
 
