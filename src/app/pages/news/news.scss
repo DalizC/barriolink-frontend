@@ -1,29 +1,47 @@
-
 .blog-box .blog-details-main .blog-social li {
   padding: 0 12px;
 }
-.pinned-news > div.row {
+
+.pinned-news>div.row {
   height: 100%;
   margin-top: 0px;
 }
 
 /* Solo desde XL: la columna derecha llena el alto y reparte A arriba / B abajo */
 @media (min-width: 1200px) {
-  .pinned-news { display: flex; }                    /* hace que la col sea flex */
-  .pinned-news .pinned-stack {
-    display: flex;                                   /* el "row" se vuelve columna flex */
-    flex-direction: column;
-    justify-content: space-between;                  /* A arriba, B abajo */
-    flex: 1 1 auto;                                  /* que llene el alto del padre */
+  .pinned-news {
+    display: flex;
   }
+
+  /* hace que la col sea flex */
+  .pinned-news .pinned-stack {
+    display: flex;
+    /* el "row" se vuelve columna flex */
+    flex-direction: column;
+    justify-content: space-between;
+    /* A arriba, B abajo */
+    flex: 1 1 auto;
+    /* que llene el alto del padre */
+  }
+
   /* (opcional) evita problemas de overflow en algunos navegadores */
-  .pinned-news .pinned-stack { min-height: 0; }
+  .pinned-news .pinned-stack {
+    min-height: 0;
+  }
 }
 
 /* Alinear bordes: quitar margen superior del primer .pinned y margen inferior del último .pinned */
-.pinned-news .pinned-stack > .pinned:first-child { margin-top: 0 !important; }
-.pinned-news .pinned-stack > .pinned:last-child  { margin-bottom: 0 !important; }
-.pinned-news .pinned-stack > .pinned:last-child > .card  { margin-bottom: 10px !important; }
+.pinned-news .pinned-stack>.pinned:first-child {
+  margin-top: 0 !important;
+}
+
+.pinned-news .pinned-stack>.pinned:last-child {
+  margin-bottom: 0 !important;
+}
+
+.pinned-news .pinned-stack>.pinned:last-child>.card {
+  margin-bottom: 10px !important;
+}
 
 /*Ajuste a altura del carrusel*/
 //owl-carousel-o { align-self: stretch; }
@@ -31,13 +49,16 @@
 /* Carousel rounded corners */
 .rounded-carousel {
   border-radius: 15px;
-  overflow: hidden; /* ensure children respect rounding */
+  overflow: hidden;
+  /* ensure children respect rounding */
 }
+
 .rounded-carousel .carousel-inner,
 .rounded-carousel .carousel-item,
 .rounded-carousel .carousel-item img {
   border-radius: 15px;
 }
+
 .carousel-caption {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
@@ -144,7 +165,86 @@ h1 > span.badge {
     border: 0;
     min-width: 120px;
   }
+
   i {
     margin-right: 5px;
   }
+}
+
+/* Equal-height cards in news grid */
+/*.product-wrapper-grid {
+  .row > [class*='col-'] {
+    display: flex;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-box {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+  }
+
+  .product-details {
+    margin-top: auto;
+  }
+}
+  */
+
+.news-img {
+  height: 220px;
+  /* ajusta este valor a lo que te guste */
+  overflow: hidden;
+  /* recorta lo que se salga */
+  position: relative; /* mantiene referencia para ribbon u otros overlays dentro de la imagen */
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* recorta por los bordes pero no deforma */
+    display: block;
+    /* evita espacios raros debajo de la imagen */
+  }
+}
+
+/* Botón de menú de opciones anclado al card */
+.product-wrapper-grid .card {
+  position: relative; /* establece el contexto de posicionamiento */
+}
+.news-card-menu {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+}
+.news-card-menu .btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.news-card-menu .btn:hover {
+  background: #ffffff;
+}
+
+
+.product-box .product-details h6, .product-box .product-details .h6 {
+    color: var(--bs-heading-color);
+    text-transform: none;
+    margin-bottom: 5px;
+}
+
+.product-box .product-details {
+  padding: 25px 25px 35px 25px;
+}
+
+.product-wrapper-grid .card.card-body {
+  padding: 0;
+}
+
+.card-header-right-icon .icon-dropdown.dropdown{
+  width: fit-content;
 }

@@ -195,32 +195,6 @@
  * Contenedor principal de la vista de detalle
  * Responsive sin min-width fijo para evitar overflow horizontal en móviles
  */
-.news-detail-container {
-  background-color: white;
-  padding: 12px;
-  margin-bottom: 20px;
-
-  // Desktop y tablet: contenedor centrado con ancho controlado
-  @media (min-width: 992px) {
-    width: 75%;
-    max-width: 1200px; // Límite máximo para pantallas muy grandes
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  // Tablets: ancho completo con padding
-  @media (min-width: 768px) and (max-width: 991.98px) {
-    width: 100%;
-    padding: 20px;
-  }
-
-  // Móviles: ancho completo sin restricciones
-  @media (max-width: 767.98px) {
-    width: 100%;
-    padding: 12px;
-    // Eliminado min-width para evitar scroll horizontal
-  }
-}
 
 /*
 // Variante con efecto hover (opcional)
@@ -272,3 +246,10 @@
     box-shadow: 0 4px 10px -2px rgba(0,0,0,0.25);
   }
 }
+
+// ==============================
+// Alert accents & rounding
+// ==============================
+/*.border-accent-info {
+  border: 2px solid #f59f00; // borde complementario (ámbar) para info
+}*/

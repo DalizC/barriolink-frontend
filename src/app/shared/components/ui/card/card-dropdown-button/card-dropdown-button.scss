@@ -1,0 +1,62 @@
+/* Rounded corners (8px) and elegant fade (no slide) for dropdown menu */
+:host {
+	.dropdown-menu {
+		/* Configurable geometry via CSS vars */
+		--dd-radius: 8px; /* container corner radius */
+		--dd-padding: 6px; /* inner padding/gap to container edge */
+
+		border-radius: var(--dd-radius);
+		border: 1px solid rgba(0,0,0,0.08);
+		box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+		/* Inner padding to keep items away from edges */
+		padding: var(--dd-padding);
+		/* Clip child backgrounds to respect rounded corners */
+		overflow: hidden;
+		background-clip: padding-box;
+
+		opacity: 0;
+		transition: opacity .18s ease;
+		will-change: opacity;
+	}
+	.dropdown-menu.show {
+		opacity: 1;
+	}
+
+	.dropdown-item {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		/* Ensure items don't visually spill outside rounded container on hover */
+		position: relative;
+		z-index: 0;
+		/* Soft corners inside and vertical separation between items */
+		/* Base geometry: r_item = max(0, r_container - container_padding)
+		   Slightly increased for a softer look: +2px, and never exceed container radius. */
+		border-radius: var(--dd-item-radius, clamp(0px, calc((var(--dd-radius) - var(--dd-padding)) + 2px), var(--dd-radius)));
+		margin: 3px 0; /* inter-item gap totals 6px (3+3), matching the 6px container padding */
+		padding: 8px 12px;
+	}
+
+	/* Remove any theme dividers/borders between items */
+	.dropdown-item + .dropdown-item {
+		border-top: 0 !important;
+	}
+
+	/* Make top/bottom spacing equal to side padding (6px) */
+	.dropdown-item:first-child { margin-top: 0; }
+	.dropdown-item:last-child { margin-bottom: 0; }
+
+	/* Hover like btn-outline-primary: fill with theme primary and turn text/icons white */
+	.dropdown-item:hover,
+	.dropdown-item:focus {
+		/* Prefer the template's theme color; fallback to Bootstrap primary */
+		background-color: var(--theme-default, var(--bs-primary));
+		color: #fff;
+	}
+	/* Danger variant follows outline-danger hover semantics */
+	.dropdown-item.text-danger:hover,
+	.dropdown-item.text-danger:focus {
+		background-color: var(--bs-danger);
+		color: #fff !important;
+	}
+}

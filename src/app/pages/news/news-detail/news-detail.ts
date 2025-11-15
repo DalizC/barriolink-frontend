@@ -4,16 +4,53 @@ import { CommonModule } from '@angular/common';
 
 import { CarouselModule, OwlOptions } from "ngx-owl-carousel-o";
 
+import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'app-news-detail',
   standalone: true,
-  imports: [CommonModule, CarouselModule],
+  imports: [CommonModule, CarouselModule, NgbAlertModule],
   templateUrl: './news-detail.html',
   styleUrl: './news-detail.scss'
 })
 export class NewsDetail implements OnInit {
   newsId: string | null = null;
   newsItem: any = null;
+  showAlert: boolean = true; // Control de visibilidad de la alerta
+
+  // Configuración de alerta (tipo y estilo)
+  alertType: 'success' | 'info' | 'warning' | 'danger' = 'info';
+  alertBorderClass = 'alert-light-info border-2 rounded-3';
+  alertTitle = '¿Deseas editar?';
+  alertText = 'Your time Over after <strong class="txt-dark">5</strong> minute';
+
+  // Botones configurables de la alerta, mantienen el orden definido aquí
+  alertActions: Array<{
+    text: string;
+    iconClass?: string;
+    colorClass?: string; // clases de Bootstrap para el botón (p.ej. 'btn-outline-secondary')
+    handler: (action: any) => void;
+  }> = [
+    {
+      text: 'Editar',
+      iconClass: '<i class="fas fa-pencil-alt"></i>',
+      colorClass: 'b-r-8 btn btn-lg btn-outline-primary',
+      handler: (action) => this.closeAlert()
+    },
+    {
+      text: 'Publicar',
+      iconClass: '<i class="fas fa-paper-plane"></i>',
+      colorClass: 'b-r-8 btn btn-lg btn-primary',
+      handler: (action) => this.closeAlert()
+    },
+    // Ejemplo de botón adicional (puedes editar/eliminar según sea necesario)
+    // {
+    //   text: 'Acción',
+    //   iconClass: 'fa-solid fa-check',
+    //   colorClass: 'btn-primary',
+    //   handler: () => this.onAlertPrimaryAction()
+    // }
+  ];
 
   // Etiquetas calculadas para la noticia actual (deriva de newsItem.tags o de category/status)
   get computedTags(): string[] {
@@ -139,4 +176,14 @@ export class NewsDetail implements OnInit {
       this.newsItem = this.news.find(n => n.id === +this.newsId!);
     }
   }
+
+  // Cierra la alerta y remueve completamente del DOM
+  closeAlert() {
+    this.showAlert = false;
+  }
+
+  // Ejemplo de acción adicional
+  // private onAlertPrimaryAction() {
+  //   // Implementa la acción deseada
+  // }
 }

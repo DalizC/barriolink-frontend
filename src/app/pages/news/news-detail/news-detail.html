@@ -91,6 +91,27 @@
             </div>
           </div>
         </div>
+
+        @if (showAlert) {
+        <ngb-alert role="alert" [type]="alertType" class="p-0 alert show fade ng-star-inserted" [ngClass]="alertBorderClass" [dismissible]="false">
+          <div class="d-flex align-items-center w-100 gap-3 p-3 py-4">
+            <div class="flex-grow-1">
+              <h5>{{ alertTitle }}</h5>
+              <p [innerHTML]="alertText"></p>
+            </div>
+            <div class="ms-auto d-inline-flex gap-2 flex-wrap">
+              @for (action of alertActions; track action.text) {
+                <button type="button" class="btn btn-sm" [ngClass]="action.colorClass" (click)="action.handler(action)">
+                  @if (action.iconClass) { <span [innerHTML]="action.iconClass"></span> }
+                  {{ action.text }}
+                </button>
+              }
+            </div>
+          </div>
+        </ngb-alert>
+        }
+
+
       </div>
 
     </div>

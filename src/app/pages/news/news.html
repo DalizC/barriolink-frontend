@@ -1,0 +1,286 @@
+<div class="container-fluid news-detail-container product-wrapper">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card mb-0">
+        <div class="card-header">
+          <h6 class="display-6 mb-2 f-w-500">Dashboard de Noticias</h6>
+          <p>Manage and view all community news articles. Create new posts, edit drafts, or read published content.</p>
+        </div>
+        <div class="card-body">
+          <!-- Stats Cards Row -->
+          <div class="row g-3 mb-4">
+            <div class="col-xxl-4 col-xl-4 col-md-6">
+              <div class="card widget-1">
+                <div class="card-body">
+                  <div class="widget-content">
+                    <div class="secondary widget-round">
+                      <div class="bg-round">
+                        <svg class="stroke-icon">
+                          <use xlink:href="assets/svg/icon-sprite.svg#c-revenue"></use>
+                        </svg>
+                        <svg class="half-circle svg-fill">
+                          <use xlink:href="assets/svg/icon-sprite.svg#halfcircle"></use>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h4><span class="counter">$45,195</span></h4>
+                      <span class="f-light">Revenue</span>
+                    </div>
+                  </div>
+                  <div class="f-w-500 font-success">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="feather feather-trending-up me-1">
+                      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                      <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                    <span class="txt-success"> +50% </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xxl-4 col-xl-4 col-md-6">
+              <div class="card widget-1">
+                <div class="card-body">
+                  <div class="widget-content">
+                    <div class="success widget-round">
+                      <div class="bg-round">
+                        <svg class="stroke-icon">
+                          <use xlink:href="assets/svg/icon-sprite.svg#c-customer"></use>
+                        </svg>
+                        <svg class="half-circle svg-fill">
+                          <use xlink:href="assets/svg/icon-sprite.svg#halfcircle"></use>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h4><span class="counter">845+</span></h4>
+                      <span class="f-light">Customers</span>
+                    </div>
+                  </div>
+                  <div class="f-w-500 font-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="feather feather-trending-down me-1">
+                      <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                      <polyline points="17 18 23 18 23 12"></polyline>
+                    </svg>
+                    <span class="txt-danger"> -40% </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xxl-4 col-xl-4 col-md-6">
+              <div class="card widget-1">
+                <div class="card-body">
+                  <div class="widget-content">
+                    <div class="primary widget-round">
+                      <div class="bg-round">
+                        <svg class="stroke-icon">
+                          <use xlink:href="assets/svg/icon-sprite.svg#c-product"></use>
+                        </svg>
+                        <svg class="half-circle svg-fill">
+                          <use xlink:href="assets/svg/icon-sprite.svg#halfcircle"></use>
+                        </svg>
+                      </div>
+                    </div>
+                    <div>
+                      <h4><span class="counter">{{totalItems}}</span></h4>
+                      <span class="f-light">Noticias Totales</span>
+                    </div>
+                  </div>
+                  <div class="f-w-500 font-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="feather feather-activity me-1">
+                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    <span class="txt-primary"> +12% </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- News Grid Section -->
+          <div class="product-grid">
+            <div class="feature-products">
+              <!-- Header with Add Button -->
+              <div class="common-f-start justify-content-md-end mb-3">
+                <button type="button" class="btn btn-primary f-w-500" (click)="createNews()">
+                  <i class="fa-solid fa-plus pe-2"></i> Agregar Noticia
+                </button>
+              </div>
+
+              <!-- Controls Row -->
+              <div class="row mb-3">
+                <div class="col-md-6 products-total">
+                  <!-- View Toggle Buttons -->
+                  <div class="square-product-setting d-inline-block">
+                    <a href="javascript:void(0)" class="icon-grid" [class.grid-layout-view]="viewMode === 'grid'"
+                      (click)="viewMode = 'grid'">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-grid">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                      </svg>
+                    </a>
+                  </div>
+                  <div class="square-product-setting d-inline-block">
+                    <a href="javascript:void(0)" class="icon-grid m-0" [class.list-layout-view]="viewMode === 'list'"
+                      (click)="viewMode = 'list'">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="feather feather-list">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+
+                <div class="col-md-6 text-md-end">
+                  <span class="f-w-600 m-r-5">Mostrando {{newsList.length}} de {{totalItems}} noticias</span>
+                  <div class="d-inline-block dropdown-product">
+                    <select class="form-select" [(ngModel)]="sortOrder" (change)="applyFilters()">
+                      <option value="desc">Más recientes</option>
+                      <option value="asc">Más antiguas</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Search and Filter Row -->
+              <div class="row mb-3">
+                <!-- Filter Dropdown with Checkboxes -->
+                <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                  <div ngbDropdown class="d-inline-block w-100">
+                    <button type="button"
+                      class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center"
+                      id="dropdownCategories" ngbDropdownToggle>
+                      <span>Categorías</span>
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownCategories" class="w-100 p-3">
+                      <div class="checkbox-animated">
+                        @for (option of options; track option.value) {
+                        <label class="d-block mb-2">
+                          <input type="checkbox" class="checkbox_animated me-2" [(ngModel)]="option.selected"
+                            (change)="applyFilters()">
+                          {{option.label}}
+                        </label>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="col-md-9 col-sm-6">
+                  <div class="position-relative">
+                    <input type="search" placeholder="Buscar noticias..." class="form-control" [(ngModel)]="searchText"
+                      name="searchText" (ngModelChange)="applyFilters()">
+                    <i class="fa-solid fa-magnifying-glass position-absolute"
+                      style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- News Grid/List -->
+
+            <div class="product-wrapper-grid" [class.list-view]="viewMode === 'list'">
+              @if (loading) {
+              <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+              </div>
+              } @else if (newsList.length === 0) {
+              <div class="text-center py-5">
+                <p class="text-muted">No se encontraron noticias.</p>
+              </div>
+              } @else {
+              <div class="row">
+                @for (news of newsList; track news.id) {
+
+                <div [class]="viewMode === 'grid' ? 'col-xl-4 col-md-6' : 'col-12'" class="d-flex mb-4">
+                  <div class="card common-hover h-100 w-100 hover-shadow-boost mb-0">
+                    <div class="card-header-right-icon">
+                      <app-card-dropdown-button [dropdownType]="'simple'" [options]="cardToggleOptions"
+                        [dropdownClass]="'icon-dropdown dropdown'" />
+                    </div>
+                    <div class="product-box">
+                      <div class="product-img news-img">
+                        <img class="img-fluid w-100 h-100" [src]="news.image || 'assets/images/placeholder.jpg'"
+                          [alt]="news.title">
+                        @if (news.pinned) {
+                        <div class="ribbon ribbon-primary">Destacado</div>
+                        }
+                      </div>
+                      <div class="product-details">
+                        <a [routerLink]="['/news', news.id]">
+                          <h4>{{news.title}}</h4>
+                        </a>
+                        <p class="mb-4">{{news.description}}</p>
+                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                          <div class="media-size-email">
+                            <img src="assets/images/avatar/11.jpg" alt="Emay Walter" class="rounded-circle img-30">
+                          </div>
+                          <div class="d-flex flex-column justify-content-center me-4">
+                            <h6 class="mb-0 f-w-500">Emay Walter</h6>
+                            <p class="mb-0 c-o-light lh-1 f-12">25 julio 2025</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+
+
+                }
+              </div>
+
+              <!-- Pagination -->
+              @if (totalPages > 1) {
+              <div class="row mt-4">
+                <div class="col-12">
+                  <nav>
+                    <ul class="pagination justify-content-center">
+                      <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" href="javascript:void(0)" (click)="previousPage()">Anterior</a>
+                      </li>
+                      @for (page of pageNumbers; track page) {
+                      <li class="page-item" [class.active]="currentPage === page">
+                        <a class="page-link" href="javascript:void(0)" (click)="goToPage(page)">{{page}}</a>
+                      </li>
+                      }
+                      <li class="page-item" [class.disabled]="currentPage === totalPages">
+                        <a class="page-link" href="javascript:void(0)" (click)="nextPage()">Siguiente</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+              }
+              }
+            </div>
+
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

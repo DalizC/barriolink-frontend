@@ -1,0 +1,46 @@
+@if (dropdownType() === "simple") {
+  <div class="dropdown icon-dropdown" [ngClass]="dropdownClass()" ngbDropdown>
+    <button class="btn dropdown-toggle" type="button" ngbDropdownToggle>
+      <i class="icon-more-alt"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-end" ngbDropdownMenu>
+      @for (option of options(); track option) {
+        <a
+          class="dropdown-item d-flex align-items-center"
+          [ngClass]="option.itemClass"
+          href="javascript:void(0)"
+          (click)="selectItem(option.title)"
+          ngbDropdownItem
+        >
+          @if (option.iconHtml) {
+            <span class="me-2" [innerHTML]="option.iconHtml"></span>
+          }
+          <span>{{ option.title }}</span>
+        </a>
+      }
+    </div>
+  </div>
+} @else if (dropdownType() === "classic") {
+  <div class="dropdown" [ngClass]="dropdownClass()" ngbDropdown>
+    <button class="btn dropdown-toggle" type="button" ngbDropdownToggle>
+      {{ selectedItem }}
+    </button>
+    <ul class="dropdown-menu" ngbDropdownMenu>
+      @for (option of options(); track option) {
+        <li ngbDropdownItem>
+          <a
+            class="dropdown-item d-flex align-items-center"
+            [ngClass]="option.itemClass"
+            href="javascript:void(0)"
+            (click)="selectItem(option.title)"
+          >
+            @if (option.iconHtml) {
+              <span class="me-2" [innerHTML]="option.iconHtml"></span>
+            }
+            <span>{{ option.title }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </div>
+}

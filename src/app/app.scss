@@ -130,3 +130,153 @@
         color: var(--bs-heading-color);
     }
 }
+
+
+.news-detail-container {
+  background-color: white;
+  padding: 12px;
+  margin-bottom: 20px;
+
+  // Desktop y tablet: contenedor centrado con ancho controlado
+  @media (min-width: 992px) {
+    width: 80%;
+    max-width: 1400px; // Límite máximo para pantallas muy grandes
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  // Tablets: ancho completo con padding
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    width: 100%;
+    padding: 20px;
+  }
+
+  // Móviles: ancho completo sin restricciones
+  @media (max-width: 767.98px) {
+    width: 100%;
+    padding: 12px;
+    // Eliminado min-width para evitar scroll horizontal
+  }
+}
+
+/* ===== Hover shadow boost utility for cards ===== */
+.hover-shadow-boost {
+  transition: box-shadow .25s ease, transform .25s ease;
+  position: relative;
+  z-index: 1;
+}
+.hover-shadow-boost:hover {
+  /* sombra más fuerte al hacer hover */
+  box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,.25), 0 0.3rem 0.6rem rgba(0,0,0,.18);
+  transform: translateY(-2px);
+}
+/* Cuando hay un dropdown abierto: desactivar hover de todos los cards EXCEPTO el que tiene el menú */
+.product-wrapper-grid:has(.dropdown.show) .hover-shadow-boost:not(:has(.dropdown.show)):hover {
+  box-shadow: none; /* anula la sombra hover */
+  transform: none; /* anula el movimiento */
+}
+/* El card con el dropdown abierto mantiene z-index elevado Y efectos de hover activos */
+.hover-shadow-boost:has(.dropdown.show) {
+  z-index: 100;
+  box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,.25), 0 0.3rem 0.6rem rgba(0,0,0,.18);
+  transform: translateY(-2px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hover-shadow-boost {
+    transition: none;
+  }
+  .hover-shadow-boost:hover {
+    transform: none;
+  }
+}
+
+/* ==============================
+   Card header right icon area
+   - Contenedor blanco, cuadrado 24x24, ícono centrado
+   - Posición absoluta para no agregar espacio; z-index alto para quedar sobre hover del card
+   ============================== */
+.card-header-right-icon {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 10; /* mayor que el card en hover */
+}
+
+.card-header-right-icon .icon-dropdown {
+  /* +~30% de tamaño para mejorar el target táctil */
+  width: 31px;
+  height: 31px;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px; /* un poco más sutil que 8px */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.card-header-right-icon .icon-dropdown .btn.dropdown-toggle {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: transparent; /* el contenedor aporta el fondo */
+  border: none; /* el contenedor aporta el borde */
+  color: var(--bs-body-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-header-right-icon .icon-dropdown .btn.dropdown-toggle::after {
+  display: none; /* oculta caret del dropdown */
+}
+.card-header-right-icon .icon-dropdown .btn.dropdown-toggle:hover {
+  background-color: transparent;
+}
+.card-header-right-icon .icon-dropdown .btn .icon-more-alt {
+  font-size: 14px; /* ajustado para 31px */
+  line-height: 1;
+}
+
+/* Hover más sutil con tono secondary-subtle (solo cuando está cerrado) */
+.card-header-right-icon .icon-dropdown:hover {
+  background-color: var(--bs-secondary-bg-subtle, rgba(108,117,125,0.12));
+  border-color: rgba(var(--bs-secondary-rgb, 108,117,125), 0.25);
+}
+.card-header-right-icon .icon-dropdown:hover .btn.dropdown-toggle {
+  color: var(--bs-body-color);
+}
+
+/* Cuando el menú está abierto, desactivar el efecto hover y mantener estilo base */
+.card-header-right-icon .icon-dropdown.show,
+.card-header-right-icon .icon-dropdown.show:hover {
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.card-header-right-icon .icon-dropdown.show .btn.dropdown-toggle,
+.card-header-right-icon .icon-dropdown.show:hover .btn.dropdown-toggle {
+  color: var(--bs-body-color);
+}
+
+/* Asegurar que el menú quede por encima de otros cards */
+.card-header-right-icon .dropdown-menu {
+  z-index: 2000;
+}
+
+/* Estilo del menú desplegable */
+.card-header-right-icon .dropdown-menu {
+  z-index: 2000;
+  /* Ajustes de posición */
+  margin-left: -1px !important; /* mueve 20px a la izquierda */
+  margin-top: 5px !important; /* mueve 5px abajo */
+  /* Ajustes de tipografía */
+  //font-family: inherit; /* o especifica: 'Roboto', sans-serif, etc. */
+  //font-size: inherit;
+}
+
+/* Estilizar cada ítem del menú */
+.card-header-right-icon .dropdown-menu .dropdown-item {
+  font-size: 14px; /* tamaño específico de cada opción */
+  padding: 8px 16px; /* espaciado interno */
+  opacity: 1;
+}
