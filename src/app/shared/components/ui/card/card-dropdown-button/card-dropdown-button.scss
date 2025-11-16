@@ -1,5 +1,9 @@
 /* Rounded corners (8px) and elegant fade (no slide) for dropdown menu */
 :host {
+	/* Ensure dropdown container behaves as positioning context */
+	.dropdown {
+		position: relative;
+	}
 	.dropdown-menu {
 		/* Configurable geometry via CSS vars */
 		--dd-radius: 8px; /* container corner radius */
@@ -14,12 +18,26 @@
 		overflow: hidden;
 		background-clip: padding-box;
 
+		/* Explicit positioning to render below toggle */
+		position: absolute;
+		top: calc(100% + 5px);
+		left: 0;
+		z-index: 2000;
+		display: none;
+
 		opacity: 0;
 		transition: opacity .18s ease;
 		will-change: opacity;
 	}
 	.dropdown-menu.show {
+		display: block;
 		opacity: 1;
+	}
+
+	/* End alignment variant */
+	.dropdown-menu.dropdown-menu-end {
+		left: auto;
+		right: 0;
 	}
 
 	.dropdown-item {

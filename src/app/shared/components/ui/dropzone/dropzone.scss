@@ -1,0 +1,70 @@
+:host {
+  display: block;
+  width: 100%;
+
+  ::ng-deep {
+    dropzone {
+      display: block;
+      width: 100%;
+    }
+
+    .dropzone {
+      border: 2px dashed var(--bs-border-color) !important;
+      border-radius: 8px !important;
+      background-color: var(--bs-body-bg) !important;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+      min-height: 200px !important;
+      padding: 2rem !important;
+
+      &:hover {
+        border-color: var(--theme-default, var(--bs-primary)) !important;
+        background-color: var(--bs-secondary-bg-subtle) !important;
+        cursor: pointer;
+      }
+
+      &.dz-drag-hover {
+        border-color: var(--theme-default, var(--bs-primary)) !important;
+        background-color: rgba(var(--theme-default-rgb, 115, 102, 255), 0.05) !important;
+      }
+
+      // Eliminar estilos del mensaje por defecto de Dropzone
+      .dz-default {
+        background-image: none !important;
+        background-color: transparent !important;
+        border: none !important;
+        width: 100% !important;
+        height: auto !important;
+        position: static !important;
+        opacity: 1 !important;
+      }
+
+      .dz-default.dz-message {
+        background: transparent !important;
+        border: none !important;
+      }
+    }
+
+    .dz-message {
+      text-align: center !important;
+      margin: 0 !important;
+      min-height: 200px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 1rem !important;
+      width: 100% !important;
+      padding: 2rem !important;
+      border: none !important;
+      background: transparent !important;
+
+      * {
+        pointer-events: none;
+      }
+    }
+
+    .dz-preview {
+      margin: 1rem;
+    }
+  }
+}

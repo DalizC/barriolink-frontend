@@ -27,7 +27,7 @@ export const newsRoutes: Routes = [
   },
   {
     path: "create",
-    loadComponent: () => import("./news-form/news-create").then((m) => m.NewsForm),
+    loadComponent: () => import("./news-form/news-form").then((m) => m.NewsForm),
     data: {
       title: "Crear Noticia",
       breadcrumb: "Crear",
@@ -35,7 +35,7 @@ export const newsRoutes: Routes = [
   },
   {
     path: "edit/:id",
-    loadComponent: () => import("./news-form/news-create").then((m) => m.NewsForm),
+    loadComponent: () => import("./news-form/news-form").then((m) => m.NewsForm),
     data: {
       title: "Editar Noticia",
       breadcrumb: "Editar",

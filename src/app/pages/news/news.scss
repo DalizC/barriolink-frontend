@@ -208,7 +208,58 @@ h1 > span.badge {
     /* recorta por los bordes pero no deforma */
     display: block;
     /* evita espacios raros debajo de la imagen */
+    /* hover-1 effect base: smooth scale */
+    transition: transform .35s ease-in-out;
   }
+}
+
+/* hover-1 effect: al hacer hover sobre el card, escalar la imagen ligeramente */
+/* Importante: el hover de la imagen NO debe actuar por sí solo */
+.product-wrapper-grid .news-img img:hover {
+  transform: none !important;
+}
+
+/* hover-1 effect: solo cuando el card está en hover o activo por menú */
+.product-wrapper-grid .card:hover .news-img img,
+.product-wrapper-grid .card.dropdown-active .news-img img {
+  transform: scale(1.08) !important;
+}
+
+/* En vista de filas (rows/list), desactivar el hover de la imagen incluso si el card está en hover o activo */
+.product-wrapper-grid.list-view .card:hover .news-img img,
+.product-wrapper-grid.list-view .card.dropdown-active .news-img img {
+  transform: none !important;
+}
+
+/* Escalar el card completo (y su contenido) ligeramente al hacer hover */
+.product-wrapper-grid .card.hover-shadow-boost {
+  transform-origin: center center;
+  /* Sincronizar timing con la imagen para evitar desfases */
+  transition: transform .3s ease-in-out, box-shadow .3s ease-in-out;
+}
+
+/* Estado activo unificado (hover o menú abierto) */
+.product-wrapper-grid .card.hover-shadow-boost:hover,
+.product-wrapper-grid .card.hover-shadow-boost.dropdown-active {
+  /* Combinamos el lift existente (-2px) con un scale sutil */
+  transform: translateY(-2px) scale(1.02);
+  /* Eliminar borde visible sin provocar reflow */
+  border-color: transparent !important;
+  /* Sombra consistente con hover global + borde interior para evitar línea fina */
+  box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,.25), 0 0.3rem 0.6rem rgba(0,0,0,.18), inset 0 0 0 1px var(--bs-card-bg, #fff);
+}
+
+/* Quitar el borde del card al hacer hover (sin variar el grosor → evitar "saltos") */
+.product-wrapper-grid .card.hover-shadow-boost:hover {
+  border-color: transparent !important; /* redundante, mantenido por especificidad */
+}
+
+/* Mejorar el anti-aliasing al escalar para evitar halos */
+.product-wrapper-grid .card.hover-shadow-boost {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  background-clip: padding-box;
 }
 
 /* Botón de menú de opciones anclado al card */
@@ -247,4 +298,26 @@ h1 > span.badge {
 
 .card-header-right-icon .icon-dropdown.dropdown{
   width: fit-content;
+}
+
+.product-box > :last-child {
+  margin-left: auto;
+}
+
+/* ===== Estado global cuando hay un dropdown activo (suprimir hovers en otras cards) ===== */
+.product-wrapper-grid.has-active-dropdown .card.hover-shadow-boost:not(.dropdown-active):hover {
+  /* Cancelar transform y sombra adicional en cards que no estén activas */
+  transform: none;
+  box-shadow: none;
+  border-color: inherit !important;
+}
+
+.product-wrapper-grid.has-active-dropdown .card.hover-shadow-boost:not(.dropdown-active) .news-img img {
+  /* Asegurar que la imagen tampoco escale */
+  transform: none !important;
+}
+
+/* En vista de lista mantiene prioridad de no escalar (regla existente ya cubre), pero añadimos especificidad para claridad */
+.product-wrapper-grid.list-view.has-active-dropdown .card.hover-shadow-boost:not(.dropdown-active) .news-img img {
+  transform: none !important;
 }

@@ -1,0 +1,8 @@
+<dropzone
+  [config]="config"
+  [message]="message"
+  [disabled]="disabled"
+  (addedFile)="onAddedFile($event)"
+  (removedFile)="onRemovedFile($event)"
+  (error)="onError($event)">
+</dropzone>

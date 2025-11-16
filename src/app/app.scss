@@ -132,9 +132,9 @@
 }
 
 
-.news-detail-container {
-  background-color: white;
-  padding: 12px;
+.page-container {
+  padding: 0;
+  background-color: transparent;
   margin-bottom: 20px;
 
   // Desktop y tablet: contenedor centrado con ancho controlado
@@ -154,7 +154,7 @@
   // Móviles: ancho completo sin restricciones
   @media (max-width: 767.98px) {
     width: 100%;
-    padding: 12px;
+    //padding: 12px;
     // Eliminado min-width para evitar scroll horizontal
   }
 }
@@ -279,4 +279,13 @@
   font-size: 14px; /* tamaño específico de cada opción */
   padding: 8px 16px; /* espaciado interno */
   opacity: 1;
+}
+
+.product-box .buttons-box {
+  padding: 0rem 1rem 1rem 1rem;
+}
+
+#dropdownCategories {
+  height: 48px;
+  border-radius: 7px;
 }

@@ -107,94 +107,84 @@
           <!-- News Grid Section -->
           <div class="product-grid">
             <div class="feature-products">
-              <!-- Header with Add Button -->
-              <div class="common-f-start justify-content-md-end mb-3">
-                <button type="button" class="btn btn-primary f-w-500" (click)="createNews()">
-                  <i class="fa-solid fa-plus pe-2"></i> Agregar Noticia
-                </button>
-              </div>
+              <!-- Card de configuración de vista -->
+              <div class="card border border-1 mb-3">
+                <div class="card-body">
+                  <!-- Fila 1: Buscar (col-8), Dropdown (col-4) -->
+                  <div class="row g-3 align-items-center mb-2">
+                    <!-- Buscar -->
+                    <div class="col-12 col-md-8">
+                      <div class="position-relative">
+                        <input type="search" placeholder="Buscar noticias..." class="form-control form-control-lg"
+                          [(ngModel)]="searchText" name="searchText" (ngModelChange)="applyFilters()">
+                        <i class="fa-solid fa-magnifying-glass position-absolute"
+                          style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
+                      </div>
+                    </div>
 
-              <!-- Controls Row -->
-              <div class="row mb-3">
-                <div class="col-md-6 products-total">
-                  <!-- View Toggle Buttons -->
-                  <div class="square-product-setting d-inline-block">
-                    <a href="javascript:void(0)" class="icon-grid" [class.grid-layout-view]="viewMode === 'grid'"
-                      (click)="viewMode = 'grid'">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-grid">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                      </svg>
-                    </a>
+                    <!-- Dropdown de categorías -->
+                    <div class="col-12 col-md-4">
+                      <div ngbDropdown class="d-inline-block w-100">
+                        <button type="button"
+                          class="btn btn-outline-secondary form-control-lg w-100 text-start d-flex justify-content-between align-items-center"
+                          id="dropdownCategories" ngbDropdownToggle>
+                          <span>Categorías</span>
+                          <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                        <div ngbDropdownMenu aria-labelledby="dropdownCategories" class="w-100 p-3">
+                          <div class="checkbox-animated">
+                            @for (option of options; track option.value) {
+                            <label class="d-block mb-2">
+                              <input type="checkbox" class="checkbox_animated me-2" [(ngModel)]="option.selected"
+                                (change)="applyFilters()">
+                              {{option.label}}
+                            </label>
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="square-product-setting d-inline-block">
-                    <a href="javascript:void(0)" class="icon-grid m-0" [class.list-layout-view]="viewMode === 'list'"
-                      (click)="viewMode = 'list'">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="feather feather-list">
-                        <line x1="8" y1="6" x2="21" y2="6"></line>
-                        <line x1="8" y1="12" x2="21" y2="12"></line>
-                        <line x1="8" y1="18" x2="21" y2="18"></line>
-                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                      </svg>
-                    </a>
-                  </div>
-                </div>
 
-                <div class="col-md-6 text-md-end">
-                  <span class="f-w-600 m-r-5">Mostrando {{newsList.length}} de {{totalItems}} noticias</span>
-                  <div class="d-inline-block dropdown-product">
-                    <select class="form-select" [(ngModel)]="sortOrder" (change)="applyFilters()">
-                      <option value="desc">Más recientes</option>
-                      <option value="asc">Más antiguas</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Search and Filter Row -->
-              <div class="row mb-3">
-                <!-- Filter Dropdown with Checkboxes -->
-                <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                  <div ngbDropdown class="d-inline-block w-100">
-                    <button type="button"
-                      class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center"
-                      id="dropdownCategories" ngbDropdownToggle>
-                      <span>Categorías</span>
-                      <i class="fa-solid fa-chevron-down"></i>
-                    </button>
-                    <div ngbDropdownMenu aria-labelledby="dropdownCategories" class="w-100 p-3">
-                      <div class="checkbox-animated">
-                        @for (option of options; track option.value) {
-                        <label class="d-block mb-2">
-                          <input type="checkbox" class="checkbox_animated me-2" [(ngModel)]="option.selected"
-                            (change)="applyFilters()">
-                          {{option.label}}
-                        </label>
-                        }
+                  <!-- Fila 2: Btn-group izquierda y (vista + orden) derecha -->
+                  <div class="row g-3 align-items-center">
+                    <!-- Grupo de acciones (izquierda) -->
+                    <div class="col-12 col-md-6">
+                      <div role="group" aria-label="Acciones" class="btn-group">
+                        <input type="radio" name="vbtn-radio" class="btn-check" id="vbtn-radio1">
+                        <label class="btn btn-lg btn-outline-primary" for="vbtn-radio1">Radio 1</label>
+                        <input type="radio" name="vbtn-radio" class="btn-check" id="vbtn-radio2">
+                        <label class="btn btn-lg btn-outline-primary" for="vbtn-radio2">Radio 2</label>
+                        <input type="radio" name="vbtn-radio" class="btn-check" id="vbtn-radio3">
+                        <label class="btn btn-lg btn-outline-primary" for="vbtn-radio3">Radio 3</label>
+                      </div>
+                    </div>
+                    <!-- Vista + Orden (derecha) -->
+                    <div class="col-12 col-md-6">
+                      <div class="d-flex justify-content-md-end align-items-center flex-wrap gap-2">
+                        <!-- Grupo de cambio de vista (derecha extremo) -->
+                        <div role="group" aria-label="Cambiar vista" class="btn-group">
+                          <input type="radio" class="btn-check" name="viewToggle" id="toggleGrid" autocomplete="off" [checked]="viewMode === 'grid'" (change)="viewMode = 'grid'">
+                          <label class="btn btn-lg btn-outline-primary" for="toggleGrid"><i class="fas fa-th"></i></label>
+                          <input type="radio" class="btn-check" name="viewToggle" id="toggleList" autocomplete="off" [checked]="viewMode === 'list'" (change)="viewMode = 'list'">
+                          <label class="btn btn-lg btn-outline-primary" for="toggleList"><i class="fas fa-list"></i></label>
+                        </div>
+                        <!-- Dropdown de orden (a la izquierda del toggle de vista) -->
+                        <div class="dropdown-product">
+                          <select class="form-select" [(ngModel)]="sortOrder" (change)="applyFilters()">
+                            <option value="desc">Más recientes</option>
+                            <option value="asc">Más antiguas</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <!-- Search Bar -->
-                <div class="col-md-9 col-sm-6">
-                  <div class="position-relative">
-                    <input type="search" placeholder="Buscar noticias..." class="form-control" [(ngModel)]="searchText"
-                      name="searchText" (ngModelChange)="applyFilters()">
-                    <i class="fa-solid fa-magnifying-glass position-absolute"
-                      style="right: 15px; top: 50%; transform: translateY(-50%);"></i>
-                  </div>
-                </div>
               </div>
             </div>
+
+
+
             <!-- News Grid/List -->
 
             <div class="product-wrapper-grid" [class.list-view]="viewMode === 'list'">
@@ -212,14 +202,17 @@
               <div class="row">
                 @for (news of newsList; track news.id) {
 
-                <div [class]="viewMode === 'grid' ? 'col-xl-4 col-md-6' : 'col-12'" class="d-flex mb-4">
-                  <div class="card common-hover h-100 w-100 hover-shadow-boost mb-0">
+                <div [ngClass]="viewMode === 'grid'
+                    ? ['col-xl-4', 'col-md-6', 'd-flex', 'mb-4']
+                    : ['col-12', 'd-flex', 'mb-4']">
+
+                  <div class="card common-hover h-100 w-100 hover-shadow-boost mb-0 border border-1">
                     <div class="card-header-right-icon">
-                      <app-card-dropdown-button [dropdownType]="'simple'" [options]="cardToggleOptions"
-                        [dropdownClass]="'icon-dropdown dropdown'" />
+                      <app-card-dropdown-button [dropdownType]="'simple'" [options]="cardToggleOptions">
+                      </app-card-dropdown-button>
                     </div>
                     <div class="product-box">
-                      <div class="product-img news-img">
+                      <div class="product-img news-img hover-1 img-hover">
                         <img class="img-fluid w-100 h-100" [src]="news.image || 'assets/images/placeholder.jpg'"
                           [alt]="news.title">
                         @if (news.pinned) {
@@ -240,6 +233,10 @@
                             <p class="mb-0 c-o-light lh-1 f-12">25 julio 2025</p>
                           </div>
                         </div>
+                      </div>
+                      <div class="buttons-box d-grid gap-2">
+                        <button type="button"
+                          class="btn button-light-primary border-dashed-secondary pe-none">Borrador</button>
                       </div>
                     </div>
 
