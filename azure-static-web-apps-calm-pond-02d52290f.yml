@@ -1,32 +1,82 @@
 name: Azure Static Web Apps CI/CD
 
-pr:
-  branches:
-    include:
-      - develop
 trigger:
   branches:
     include:
       - develop
 
+pr:
+  branches:
+    include:
+      - develop
+
 jobs:
-- job: build_and_deploy_job
-  displayName: Build and Deploy Job
-  condition: or(eq(variables['Build.Reason'], 'Manual'),or(eq(variables['Build.Reason'], 'PullRequest'),eq(variables['Build.Reason'], 'IndividualCI')))
+# ------------------------------------------------------------------
+# 1. JOB: BUILD ANGULAR + CACHE npm + PUBLICAR DIST COMO ARTEFACTO
+# ------------------------------------------------------------------
+- job: build_app
+  displayName: "Build Angular App"
   pool:
     vmImage: ubuntu-latest
-  variables:
-  - group: Azure-Static-Web-Apps-calm-pond-02d52290f-variable-group
+
   steps:
   - checkout: self
     submodules: true
+
+  # --- Install Node 20 ----
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '20.x'
+    displayName: "Install Node.js 20"
+
+  # --- Cache npm ---
+  - task: Cache@2
+    displayName: "Cache npm dependencies"
+    inputs:
+      key: 'npm | "$(Agent.OS)" | package-lock.json'
+      restoreKeys: |
+        npm | "$(Agent.OS)"
+      path: ~/.npm
+
+  # --- Install & Build ---
+  - script: |
+      npm ci
+      npm run build
+    displayName: "Install deps and Build Angular"
+
+  # --- Publicar artefactos ---
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish build artifact"
+    inputs:
+      PathtoPublish: "dist/cuba-angular"
+      ArtifactName: "angular_dist"
+      publishLocation: "Container"
+
+
+# ------------------------------------------------------------------
+# 2. JOB: DEPLOY (DEPENDE DEL BUILD)
+# ------------------------------------------------------------------
+- job: deploy_app
+  dependsOn: build_app
+  displayName: "Deploy to Azure Static Web Apps"
+  pool:
+    vmImage: ubuntu-latest
+
+  variables:
+    - group: Azure-Static-Web-Apps-calm-pond-02d52290f-variable-group
+
+  steps:
+  - download: current
+    artifact: angular_dist
+
   - task: AzureStaticWebApp@0
+    displayName: "Deploy SWA"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
-###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-# For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-      app_location: "/" # App source code path
-      api_location: "" # Api source code path - optional
-      output_location: "dist/cuba-angular" # Built app content directory - optional
-###### End of Repository/Build Configurations ######
 
+      # Deploy the artifact directory
+      app_location: "$(Pipeline.Workspace)/angular_dist"
+
+      # Not using API & Not using Oryx output path
+      api_location: ""
+      output_location: ""
