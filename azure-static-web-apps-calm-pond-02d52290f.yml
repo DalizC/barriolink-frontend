@@ -29,17 +29,18 @@ jobs:
       versionSpec: '20.x'
     displayName: "Install Node.js 20"
 
-  # --- Cache npm ---
+    # --- Cache npm ---
   - task: Cache@2
     displayName: "Cache npm dependencies"
     inputs:
       key: 'npm | "$(Agent.OS)" | package-lock.json'
       restoreKeys: |
         npm | "$(Agent.OS)"
-      path: ~/.npm
+      path: $(Agent.ToolsDirectory)/cache/npm
 
   # --- Install & Build ---
   - script: |
+      npm config set cache $(Agent.ToolsDirectory)/cache/npm --global
       npm ci
       npm run build
     displayName: "Install deps and Build Angular"
