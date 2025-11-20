@@ -1,10 +1,5 @@
 name: Azure Static Web Apps CI/CD
 
-pr:
-  branches:
-    include:
-      - develop
-
 trigger:
   branches:
     include:
@@ -12,54 +7,40 @@ trigger:
 
 jobs:
 - job: build_and_deploy
-  displayName: Build and Deploy Angular to SWA
+  displayName: Build & Deploy Angular 20 to SWA
   pool:
     vmImage: ubuntu-latest
 
   variables:
-  - group: Azure-Static-Web-Apps-calm-pond-02d52290f-variable-group
+    - group: Azure-Static-Web-Apps-calm-pond-02d52290f-variable-group
 
   steps:
   - checkout: self
     submodules: true
 
-  # --------------------------
-  # 1) Instalar Node 20 (Angular 20 lo requiere)
-  # --------------------------
+  # 1. Instalar Node 20
   - task: NodeTool@0
     inputs:
       versionSpec: '20.x'
-    displayName: "Use Node 20"
+    displayName: 'Install Node 20'
 
-  # --------------------------
-  # 2) Instalar dependencias
-  # --------------------------
-  - script: |
-      npm ci
-    displayName: "Install dependencies"
+  # 2. Instalar dependencias
+  - script: npm ci
+    displayName: 'Install dependencies'
 
-  # --------------------------
-  # 3) Build Angular
-  # --------------------------
-  - script: |
-      npm run build
-    displayName: "Build Angular"
+  # 3. Build Angular
+  - script: npm run build
+    displayName: 'Build Angular'
 
-  # --------------------------
-  # 4) Copiar salida real
-  #    (descubrimos que se genera en dist/cuba-angular)
-  # --------------------------
+  # 4. Copiar SOLO el contenido de dist/cuba-angular/browser
   - script: |
-      echo "Copiando dist/cuba-angular a $(Build.ArtifactStagingDirectory)/app"
       mkdir -p "$(Build.ArtifactStagingDirectory)/app"
-      cp -R dist/cuba-angular/* "$(Build.ArtifactStagingDirectory)/app"
+      cp -R dist/cuba-angular/browser/* "$(Build.ArtifactStagingDirectory)/app"
     displayName: "Prepare SWA artifact"
 
-  # --------------------------
-  # 5) Deploy Static Web App
-  # --------------------------
+  # 5. Deploy
   - task: AzureStaticWebApp@0
-    displayName: "Deploy SWA"
+    displayName: "Deploy to SWA"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
       app_location: "$(Build.ArtifactStagingDirectory)/app"
