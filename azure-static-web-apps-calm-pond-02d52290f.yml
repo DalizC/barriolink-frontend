@@ -10,77 +10,35 @@ pr:
     include:
       - develop
 
-pool:
-  vmImage: ubuntu-latest
+jobs:
+- job: build_and_deploy
+  displayName: Build Angular & Deploy to Azure SWA
+  pool:
+    vmImage: ubuntu-latest
 
-variables:
+  variables:
   - group: Azure-Static-Web-Apps-calm-pond-02d52290f-variable-group
 
-jobs:
-- job: build_and_deploy_job
-  displayName: "Build & Deploy Angular to Azure Static Web Apps"
   steps:
-
-  # 1) Checkout del repo
   - checkout: self
     submodules: true
 
-  # 2) Instalar Node y Angular
+  # 1. Build Angular manually (NO Oryx)
   - task: NodeTool@0
     inputs:
-      versionSpec: '20.x'
-    displayName: "Instalar Node 20"
+      versionSpec: '18.x'
+    displayName: 'Install Node'
 
-  # 3) Instalar dependencias
   - script: |
-      npm ci
-    displayName: "Instalar dependencias"
-
-  # 4) Build Angular
-  - script: |
+      npm install
       npm run build --if-present
-      echo "Contenido de dist:"
-      ls -R dist || echo "dist no existe"
-    displayName: "Build Angular"
+    displayName: "Build Angular App"
 
-  # 5) INSPECCIÓN COMPLETA (para que NO haya dudas)
-  - script: |
-      echo "===== PWD ====="
-      pwd
-
-      echo "===== Root ====="
-      ls -Rlah .
-
-      echo "===== Sources Directory ====="
-      ls -Rlah $(Build.SourcesDirectory)
-
-      echo "===== Artifact Staging Directory ====="
-      ls -Rlah $(Build.ArtifactStagingDirectory)
-
-      echo "===== dist ====="
-      ls -Rlah dist || echo "NO dist"
-
-      echo "===== dist/cuba-angular ====="
-      ls -Rlah dist/cuba-angular || echo "NO dist/cuba-angular"
-
-      echo "===== dist/cuba-angular/browser ====="
-      ls -Rlah dist/cuba-angular/browser || echo "NO dist/cuba-angular/browser"
-    displayName: "Inspección completa del FS"
-
-  # 6) Copiar build Angular a $(Build.ArtifactStagingDirectory)/app
-  - script: |
-      mkdir -p $(Build.ArtifactStagingDirectory)/app
-      cp -R dist/cuba-angular/browser/* $(Build.ArtifactStagingDirectory)/app
-      echo "===== Contenido final de /app ====="
-      ls -Rlah $(Build.ArtifactStagingDirectory)/app
-    displayName: "Copiar build Angular a /app"
-
-  # 7) Deploy a Azure Static Web Apps
+  # 2. Deploy using YOUR dist folder
   - task: AzureStaticWebApp@0
-    displayName: "Debug SWA Container FS"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
       app_location: "/"
       api_location: ""
-      output_location: ""
-      app_build_command: "ls -R /working_dir"
+      output_location: "dist/cuba-angular"
+    displayName: "Deploy to SWA (using dist/cuba-angular ONLY)"
