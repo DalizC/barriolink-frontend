@@ -5,126 +5,87 @@ trigger:
     include:
       - develop
 
+pr:
+  branches:
+    include:
+      - develop
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: Azure-Static-Web-Apps-calm-pond-02d52290f-variable-group
+
 jobs:
-- job: build_and_deploy
-  displayName: Build & Deploy Angular 20 to SWA
-  pool:
-    vmImage: ubuntu-latest
-
-  variables:
-    - group: Azure-Static-Web-Apps-calm-pond-02d52290f-variable-group
-
+- job: build_and_deploy_job
+  displayName: "Build & Deploy Angular to Azure Static Web Apps"
   steps:
+
+  # 1) Checkout del repo
   - checkout: self
     submodules: true
 
-  # 1. Instalar Node 20
+  # 2) Instalar Node y Angular
   - task: NodeTool@0
     inputs:
       versionSpec: '20.x'
-    displayName: 'Install Node 20'
+    displayName: "Instalar Node 20"
 
-  # 2. Instalar dependencias
-  - script: npm ci
-    displayName: 'Install dependencies'
-
-  # 3. Build Angular
-  - script: npm run build
-    displayName: 'Build Angular'
-
-  # 4. Diagnosticar la estructura del build
+  # 3) Instalar dependencias
   - script: |
-      echo "====== BUILD DIAGNOSTICS ======"
-      echo "Working directory:"
+      npm ci
+    displayName: "Instalar dependencias"
+
+  # 4) Build Angular
+  - script: |
+      npm run build --if-present
+      echo "Contenido de dist:"
+      ls -R dist || echo "dist no existe"
+    displayName: "Build Angular"
+
+  # 5) INSPECCIÓN COMPLETA (para que NO haya dudas)
+  - script: |
+      echo "===== PWD ====="
       pwd
 
-      echo ""
-      echo "Listing sources directory:"
-      ls -R "$(Build.SourcesDirectory)" | head -50
+      echo "===== Root ====="
+      ls -Rlah .
 
-      echo ""
-      echo "Checking if dist exists:"
-      if [ -d "$(Build.SourcesDirectory)/dist" ]; then
-        echo "✓ dist directory found"
-        echo "Contents of dist:"
-        ls -R "$(Build.SourcesDirectory)/dist" | head -100
-      else
-        echo "✗ dist directory NOT found"
-      fi
+      echo "===== Sources Directory ====="
+      ls -Rlah $(Build.SourcesDirectory)
 
-      echo ""
-      echo "Checking if cuba-angular exists:"
-      if [ -d "$(Build.SourcesDirectory)/dist/cuba-angular" ]; then
-        echo "✓ cuba-angular directory found"
-        ls -R "$(Build.SourcesDirectory)/dist/cuba-angular"
-      else
-        echo "✗ cuba-angular directory NOT found"
-        echo "Available folders in dist:"
-        ls -la "$(Build.SourcesDirectory)/dist" 2>/dev/null || echo "dist is empty or not accessible"
-      fi
-    displayName: 'Diagnose build structure'
-    continueOnError: true
+      echo "===== Artifact Staging Directory ====="
+      ls -Rlah $(Build.ArtifactStagingDirectory)
 
-  # 5. Preparar artefacto para SWA - versión mejorada
+      echo "===== dist ====="
+      ls -Rlah dist || echo "NO dist"
+
+      echo "===== dist/cuba-angular ====="
+      ls -Rlah dist/cuba-angular || echo "NO dist/cuba-angular"
+
+      echo "===== dist/cuba-angular/browser ====="
+      ls -Rlah dist/cuba-angular/browser || echo "NO dist/cuba-angular/browser"
+    displayName: "Inspección completa del FS"
+
+  # 6) Copiar build Angular a $(Build.ArtifactStagingDirectory)/app
   - script: |
-      echo "====== PREPARING SWA ARTIFACT ======"
+      mkdir -p $(Build.ArtifactStagingDirectory)/app
+      cp -R dist/cuba-angular/browser/* $(Build.ArtifactStagingDirectory)/app
+      echo "===== Contenido final de /app ====="
+      ls -Rlah $(Build.ArtifactStagingDirectory)/app
+    displayName: "Copiar build Angular a /app"
 
-      # Crear directorio de salida
-      mkdir -p "$(Build.ArtifactStagingDirectory)/app"
-
-      # Buscar el directorio de build correcto
-      BUILD_DIR=""
-
-      # Intento 1: dist/cuba-angular/browser
-      if [ -d "$(Build.SourcesDirectory)/dist/cuba-angular/browser" ]; then
-        BUILD_DIR="$(Build.SourcesDirectory)/dist/cuba-angular/browser"
-        echo "✓ Found build at: dist/cuba-angular/browser"
-      # Intento 2: dist/cuba-angular
-      elif [ -d "$(Build.SourcesDirectory)/dist/cuba-angular" ]; then
-        BUILD_DIR="$(Build.SourcesDirectory)/dist/cuba-angular"
-        echo "✓ Found build at: dist/cuba-angular"
-      # Intento 3: dist
-      elif [ -d "$(Build.SourcesDirectory)/dist" ]; then
-        BUILD_DIR="$(Build.SourcesDirectory)/dist"
-        echo "✓ Found build at: dist"
-      else
-        echo "✗ ERROR: Could not find any build directory!"
-        echo "Listing $(Build.SourcesDirectory):"
-        ls -la "$(Build.SourcesDirectory)"
-        exit 1
-      fi
-
-      echo ""
-      echo "Copying from: $BUILD_DIR"
-      echo "Copying to: $(Build.ArtifactStagingDirectory)/app"
-      cp -v -R "$BUILD_DIR/." "$(Build.ArtifactStagingDirectory)/app" || {
-        echo "✗ Copy failed!"
-        exit 1
-      }
-
-      echo ""
-      echo "Verifying artifact contents:"
-      if [ -f "$(Build.ArtifactStagingDirectory)/app/index.html" ]; then
-        echo "✓ index.html found - artifact is valid"
-        ls -la "$(Build.ArtifactStagingDirectory)/app" | head -20
-      else
-        echo "✗ ERROR: index.html not found in artifact!"
-        echo "Artifact contents:"
-        ls -R "$(Build.ArtifactStagingDirectory)/app" | head -50
-        exit 1
-      fi
-
-      echo ""
-      echo "Artifact size:"
-      du -sh "$(Build.ArtifactStagingDirectory)/app"
-    displayName: "Prepare SWA artifact (Enhanced)"
-    continueOnError: false
-
-  # 6. Deploy
+  # 7) Deploy a Azure Static Web Apps
   - task: AzureStaticWebApp@0
-    displayName: "Deploy to SWA"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
-      app_location: "$(Build.ArtifactStagingDirectory)/app"
+
+      # RUTA CORRECTA PARA SWA (relativa al working dir del task)
+      app_location: "/a/app"
+
+      # No usas API Node para SWA
       api_location: ""
+
+      # No necesitamos output_location porque ya estamos entregando la carpeta final
       output_location: ""
+    displayName: "Deploy a Azure Static Web Apps"
