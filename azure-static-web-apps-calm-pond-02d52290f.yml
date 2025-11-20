@@ -58,7 +58,7 @@ jobs:
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
       workingDirectory: $(Build.SourcesDirectory)  # ⬅️ Define directorio raíz
-      app_location: "/dist/cuba-angular"           # Ruta relativa a workingDirectory
+      app_location: "."               # 🔥 SIEMPRE el root del proyecto
       api_location: ""
-      output_location: ""
+      output_location: "dist/cuba-angular"  # 🔥 carpeta final donde está index.html
       skip_app_build: true
