@@ -32,26 +32,95 @@ jobs:
   - script: npm run build
     displayName: 'Build Angular'
 
-  # 4. Copiar SOLO el contenido de dist/cuba-angular/browser
+  # 4. Diagnosticar la estructura del build
   - script: |
+      echo "====== BUILD DIAGNOSTICS ======"
       echo "Working directory:"
       pwd
 
-      echo "Listing dist:"
-      ls -R dist
+      echo ""
+      echo "Listing sources directory:"
+      ls -R "$(Build.SourcesDirectory)" | head -50
 
-      echo "Creating artifact folder:"
+      echo ""
+      echo "Checking if dist exists:"
+      if [ -d "$(Build.SourcesDirectory)/dist" ]; then
+        echo "✓ dist directory found"
+        echo "Contents of dist:"
+        ls -R "$(Build.SourcesDirectory)/dist" | head -100
+      else
+        echo "✗ dist directory NOT found"
+      fi
+
+      echo ""
+      echo "Checking if cuba-angular exists:"
+      if [ -d "$(Build.SourcesDirectory)/dist/cuba-angular" ]; then
+        echo "✓ cuba-angular directory found"
+        ls -R "$(Build.SourcesDirectory)/dist/cuba-angular"
+      else
+        echo "✗ cuba-angular directory NOT found"
+        echo "Available folders in dist:"
+        ls -la "$(Build.SourcesDirectory)/dist" 2>/dev/null || echo "dist is empty or not accessible"
+      fi
+    displayName: 'Diagnose build structure'
+    continueOnError: true
+
+  # 5. Preparar artefacto para SWA - versión mejorada
+  - script: |
+      echo "====== PREPARING SWA ARTIFACT ======"
+
+      # Crear directorio de salida
       mkdir -p "$(Build.ArtifactStagingDirectory)/app"
 
-      echo "Copying browser build:"
-      cp -R "$(Build.SourcesDirectory)/dist/cuba-angular/browser/." "$(Build.ArtifactStagingDirectory)/app"
+      # Buscar el directorio de build correcto
+      BUILD_DIR=""
 
-      echo "Listing artifact folder:"
-      ls -R "$(Build.ArtifactStagingDirectory)/app"
-    displayName: "Prepare SWA artifact"
+      # Intento 1: dist/cuba-angular/browser
+      if [ -d "$(Build.SourcesDirectory)/dist/cuba-angular/browser" ]; then
+        BUILD_DIR="$(Build.SourcesDirectory)/dist/cuba-angular/browser"
+        echo "✓ Found build at: dist/cuba-angular/browser"
+      # Intento 2: dist/cuba-angular
+      elif [ -d "$(Build.SourcesDirectory)/dist/cuba-angular" ]; then
+        BUILD_DIR="$(Build.SourcesDirectory)/dist/cuba-angular"
+        echo "✓ Found build at: dist/cuba-angular"
+      # Intento 3: dist
+      elif [ -d "$(Build.SourcesDirectory)/dist" ]; then
+        BUILD_DIR="$(Build.SourcesDirectory)/dist"
+        echo "✓ Found build at: dist"
+      else
+        echo "✗ ERROR: Could not find any build directory!"
+        echo "Listing $(Build.SourcesDirectory):"
+        ls -la "$(Build.SourcesDirectory)"
+        exit 1
+      fi
 
+      echo ""
+      echo "Copying from: $BUILD_DIR"
+      echo "Copying to: $(Build.ArtifactStagingDirectory)/app"
+      cp -v -R "$BUILD_DIR/." "$(Build.ArtifactStagingDirectory)/app" || {
+        echo "✗ Copy failed!"
+        exit 1
+      }
 
-  # 5. Deploy
+      echo ""
+      echo "Verifying artifact contents:"
+      if [ -f "$(Build.ArtifactStagingDirectory)/app/index.html" ]; then
+        echo "✓ index.html found - artifact is valid"
+        ls -la "$(Build.ArtifactStagingDirectory)/app" | head -20
+      else
+        echo "✗ ERROR: index.html not found in artifact!"
+        echo "Artifact contents:"
+        ls -R "$(Build.ArtifactStagingDirectory)/app" | head -50
+        exit 1
+      fi
+
+      echo ""
+      echo "Artifact size:"
+      du -sh "$(Build.ArtifactStagingDirectory)/app"
+    displayName: "Prepare SWA artifact (Enhanced)"
+    continueOnError: false
+
+  # 6. Deploy
   - task: AzureStaticWebApp@0
     displayName: "Deploy to SWA"
     inputs:
