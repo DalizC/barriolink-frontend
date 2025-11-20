@@ -29,19 +29,35 @@ jobs:
       versionSpec: '20.x'
     displayName: 'Install Node 20'
 
-  # 2. Build Angular manually
+  # 2. Build Angular
   - script: |
       npm ci
       npm run build
     displayName: "Build Angular"
 
-  # 3. Deploy dist directly (this time **forcing** the artifact folder)
+  # 3. Verificar la estructura del build
+  - script: |
+      echo "====== Build Output Structure ======"
+      ls -la dist/
+      echo ""
+      echo "Contents of dist/cuba-angular:"
+      ls -la dist/cuba-angular/
+      echo ""
+      echo "Checking for index.html:"
+      if [ -f "dist/cuba-angular/index.html" ]; then
+        echo "✓ index.html found in dist/cuba-angular"
+      else
+        echo "✗ index.html NOT found"
+      fi
+    displayName: "Verify build structure"
+    continueOnError: true
+
+  # 4. Deploy to SWA con la configuración correcta
   - task: AzureStaticWebApp@0
-    displayName: "Deploy to SWA (forced dist mode)"
+    displayName: "Deploy to Azure Static Web Apps"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
-      app_location: "/"                           # ignorable
-      output_location: ""                         # ignorable
-      app_artifact_location: "dist/cuba-angular"  # ⬅️ LA CLAVE
-      api_location: ""
-      skip_app_build: true                        # ⬅️ LA OTRA CLAVE
+      app_location: "dist/cuba-angular"  # Ubicación del build compilado
+      api_location: ""                    # No hay API
+      output_location: ""                 # Ya está compilado
+      skip_app_build: true                # No compilar de nuevo
