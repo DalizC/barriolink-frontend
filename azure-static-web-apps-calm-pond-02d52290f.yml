@@ -55,7 +55,7 @@ jobs:
 
 
 # ------------------------------------------------------------------
-# 2. JOB: DEPLOY (DEPENDE DEL BUILD)
+# JOB 2: DEPLOY
 # ------------------------------------------------------------------
 - job: deploy_app
   dependsOn: build_app
@@ -70,14 +70,19 @@ jobs:
   - download: current
     artifact: angular_dist
 
+  # --- DEBUG: list folders to confirm actual location ---
+  - script: |
+      echo "Pipeline.Workspace = $(Pipeline.Workspace)"
+      echo "Listing workspace:"
+      ls -R "$(Pipeline.Workspace)"
+    displayName: "DEBUG — Show Workspace Structure"
+
+  # --- Deploy ---
   - task: AzureStaticWebApp@0
     displayName: "Deploy SWA"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
-
-      # Deploy the artifact directory
       app_location: "$(Pipeline.Workspace)/angular_dist"
-
-      # Not using API & Not using Oryx output path
       api_location: ""
       output_location: ""
+
