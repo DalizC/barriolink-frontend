@@ -77,15 +77,10 @@ jobs:
 
   # 7) Deploy a Azure Static Web Apps
   - task: AzureStaticWebApp@0
+    displayName: "Debug SWA Container FS"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
-
-      # RUTA CORRECTA PARA SWA (relativa al working dir del task)
-      app_location: "/a/app"
-
-      # No usas API Node para SWA
+      app_location: "/"
       api_location: ""
-
-      # No necesitamos output_location porque ya estamos entregando la carpeta final
       output_location: ""
-    displayName: "Deploy a Azure Static Web Apps"
+      app_build_command: "ls -R /working_dir"
