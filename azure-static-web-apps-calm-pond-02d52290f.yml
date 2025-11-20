@@ -23,22 +23,25 @@ jobs:
   - checkout: self
     submodules: true
 
-  # 1. Build Angular manually (NO Oryx)
+  # 1. Install proper Node version for Angular 20
   - task: NodeTool@0
     inputs:
       versionSpec: '20.x'
     displayName: 'Install Node 20'
 
+  # 2. Build Angular manually
   - script: |
       npm ci
       npm run build
-    displayName: "Build Angular App"
+    displayName: "Build Angular"
 
-  # 2. Deploy using your DIST folder directly
+  # 3. Deploy dist directly (this time **forcing** the artifact folder)
   - task: AzureStaticWebApp@0
-    displayName: "Deploy to SWA (dist-only mode)"
+    displayName: "Deploy to SWA (forced dist mode)"
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
-      app_location: "dist/cuba-angular"    # <--- ESTA es la clave
+      app_location: "/"                           # ignorable
+      output_location: ""                         # ignorable
+      app_artifact_location: "dist/cuba-angular"  # ⬅️ LA CLAVE
       api_location: ""
-      output_location: ""                  # <--- importa que esté vacío
+      skip_app_build: true                        # ⬅️ LA OTRA CLAVE
