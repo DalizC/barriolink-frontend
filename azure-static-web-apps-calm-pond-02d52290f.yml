@@ -43,11 +43,18 @@ jobs:
       echo "Contents of dist/cuba-angular:"
       ls -la dist/cuba-angular/
       echo ""
+      echo "Contents of dist/cuba-angular/browser (if exists):"
+      ls -la dist/cuba-angular/browser/ 2>/dev/null || echo "browser/ does not exist"
+      echo ""
       echo "Checking for index.html:"
       if [ -f "dist/cuba-angular/index.html" ]; then
         echo "✓ index.html found in dist/cuba-angular"
+      elif [ -f "dist/cuba-angular/browser/index.html" ]; then
+        echo "✓ index.html found in dist/cuba-angular/browser"
       else
-        echo "✗ index.html NOT found"
+        echo "✗ index.html NOT found in expected locations"
+        echo "Searching for index.html recursively:"
+        find dist/ -name "index.html" -type f
       fi
     displayName: "Verify build structure"
     continueOnError: true
@@ -58,7 +65,7 @@ jobs:
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_CALM_POND_02D52290F)
       workingDirectory: $(Build.SourcesDirectory)
-      app_location: "dist/cuba-angular"  # Apunta directamente al build final con index.html
+      app_location: "dist/cuba-angular/browser"  # Apunta directamente al build final con index.html
       api_location: ""
       output_location: ""                # Vacío cuando skip_app_build: true
       skip_app_build: true
