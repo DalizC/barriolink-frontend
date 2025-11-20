@@ -34,9 +34,22 @@ jobs:
 
   # 4. Copiar SOLO el contenido de dist/cuba-angular/browser
   - script: |
+      echo "Working directory:"
+      pwd
+
+      echo "Listing dist:"
+      ls -R dist
+
+      echo "Creating artifact folder:"
       mkdir -p "$(Build.ArtifactStagingDirectory)/app"
-      cp -R dist/cuba-angular/browser/* "$(Build.ArtifactStagingDirectory)/app"
+
+      echo "Copying browser build:"
+      cp -R "$(Build.SourcesDirectory)/dist/cuba-angular/browser/." "$(Build.ArtifactStagingDirectory)/app"
+
+      echo "Listing artifact folder:"
+      ls -R "$(Build.ArtifactStagingDirectory)/app"
     displayName: "Prepare SWA artifact"
+
 
   # 5. Deploy
   - task: AzureStaticWebApp@0
