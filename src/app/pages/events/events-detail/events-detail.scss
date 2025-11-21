@@ -1,59 +1,6 @@
 /**
  * ============================================================================
- * EVENT DETAIL - IMAGE HANDLING DOCUMENTATION
- * ============================================================================
- *
- * PROBLEMA RESUELTO:
- * 1. Imágenes con alturas inconsistentes y posible distorsión
- * 2. Overflow horizontal en móviles (min-width fijo causaba scroll)
- * 3. Necesidad de altura máxima constante (500px) en todas las vistas
- *
- * SOLUCIÓN IMPLEMENTADA:
- * - Contenedor con aspect-ratio CSS + max-height: 500px
- * - object-fit: cover para mantener proporciones sin distorsión
- * - Responsive sin min-width para evitar overflow
- * - Alturas escalonadas: 350px (móvil), 400px (tablet), 500px (desktop)
- *
- * ============================================================================
- * ALTURAS MÁXIMAS POR DISPOSITIVO:
- * ============================================================================
- *
- * Móviles (≤767px):  350px
- * Tablets (768-991px): 400px
- * Desktop (≥992px):   500px
- *
- * ============================================================================
- * ASPECT RATIOS DISPONIBLES (se ajustan dentro del límite de altura):
- * ============================================================================
- *
- * 16:9  (1.78:1) - Paisaje amplio estándar (YouTube, TV)
- * 4:3   (1.33:1) - Formato clásico, más cuadrado
- * 3:2   (1.5:1)  - Formato cámaras DSLR
- * 21:9  (2.33:1) - Ultra wide (cine)
- * 1:1   (1:1)    - Cuadrado perfecto (Instagram)
- *
- * ============================================================================
- * CONFIGURACIÓN object-fit (línea ~135):
- * ============================================================================
- *
- * - cover:   Cubre todo el contenedor, recorta exceso (ACTIVO)
- * - contain: Muestra imagen completa, puede dejar espacios vacíos
- * - fill:    Estira imagen para llenar (distorsiona, NO recomendado)
- * - none:    Tamaño original, puede desbordarse
- *
- * ============================================================================
- * CÓMO CAMBIAR ALTURAS MÁXIMAS:
- * ============================================================================
- *
- * Desktop (línea ~94):
- *   max-height: 500px;  ← Cambiar aquí
- *
- * Tablets (línea ~89):
- *   max-height: 400px;  ← Cambiar aquí
- *
- * Móviles (línea ~84):
- *   max-height: 350px;  ← Cambiar aquí
- *
+ * EVENT DETAIL - CSS GRID LAYOUT FOR 3 EQUAL COLUMNS
  * ============================================================================
  */
 
@@ -64,6 +11,14 @@
         display: block !important;
         overflow: visible !important;
         text-overflow: clip !important;
+        font-weight: 400;
+        margin-bottom: -10px;
+        margin-top: 0;
+        width: fit-content;
+
+        i {
+            margin-right: 5px;
+        }
     }
 
     p {
@@ -73,62 +28,94 @@
         overflow: visible !important;
         text-overflow: clip !important;
     }
+
+    h5 {
+        font-size: 1rem;
+        margin-bottom: 0px;
+        width: fit-content;
+    }
+
+    // CSS Grid: 3 columnas de igual ancho con gap
+    .event-details-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); // 3 columnas iguales (33.33% cada una)
+        gap: 40px; // Espacio uniforme entre columnas
+        margin-top: 25px;
+        margin-bottom: 25px;
+
+        @media (max-width: 991.98px) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        @media (max-width: 767.98px) {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+    }
+
+    .event-column {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        >div {
+            margin-top: 25px;
+
+            &:first-child {
+                margin-top: 0;
+            }
+        }
+    }
+
+    hr {
+        width: 100%;
+        max-width: 150px;
+        margin-top: 15px;
+        margin-bottom: 12px;
+        border-top: 2px solid rgba(0, 0, 0, 0.1);
+        opacity: 1;
+    }
 }
 
-/**
- * Contenedor responsive para imagen principal de evento
- * ALTURA MÁXIMA: 500px para mantener consistencia visual
- * Mantiene aspect ratio hasta alcanzar el límite de altura
- */
 .event-detail-image-container {
     position: relative;
     width: 100%;
-    max-width: 100%; // Asegura que no desborde en móviles
+    max-width: 100%;
     overflow: hidden;
-    background-color: #f8f9fa; // Fondo neutral mientras carga
-    border-radius: 8px; // Bordes suaves opcionales
+    background-color: #f8f9fa;
+    border-radius: 8px;
     margin-bottom: 1.5rem;
-
-    // ALTURA MÁXIMA FIJA: 500px (constante en todas las resoluciones)
     max-height: 500px;
-
-    // Altura base responsive con límite máximo
     height: auto;
-
-    // Aspect ratio como guía, pero limitado por max-height
     aspect-ratio: 16 / 9;
 
-    // Breakpoints responsive para ajustar proporción según dispositivo
     @media (max-width: 767.98px) {
-        // Móviles: altura reducida para optimizar espacio
         max-height: 350px;
         aspect-ratio: 4 / 3;
     }
 
     @media (min-width: 768px) and (max-width: 991.98px) {
-        // Tablets: altura intermedia
         max-height: 400px;
         aspect-ratio: 3 / 2;
     }
 
     @media (min-width: 992px) {
-        // Desktop: altura máxima completa
         max-height: 500px;
         aspect-ratio: 16 / 9;
     }
 
-    // Fallback para navegadores antiguos sin soporte aspect-ratio
     &::before {
         content: '';
         display: block;
-        padding-top: min(56.25%, 500px); // 16:9 ratio limitado a 500px
+        padding-top: min(56.25%, 500px);
 
         @media (max-width: 767.98px) {
-            padding-top: min(75%, 350px); // 4:3 ratio limitado a 350px
+            padding-top: min(75%, 350px);
         }
 
         @media (min-width: 768px) and (max-width: 991.98px) {
-            padding-top: min(66.66%, 400px); // 3:2 ratio limitado a 400px
+            padding-top: min(66.66%, 400px);
         }
     }
 }
@@ -139,25 +126,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-
-    // object-fit mantiene proporción sin distorsión
-    object-fit: cover; // Cubre todo el contenedor, puede recortar bordes
-    // Alternativas:
-    // object-fit: contain; // Muestra imagen completa con barras si necesario
-    // object-fit: fill; // Estira la imagen (no recomendado)
-
-    // Centra el punto focal de la imagen
+    object-fit: cover;
     object-position: center center;
-
-    // Transición suave al cargar
     opacity: 0;
     animation: fadeInImage 0.3s ease-in forwards;
-
-    // Mejora la calidad del renderizado
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-
-    // Evita selección accidental
     user-select: none;
     -webkit-user-drag: none;
 }
@@ -168,7 +142,6 @@
     }
 }
 
-// Estado de carga opcional (si implementas lazy loading)
 .event-detail-image-container.loading {
     &::after {
         content: '';
@@ -191,27 +164,6 @@
     }
 }
 
-/**
- * Contenedor principal de la vista de detalle
- * Responsive sin min-width fijo para evitar overflow horizontal en móviles
- */
-
-/*
-// Variante con efecto hover (opcional)
-.event-detail-image-container:hover .event-detail-image {
-  transform: scale(1.05);
-  transition: transform 0.4s ease;
-}
-
-// Reset del transform en reposo
-.event-detail-image {
-  transition: transform 0.4s ease;
-}
-*/
-
-// ==============================
-// ICONOS SOCIALES (parte inferior)
-// ==============================
 .event-detail-social {
     .social-icon {
         --_size: 44px;
@@ -254,11 +206,9 @@
     }
 }
 
-/* Event Overlay Styles */
 .event-card-overlay {
     .img-wrapper {
-        height: 430px;
-        /* Increased height for detail view */
+        height: 425px;
         overflow: hidden;
         position: relative;
         border-top-left-radius: inherit;
@@ -269,6 +219,19 @@
             width: 100%;
             object-fit: cover;
         }
+    }
+
+    .img-wrapper::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to top,
+                rgba(255, 255, 255, 0.85) 0%,
+                rgba(255, 255, 255, 0.25) 5%,
+                rgba(255, 255, 255, 0) 15%);
     }
 
     .event-overlay-content {
@@ -283,39 +246,9 @@
         flex-direction: column;
         justify-content: flex-end;
     }
-}
 
-.blog-details {
-    h6 {
-        font-weight: 400;
-        margin-bottom: -10px;
-        margin-top: 0;
-
-        i {
-            margin-right: 5px;
-        }
-    }
-
-    h5 {
-        font-size: 1rem;
-        margin-bottom: 5px;
-    }
-
-    div.col-6.d-flex.flex-column div {
-        margin-top: 30px;
-
-    }
-
-    div.col-6.d-flex.flex-column div:last-child {
-        margin-bottom: 30px;
-    }
-
-    hr {
-        width: 150px; // Configurable fixed width
-        margin-top: 15px;
-        margin-bottom: 12px;
-        border-top: 2px solid rgba(0, 0, 0, 0.1); // Optional: ensure visibility
-        opacity: 1;
+    .card-body {
+        padding-top: 0;
     }
 }
 

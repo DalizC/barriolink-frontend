@@ -16,12 +16,14 @@
         <div class="card-body">
           <div class="blog-single card border border-1 px-4 py-2">
             <div class="blog-box blog-details">
-              <div class="row">
-                <div class="col-6 d-flex flex-column">
+              <!-- Grid de 3 columnas con distribución equitativa -->
+              <div class="event-details-grid">
+                <!-- Primera columna -->
+                <div class="event-column">
                   <div>
                     <h6 class="txt-secondary"><i class="fa-solid fa-calendar"></i> Fecha y hora</h6>
                     <hr>
-                    <h5> {{ eventItem?.date }}</h5>
+                    <h5>{{ eventItem?.date }}</h5>
                     <span>{{ eventItem?.time }}</span>
                   </div>
 
@@ -39,7 +41,9 @@
                     <span>2 días + 1 noche</span>
                   </div>
                 </div>
-                <div class="col-6 d-flex flex-column">
+
+                <!-- Segunda columna -->
+                <div class="event-column">
                   <div>
                     <h6 class="txt-secondary"><i class="fa-solid fa-user-group"></i> Disponibilidad</h6>
                     <hr>
@@ -61,12 +65,34 @@
                     <span>Comité de Actividades</span>
                   </div>
                 </div>
+
+                <!-- Tercera columna (nuevo contenido) -->
+                <div class="event-column">
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-star"></i> Valoración</h6>
+                    <hr>
+                    <h5>4.5/5.0</h5>
+                    <span>De 24 opiniones</span>
+                  </div>
+
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-users"></i> Capacidad</h6>
+                    <hr>
+                    <h5>20 personas</h5>
+                    <span>Máximo permitido</span>
+                  </div>
+
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-tag"></i> Categoría</h6>
+                    <hr>
+                    <h5>Recreativo</h5>
+                    <span>Actividad comunitaria</span>
+                  </div>
+                </div>
               </div>
-
-
             </div>
-
           </div>
+
           <div class="blog-single card">
             <div class="blog-box blog-details">
               <p>{{ eventItem?.content }}</p>
