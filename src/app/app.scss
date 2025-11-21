@@ -120,20 +120,21 @@
 
 //Sobreescribir el estilo de news detail (artículo)
 .blog-box .blog-details .single-blog-content-top {
-    margin-top: 0px;
-    border-top: none;
-    padding-left: 100px;
-    padding-right: 100px;
-    p {
-        text-align: justify;
-        font-size: medium;
-        color: var(--bs-heading-color);
-    }
+  margin-top: 0px;
+  border-top: none;
+  padding-left: 100px;
+  padding-right: 100px;
+
+  p {
+    text-align: justify;
+    font-size: medium;
+    color: var(--bs-heading-color);
+  }
 }
 
 
 .page-container {
-  padding: 0;
+  padding: 20px 0 0 0;
   background-color: transparent;
   margin-bottom: 20px;
 
@@ -165,26 +166,33 @@
   position: relative;
   z-index: 1;
 }
+
 .hover-shadow-boost:hover {
   /* sombra más fuerte al hacer hover */
-  box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,.25), 0 0.3rem 0.6rem rgba(0,0,0,.18);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, .25), 0 0.3rem 0.6rem rgba(0, 0, 0, .18);
   transform: translateY(-2px);
 }
+
 /* Cuando hay un dropdown abierto: desactivar hover de todos los cards EXCEPTO el que tiene el menú */
 .product-wrapper-grid:has(.dropdown.show) .hover-shadow-boost:not(:has(.dropdown.show)):hover {
-  box-shadow: none; /* anula la sombra hover */
-  transform: none; /* anula el movimiento */
+  box-shadow: none;
+  /* anula la sombra hover */
+  transform: none;
+  /* anula el movimiento */
 }
+
 /* El card con el dropdown abierto mantiene z-index elevado Y efectos de hover activos */
 .hover-shadow-boost:has(.dropdown.show) {
   z-index: 100;
-  box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,.25), 0 0.3rem 0.6rem rgba(0,0,0,.18);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, .25), 0 0.3rem 0.6rem rgba(0, 0, 0, .18);
   transform: translateY(-2px);
 }
+
 @media (prefers-reduced-motion: reduce) {
   .hover-shadow-boost {
     transition: none;
   }
+
   .hover-shadow-boost:hover {
     transform: none;
   }
@@ -199,7 +207,8 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  z-index: 10; /* mayor que el card en hover */
+  z-index: 10;
+  /* mayor que el card en hover */
 }
 
 .card-header-right-icon .icon-dropdown {
@@ -208,7 +217,8 @@
   height: 31px;
   background-color: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 6px; /* un poco más sutil que 8px */
+  border-radius: 6px;
+  /* un poco más sutil que 8px */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -220,29 +230,37 @@
   width: 100%;
   height: 100%;
   padding: 0;
-  background: transparent; /* el contenedor aporta el fondo */
-  border: none; /* el contenedor aporta el borde */
+  background: transparent;
+  /* el contenedor aporta el fondo */
+  border: none;
+  /* el contenedor aporta el borde */
   color: var(--bs-body-color);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
+
 .card-header-right-icon .icon-dropdown .btn.dropdown-toggle::after {
-  display: none; /* oculta caret del dropdown */
+  display: none;
+  /* oculta caret del dropdown */
 }
+
 .card-header-right-icon .icon-dropdown .btn.dropdown-toggle:hover {
   background-color: transparent;
 }
+
 .card-header-right-icon .icon-dropdown .btn .icon-more-alt {
-  font-size: 14px; /* ajustado para 31px */
+  font-size: 14px;
+  /* ajustado para 31px */
   line-height: 1;
 }
 
 /* Hover más sutil con tono secondary-subtle (solo cuando está cerrado) */
 .card-header-right-icon .icon-dropdown:hover {
-  background-color: var(--bs-secondary-bg-subtle, rgba(108,117,125,0.12));
-  border-color: rgba(var(--bs-secondary-rgb, 108,117,125), 0.25);
+  background-color: var(--bs-secondary-bg-subtle, rgba(108, 117, 125, 0.12));
+  border-color: rgba(var(--bs-secondary-rgb, 108, 117, 125), 0.25);
 }
+
 .card-header-right-icon .icon-dropdown:hover .btn.dropdown-toggle {
   color: var(--bs-body-color);
 }
@@ -253,6 +271,7 @@
   background-color: #ffffff;
   border-color: rgba(0, 0, 0, 0.1);
 }
+
 .card-header-right-icon .icon-dropdown.show .btn.dropdown-toggle,
 .card-header-right-icon .icon-dropdown.show:hover .btn.dropdown-toggle {
   color: var(--bs-body-color);
@@ -267,8 +286,10 @@
 .card-header-right-icon .dropdown-menu {
   z-index: 2000;
   /* Ajustes de posición */
-  margin-left: -1px !important; /* mueve 20px a la izquierda */
-  margin-top: 5px !important; /* mueve 5px abajo */
+  margin-left: -1px !important;
+  /* mueve 20px a la izquierda */
+  margin-top: 5px !important;
+  /* mueve 5px abajo */
   /* Ajustes de tipografía */
   //font-family: inherit; /* o especifica: 'Roboto', sans-serif, etc. */
   //font-size: inherit;
@@ -276,8 +297,10 @@
 
 /* Estilizar cada ítem del menú */
 .card-header-right-icon .dropdown-menu .dropdown-item {
-  font-size: 14px; /* tamaño específico de cada opción */
-  padding: 8px 16px; /* espaciado interno */
+  font-size: 14px;
+  /* tamaño específico de cada opción */
+  padding: 8px 16px;
+  /* espaciado interno */
   opacity: 1;
 }
 

@@ -26,6 +26,8 @@ import {
   CalendarView
 } from "angular-calendar";
 
+import { NgbProgressbarModule } from '@ng-bootstrap/ng-bootstrap';
+
 const colors: any = {
   red: {
     primary: "#ad2121",
@@ -51,6 +53,7 @@ registerLocaleData(localeEs);
   imports: [
     CommonModule,
     CalendarModule,
+    NgbProgressbarModule,
     // otros módulos necesarios
   ]
 })
@@ -168,7 +171,7 @@ export class Events {
     },
   ];
 
-  constructor(private modal: NgbModal) {}
+  constructor(private modal: NgbModal) { }
 
   handleEvent(action: string, event: CalendarEvent): void {
     this.modalData = { event, action };

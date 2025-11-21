@@ -63,6 +63,7 @@ export const eventsRoutes: Routes = [
     data: {
       title: "Detalle de Evento",
       breadcrumb: "Detalle",
+      hideBreadcrumbs: true,
     },
   },
 ];

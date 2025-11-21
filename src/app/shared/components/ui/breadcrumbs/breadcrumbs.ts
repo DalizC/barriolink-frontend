@@ -48,6 +48,8 @@ export class Breadcrumbs {
         };
 
         this.title = routeSnapshot.data["title"] || "";
+        this.showBreadcrumbs = !routeSnapshot.data["hideBreadcrumbs"];
       });
   }
+  public showBreadcrumbs: boolean = true;
 }

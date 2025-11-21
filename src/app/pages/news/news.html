@@ -1,4 +1,4 @@
-<div class="container-fluid news-detail-container product-wrapper">
+<div class="container-fluid news-detail-container product-wrapper page-container">
   <div class="row">
     <div class="col-sm-12">
       <div class="card mb-0">
@@ -164,10 +164,14 @@
                       <div class="d-flex justify-content-md-end align-items-center flex-wrap gap-2">
                         <!-- Grupo de cambio de vista (derecha extremo) -->
                         <div role="group" aria-label="Cambiar vista" class="btn-group">
-                          <input type="radio" class="btn-check" name="viewToggle" id="toggleGrid" autocomplete="off" [checked]="viewMode === 'grid'" (change)="viewMode = 'grid'">
-                          <label class="btn btn-lg btn-outline-primary" for="toggleGrid"><i class="fas fa-th"></i></label>
-                          <input type="radio" class="btn-check" name="viewToggle" id="toggleList" autocomplete="off" [checked]="viewMode === 'list'" (change)="viewMode = 'list'">
-                          <label class="btn btn-lg btn-outline-primary" for="toggleList"><i class="fas fa-list"></i></label>
+                          <input type="radio" class="btn-check" name="viewToggle" id="toggleGrid" autocomplete="off"
+                            [checked]="viewMode === 'grid'" (change)="viewMode = 'grid'">
+                          <label class="btn btn-lg btn-outline-primary" for="toggleGrid"><i
+                              class="fas fa-th"></i></label>
+                          <input type="radio" class="btn-check" name="viewToggle" id="toggleList" autocomplete="off"
+                            [checked]="viewMode === 'list'" (change)="viewMode = 'list'">
+                          <label class="btn btn-lg btn-outline-primary" for="toggleList"><i
+                              class="fas fa-list"></i></label>
                         </div>
                         <!-- Dropdown de orden (a la izquierda del toggle de vista) -->
                         <div class="dropdown-product">

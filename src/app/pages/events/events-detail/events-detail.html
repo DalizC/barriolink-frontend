@@ -1,1 +1,118 @@
-<p>events-detail works!</p>
+<div class="container-fluid event-detail-container page-container">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="card card event-card-overlay">
+        <div class="img-wrapper position-relative">
+          <img class="card-img-top img-fluid w-100" [src]="eventItem?.image" alt="{{ eventItem?.title }}">
+          <div class="event-overlay-content">
+            <div class="d-flex justify-content-between align-items-end w-100">
+              <div class="text-content me-3">
+                <h1 class="card-title mb-1 display-1 f-w-500 text-white">{{ eventItem?.title }}</h1>
+                <h3 class="card-text opacity-75 mb-0 mx-1">{{ eventItem?.meta?.description }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="blog-single card border border-1 px-4 py-2">
+            <div class="blog-box blog-details">
+              <div class="row">
+                <div class="col-6 d-flex flex-column">
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-calendar"></i> Fecha y hora</h6>
+                    <hr>
+                    <h5> {{ eventItem?.date }}</h5>
+                    <span>{{ eventItem?.time }}</span>
+                  </div>
+
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-location-arrow"></i> Ubicación</h6>
+                    <hr>
+                    <h5>Sede Vecinal</h5>
+                    <span>Calle Blanco 123, Villa Alemana</span>
+                  </div>
+
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-clock"></i> Duración</h6>
+                    <hr>
+                    <h5>2 días</h5>
+                    <span>2 días + 1 noche</span>
+                  </div>
+                </div>
+                <div class="col-6 d-flex flex-column">
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-user-group"></i> Disponibilidad</h6>
+                    <hr>
+                    <h5>10/20</h5>
+                    <span>Cupos disponibles</span>
+                  </div>
+
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-dollar"></i> Valor</h6>
+                    <hr>
+                    <h5>Free</h5>
+                    <span>&nbsp;</span>
+                  </div>
+
+                  <div>
+                    <h6 class="txt-secondary"><i class="fa-solid fa-building"></i> Organizador</h6>
+                    <hr>
+                    <h5>Administración</h5>
+                    <span>Comité de Actividades</span>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+
+          </div>
+          <div class="blog-single card">
+            <div class="blog-box blog-details">
+              <p>{{ eventItem?.content }}</p>
+            </div>
+          </div>
+
+          <!-- Sección de iconos sociales centrados -->
+          <div class="text-center mt-5 event-detail-social">
+            <div class="d-inline-flex gap-3 align-items-center justify-content-center">
+              <a class="social-icon facebook" href="https://www.facebook.com" target="_blank" rel="noopener"
+                aria-label="Facebook" title="Compartir en Facebook">
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+              <a class="social-icon instagram" href="https://www.instagram.com" target="_blank" rel="noopener"
+                aria-label="Instagram" title="Ver en Instagram">
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+              <a class="social-icon x-twitter" href="https://www.twitter.com" target="_blank" rel="noopener"
+                aria-label="X" title="Compartir en X">
+                <i class="fa-brands fa-x-twitter"></i>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        @if (showAlert) {
+        <ngb-alert role="alert" [type]="alertType" class="p-0 alert show fade ng-star-inserted"
+          [ngClass]="alertBorderClass" [dismissible]="false">
+          <div class="d-flex align-items-center w-100 gap-3 p-3 py-4">
+            <div class="flex-grow-1">
+              <h5>{{ alertTitle }}</h5>
+              <p [innerHTML]="alertText"></p>
+            </div>
+            <div class="ms-auto d-inline-flex gap-2 flex-wrap">
+              @for (action of alertActions; track action.text) {
+              <button type="button" class="btn btn-sm" [ngClass]="action.colorClass" (click)="action.handler(action)">
+                @if (action.iconClass) { <span [innerHTML]="action.iconClass"></span> }
+                {{ action.text }}
+              </button>
+              }
+            </div>
+          </div>
+        </ngb-alert>
+        }
+      </div>
+    </div>
+  </div>
+</div>

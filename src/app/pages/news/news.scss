@@ -199,7 +199,8 @@ h1 > span.badge {
   /* ajusta este valor a lo que te guste */
   overflow: hidden;
   /* recorta lo que se salga */
-  position: relative; /* mantiene referencia para ribbon u otros overlays dentro de la imagen */
+  position: relative;
+  /* mantiene referencia para ribbon u otros overlays dentro de la imagen */
 
   img {
     width: 100%;
@@ -246,12 +247,40 @@ h1 > span.badge {
   /* Eliminar borde visible sin provocar reflow */
   border-color: transparent !important;
   /* Sombra consistente con hover global + borde interior para evitar línea fina */
-  box-shadow: 0 0.75rem 1.5rem rgba(0,0,0,.25), 0 0.3rem 0.6rem rgba(0,0,0,.18), inset 0 0 0 1px var(--bs-card-bg, #fff);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, .25), 0 0.3rem 0.6rem rgba(0, 0, 0, .18), inset 0 0 0 1px var(--bs-card-bg, #fff);
+}
+
+/* En vista de lista, mantenemos el zoom pero forzamos renderizado nítido */
+.product-wrapper-grid.list-view .card.hover-shadow-boost:hover,
+.product-wrapper-grid.list-view .card.hover-shadow-boost.dropdown-active {
+  //transform: translateY(-2px) scale(1.05);
+  -ms-transform: translateY(-2px) scale(1.02);
+  /* IE 9 */
+  -webkit-transform: translateY(-2px) scale(1.02);
+  transform: translateY(-2px) scale(1.02);
+  /* Safari 3-8 */
+  /* Hacks para evitar texto borroso en Chrome/Edge durante transformaciones */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  //filter: blur(0);
+  /* Fuerza aceleración de hardware sin desenfoque */
+
+  //backface-visibility: hidden;
+  //-webkit-font-smoothing: subpixel-antialiased;
+  //transform: translateZ(0);
+}
+
+/* Asegurar que el contenido de texto tenga su propio contexto de renderizado */
+.product-wrapper-grid.list-view .product-details {
+  transform: translateZ(0);
+  will-change: transform;
+  /* Indica al navegador que este elemento cambiará */
 }
 
 /* Quitar el borde del card al hacer hover (sin variar el grosor → evitar "saltos") */
 .product-wrapper-grid .card.hover-shadow-boost:hover {
-  border-color: transparent !important; /* redundante, mantenido por especificidad */
+  border-color: transparent !important;
+  /* redundante, mantenido por especificidad */
 }
 
 /* Mejorar el anti-aliasing al escalar para evitar halos */
@@ -264,28 +293,33 @@ h1 > span.badge {
 
 /* Botón de menú de opciones anclado al card */
 .product-wrapper-grid .card {
-  position: relative; /* establece el contexto de posicionamiento */
+  position: relative;
+  /* establece el contexto de posicionamiento */
 }
+
 .news-card-menu {
   position: absolute;
   top: 8px;
   right: 8px;
   z-index: 3;
 }
+
 .news-card-menu .btn {
   background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0,0,0,0.06);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
+
 .news-card-menu .btn:hover {
   background: #ffffff;
 }
 
 
-.product-box .product-details h6, .product-box .product-details .h6 {
-    color: var(--bs-heading-color);
-    text-transform: none;
-    margin-bottom: 5px;
+.product-box .product-details h6,
+.product-box .product-details .h6 {
+  color: var(--bs-heading-color);
+  text-transform: none;
+  margin-bottom: 5px;
 }
 
 .product-box .product-details {
@@ -296,11 +330,11 @@ h1 > span.badge {
   padding: 0;
 }
 
-.card-header-right-icon .icon-dropdown.dropdown{
+.card-header-right-icon .icon-dropdown.dropdown {
   width: fit-content;
 }
 
-.product-box > :last-child {
+.product-box> :last-child {
   margin-left: auto;
 }
 
