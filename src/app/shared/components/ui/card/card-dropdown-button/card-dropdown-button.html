@@ -22,16 +22,29 @@
     >
       @for (option of options; track option.id) {
         <a
-          class="dropdown-item d-flex align-items-center"
+          class="dropdown-item d-flex align-items-center justify-content-between"
           [ngClass]="option.itemClass"
           href="javascript:void(0)"
           (click)="selectItem(option.title)"
           role="menuitem"
         >
-          @if (option.iconHtml) {
-            <span class="me-2" [innerHTML]="option.iconHtml"></span>
+          <div class="d-flex align-items-center">
+            @if (option.iconHtml) {
+              <span class="me-2" [innerHTML]="option.iconHtml"></span>
+            }
+            <span>{{ option.title }}</span>
+          </div>
+          @if (option.switch) {
+            <div class="form-check form-switch" (click)="$event.stopPropagation()">
+              <input
+                class="form-check-input switch-{{ option.switch.class }} check-size"
+                type="checkbox"
+                role="switch"
+                [checked]="option.switch.value"
+                (change)="onSwitchChange($event, option)"
+              />
+            </div>
           }
-          <span>{{ option.title }}</span>
         </a>
       }
     </div>
@@ -62,16 +75,29 @@
       @for (option of options; track option.id) {
         <li>
           <a
-            class="dropdown-item d-flex align-items-center"
+            class="dropdown-item d-flex align-items-center justify-content-between"
             [ngClass]="option.itemClass"
             href="javascript:void(0)"
             (click)="selectItem(option.title)"
             role="menuitem"
           >
-            @if (option.iconHtml) {
-              <span class="me-2" [innerHTML]="option.iconHtml"></span>
+            <div class="d-flex align-items-center">
+              @if (option.iconHtml) {
+                <span class="me-2" [innerHTML]="option.iconHtml"></span>
+              }
+              <span>{{ option.title }}</span>
+            </div>
+            @if (option.switch) {
+              <div class="form-check form-switch" (click)="$event.stopPropagation()">
+                <input
+                  class="form-check-input switch-{{ option.switch.class }} check-size"
+                  type="checkbox"
+                  role="switch"
+                  [checked]="option.switch.value"
+                  (change)="onSwitchChange($event, option)"
+                />
+              </div>
             }
-            <span>{{ option.title }}</span>
           </a>
         </li>
       }

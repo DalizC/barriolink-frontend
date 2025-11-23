@@ -165,15 +165,13 @@
             }
 
             @if (rowDetails()) {
-            <td [ngStyle]="{
-                  background:
-                    'url(assets/images/' +
-                    (selectedOpenRows.includes(details.id!)
-                      ? 'details_close'
-                      : 'details_open') +
-                    '.png) no-repeat center center',
-                  cursor: 'pointer',
-                }" (click)="openRowDetails(details.id!)"></td>
+            <td style="width: 50px; text-align: center; cursor: pointer;" (click)="openRowDetails(details.id!)">
+                <i class="fa-solid"
+                   [class.fa-chevron-down]="!selectedOpenRows.includes(details.id!)"
+                   [class.fa-chevron-up]="selectedOpenRows.includes(details.id!)"
+                   style="color: #7366ff; font-size: 14px; transition: transform 0.2s ease;">
+                </i>
+            </td>
             }
 
             @for (column of tableConfig.columns; track column) {
@@ -200,9 +198,22 @@
                 }
             </td>
             } @else {
-            <td [innerHTML]="details[column.field_value]">
-                @if (column.text) {
-                {{ column.text }}
+            <td>
+                @if (column.field_value === 'product_name' && details['description']) {
+                <ul class="datatable-desc">
+                    <li>
+                        <h6 [innerHTML]="details[column.field_value]"></h6>
+                    </li>
+                    <li>
+                        <h6 class="c-light f-14">{{ details['description'] }}</h6>
+                    </li>
+                </ul>
+                } @else {
+                <div [innerHTML]="details[column.field_value]">
+                    @if (column.text) {
+                    {{ column.text }}
+                    }
+                </div>
                 }
             </td>
             }
@@ -211,7 +222,7 @@
 
             @if (tableConfig.row_action) {
             <td>
-                <div class="product-action common-align gap-2 justify-content-start">
+                <div class="datatable-actions common-align gap-2 justify-content-start">
                     @for (rows of tableConfig.row_action; track rows) {
                     @if (rows['type'] === 'button') {
                     <button [class]="rows['class']">{{ rows['label'] }}</button>
@@ -219,12 +230,12 @@
                     @if (rows['label'] === 'Create') {
                     <button class="plus-btn">+</button>
                     } @else if (rows['label'] === 'Edit' || rows['label'] === 'Delete') {
-                    <a class="square-white" href="javascript:void(0)" [routerLink]="rows['path']"
+                    <a class="btn btn-outline-secondary btn-square" href="javascript:void(0)" [routerLink]="rows['path']"
                         (click)="handleAction(rows, details)">
-                        <app-svg-icon [icon]="rows['icon']"></app-svg-icon>
+                        <i [class]="rows['label'] === 'Delete' ? 'fas fa-trash-alt' : 'fa-solid fa-edit'"></i>
                     </a>
                     } @else if (rows['label'] === 'View') {
-                    <a class="square-white" href="javascript:void(0)" (click)="handleAction(rows, details)"
+                    <a class="btn btn-outline-secondary btn-square" href="javascript:void(0)" (click)="handleAction(rows, details)"
                         [routerLink]="rows['path']">
                         <i class="fa-solid fa-eye"></i>
                     </a>
@@ -242,6 +253,7 @@
                     <Button class="btn btn-danger" placement="top" [ngbTooltip]="'Reject'"><i
                             class="fa-solid fa-circle-xmark"></i></Button>
                     }
+
                     }
                 </div>
             </td>
@@ -250,7 +262,10 @@
 
         @if (rowDetails() && selectedOpenRows.includes(details.id!)) {
         <tr data-dt-row="8">
-            <td colspan="8">
+            <td [attr.colspan]="getColSpan()">
+                @if (rowDetailTemplate) {
+                <ng-container *ngTemplateOutlet="rowDetailTemplate; context: { $implicit: details }"></ng-container>
+                } @else {
                 <table cellpadding="5" cellspacing="0" [border]="0" style="padding-left: 50px">
                     <tbody>
                         @for (column of tableConfig.columns; track column) {
@@ -261,6 +276,7 @@
                         }
                     </tbody>
                 </table>
+                }
             </td>
         </tr>
         }

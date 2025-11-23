@@ -6,6 +6,8 @@ import {
     output,
     input,
     inject,
+    ContentChild,
+    TemplateRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -31,7 +33,6 @@ import {
 } from '../../../interface/common';
 import { TableService } from '../../../interface/services/table.service';
 import { Pagination } from '../pagination/pagination';
-import { SvgIcon } from '../svg-icon/svg-icon';
 
 @Component({
     selector: 'app-table',
@@ -43,7 +44,6 @@ import { SvgIcon } from '../svg-icon/svg-icon';
         NgbDatepickerModule,
         NgbTooltipModule,
         Pagination,
-        SvgIcon,
     ],
     providers: [DecimalPipe],
     templateUrl: './datatable.html',
@@ -68,6 +68,8 @@ export class DataTable<TData extends IHasId = IHasId, TValue = unknown> {
     @Input() dateFilter: boolean = false;
     readonly downloadReports = input<boolean>(false);
     readonly searchPlaceholder = input<string>('');
+
+    @ContentChild('rowDetailTemplate', { read: TemplateRef }) rowDetailTemplate?: TemplateRef<{ $implicit: TData }>;
 
     readonly action = output<ITableClickedAction<TData, TValue>>();
 

@@ -1,0 +1,205 @@
+/**=====================
+    DataTable Component - Estilos Modulares
+    Solo estilos usados dentro del componente DataTable
+==========================**/
+
+/* ===================================
+   1. DESCRIPCIÓN CON TÍTULO Y SUBTÍTULO
+   Usado para mostrar información en dos líneas dentro de celdas
+   =================================== */
+.datatable-desc {
+  li {
+    h6 {
+      margin-bottom: 0;
+      line-height: 1.3;
+    }
+
+    p {
+      margin-bottom: 0;
+      color: rgba(67, 89, 113, 0.8);
+    }
+
+    span {
+      color: #435971;
+      font-weight: 400;
+    }
+
+    &:last-child {
+      margin-top: 2px;
+
+      // Truncar descripción en una sola línea con ellipsis
+      h6 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+    }
+  }
+
+  h6 {
+    margin-bottom: 6px;
+  }
+}
+
+/* ===================================
+   2. ACCIONES DE FILA (datatable-actions)
+   Botones de acción dentro de las celdas de la tabla
+   =================================== */
+.datatable-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+
+  .square-white {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 28px 6px rgba(235, 235, 235, 0.4);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #7366ff;
+      transform: translateY(-2px);
+      box-shadow: 0px 4px 12px rgba(115, 102, 255, 0.3);
+
+      svg {
+        fill: #fff !important;
+      }
+
+      i {
+        color: #fff;
+      }
+    }
+
+    svg {
+      fill: rgba(67, 89, 113, 0.8);
+      width: 16px;
+      height: 16px;
+      transition: fill 0.3s ease;
+    }
+
+    i {
+      color: rgba(67, 89, 113, 0.8);
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
+  }
+
+  .btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+
+  .plus-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background-color: #7366ff;
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #5f56d4;
+      transform: scale(1.05);
+    }
+  }
+}
+
+/* ===================================
+   3. TOP BODY
+   Barra superior con búsqueda, filtros y paginación
+   =================================== */
+.top-body {
+  padding: 20px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  select {
+    position: relative;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    font-size: 14px;
+    color: rgba(67, 89, 113, 0.8);
+  }
+
+  .dataTables_filter {
+    label {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      input {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        font-size: 14px;
+        opacity: 1;
+        width: 250px;
+
+        &:focus {
+          outline: none;
+          border-color: #7366ff;
+        }
+      }
+    }
+  }
+}
+
+/* ===================================
+   4. EMPTY DATA
+   Mensaje cuando no hay datos en la tabla
+   =================================== */
+.empty-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: rgba(67, 89, 113, 0.6);
+  font-size: 14px;
+}
+
+/* ===================================
+   5. CHECKBOX
+   Estilos para checkboxes de selección de filas
+   =================================== */
+.datatable-checkbox {
+  text-align: center;
+  padding: 10px;
+
+  input[type="checkbox"] {
+    cursor: pointer;
+
+    &:focus,
+    &:focus-visible {
+      outline: unset;
+    }
+  }
+}
+
+.cb-select-checkbox {
+  cursor: pointer;
+}
+

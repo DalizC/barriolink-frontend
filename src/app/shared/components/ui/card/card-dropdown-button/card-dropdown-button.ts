@@ -73,6 +73,16 @@ export class CardDropdownButton implements OnChanges {
     // Aquí en el futuro podemos emitir un @Output si quieres "Editar / Eliminar"
   }
 
+  // Maneja el cambio del switch
+  onSwitchChange(event: Event, option: ICardToggleOptions): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (option.switch) {
+      option.switch.value = checkbox.checked;
+    }
+    // Prevenir que se cierre el dropdown al cambiar el switch
+    event.stopPropagation();
+  }
+
   // Cerrar al hacer click fuera
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {

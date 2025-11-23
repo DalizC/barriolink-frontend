@@ -329,7 +329,7 @@
 @import "pages/add-product";
 @import "pages/blog";
 @import "pages/bookmark-app";
-@import "pages/cart";
+// @import "pages/cart"; // CSS extraído a datatable.scss
 @import "pages/chart";
 @import "pages/chat";
 @import "pages/checkout";
@@ -361,7 +361,7 @@
 @import "pages/helper";
 @import "pages/internationalization";
 @import "pages/invoice";
-@import "pages/job-search";
+// @import "pages/job-search"; // CSS extraído a datatable.scss
 @import "pages/editors";
 @import "pages/kanban";
 @import "pages/knowledgebase";
@@ -385,7 +385,7 @@
 @import "pages/social-app";
 @import "pages/scrollspy";
 @import "pages/sweet-alert";
-@import "pages/sellers";
+// @import "pages/sellers"; // CSS extraído a datatable.scss
 @import "pages/settings";
 @import "pages/task";
 @import "pages/timeline-v";

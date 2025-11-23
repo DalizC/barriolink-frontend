@@ -5,6 +5,8 @@ export interface ICardToggleOptions {
   iconHtml?: string;
   /** Optional CSS class to apply to the dropdown item */
   itemClass?: string;
+  /** Optional switch configuration */
+  switch?: ICustomSwitch;
 }
 
 export interface ITableConfigs<T = unknown> {
@@ -60,4 +62,9 @@ export interface IHasId {
   date?: string | Date;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
+}
+
+export interface ICustomSwitch {
+  class: string;
+  value: boolean;
 }
