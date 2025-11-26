@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { adminGuard } from "../../core/guards/auth.guard";
 
 export const facilitiesRoutes: Routes = [
   {
@@ -20,6 +21,7 @@ export const facilitiesRoutes: Routes = [
   {
     path: "admin",
     loadComponent: () => import("./facilities-admin/facilities-admin").then((m) => m.FacilitiesAdmin),
+    canActivate: [adminGuard],
     data: {
       title: "Gestión de Instalaciones",
       breadcrumb: "Gestión",

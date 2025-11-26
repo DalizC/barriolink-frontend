@@ -1,1 +1,178 @@
-<p>users-form works!</p>
+<div class="container-fluid p-0">
+  <div class="row m-0">
+    <div class="col-12 p-0">
+      <div class="login-card login-dark">
+        <div>
+          <div>
+            <a class="logo" [routerLink]="['/dashboard/default']">
+              <span class="logo-text">
+                <span class="barrio-text">Barrio</span><span class="link-text">Link</span>
+              </span>
+            </a>
+          </div>
+          <div class="login-main">
+            <form
+              class="theme-form"
+              [formGroup]="registerForm"
+              (ngSubmit)="register()"
+            >
+              <h4>Crear Cuenta</h4>
+              <p>Completa los datos para crear tu cuenta</p>
+
+              <!-- Nombre Completo -->
+              <div class="form-group">
+                <label class="col-form-label">Nombre Completo</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  required=""
+                  placeholder="Tu nombre completo"
+                  formControlName="name"
+                />
+                @if (
+                  registerForm.controls["name"].touched &&
+                  registerForm.controls["name"].errors?.["required"]
+                ) {
+                  <div class="text text-danger mt-1">El nombre es requerido</div>
+                }
+                @if (
+                  registerForm.controls["name"].touched &&
+                  registerForm.controls["name"].errors?.["minlength"]
+                ) {
+                  <div class="text text-danger mt-1">El nombre debe tener al menos 3 caracteres</div>
+                }
+              </div>
+
+              <!-- Email -->
+              <div class="form-group">
+                <label class="col-form-label">Correo Electrónico</label>
+                <input
+                  class="form-control"
+                  type="email"
+                  required=""
+                  placeholder="correo@ejemplo.com"
+                  formControlName="email"
+                />
+                @if (
+                  registerForm.controls["email"].touched &&
+                  registerForm.controls["email"].errors?.["required"]
+                ) {
+                  <div class="text text-danger mt-1">El email es requerido</div>
+                }
+                @if (
+                  registerForm.controls["email"].touched &&
+                  registerForm.controls["email"].errors?.["email"]
+                ) {
+                  <div class="text text-danger mt-1">Email inválido</div>
+                }
+              </div>
+
+              <!-- Contraseña -->
+              <div class="form-group">
+                <label class="col-form-label">Contraseña</label>
+                <div class="form-input position-relative">
+                  <input
+                    class="form-control"
+                    [type]="show ? 'text' : 'password'"
+                    required=""
+                    placeholder="*********"
+                    formControlName="password"
+                  />
+                  @if (!show) {
+                    <div class="show-hide" (click)="showPassword()">
+                      <span class="show"></span>
+                    </div>
+                  } @else {
+                    <div class="show-hide" (click)="showPassword()">
+                      <span class="Hide"></span>
+                    </div>
+                  }
+                  @if (
+                    registerForm.controls["password"].touched &&
+                    registerForm.controls["password"].errors?.["required"]
+                  ) {
+                    <div class="text text-danger mt-1">
+                      La contraseña es requerida
+                    </div>
+                  }
+                  @if (
+                    registerForm.controls["password"].touched &&
+                    registerForm.controls["password"].errors?.["minlength"]
+                  ) {
+                    <div class="text text-danger mt-1">
+                      La contraseña debe tener al menos 5 caracteres
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Confirmar Contraseña -->
+              <div class="form-group">
+                <label class="col-form-label">Confirmar Contraseña</label>
+                <div class="form-input position-relative">
+                  <input
+                    class="form-control"
+                    [type]="showConfirm ? 'text' : 'password'"
+                    required=""
+                    placeholder="*********"
+                    formControlName="confirmPassword"
+                  />
+                  @if (!showConfirm) {
+                    <div class="show-hide" (click)="showConfirmPassword()">
+                      <span class="show"></span>
+                    </div>
+                  } @else {
+                    <div class="show-hide" (click)="showConfirmPassword()">
+                      <span class="Hide"></span>
+                    </div>
+                  }
+                  @if (
+                    registerForm.controls["confirmPassword"].touched &&
+                    registerForm.controls["confirmPassword"].errors?.["required"]
+                  ) {
+                    <div class="text text-danger mt-1">
+                      Debes confirmar la contraseña
+                    </div>
+                  }
+                  @if (
+                    registerForm.controls["confirmPassword"].touched &&
+                    registerForm.controls["confirmPassword"].errors?.["passwordMismatch"]
+                  ) {
+                    <div class="text text-danger mt-1">
+                      Las contraseñas no coinciden
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Botón Crear Cuenta -->
+              <div class="form-group mb-0">
+                <div class="text-end mt-3">
+                  <button
+                    class="btn btn-primary btn-block w-100"
+                    type="submit"
+                    [disabled]="!registerForm.valid || loading"
+                  >
+                    @if (loading) {
+                      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Creando cuenta...
+                    } @else {
+                      Crear Cuenta
+                    }
+                  </button>
+                </div>
+              </div>
+
+              <p class="mt-4 mb-0 text-center">
+                ¿Ya tienes cuenta?
+                <a class="ms-2" [routerLink]="['/auth/login']">
+                  Iniciar Sesión
+                </a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

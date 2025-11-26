@@ -121,9 +121,19 @@
             <!-- Card con la tabla -->
             <div class="card mt-0">
                 <div class="card-body candidates-box px-0 pt-0">
-                    <div class="table-responsive table-events-admin custom-scrollbar">
-                        <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [rowDetails]="true"
-                            [pageSize]="6" [paginateDetails]="true" [search]="false">
+                    <div class="table-responsive table-events-admin custom-scrollbar position-relative" style="min-height: 400px;">
+                        @if (loading) {
+                            <ngx-spinner
+                                [name]="'events-table'"
+                                [fullScreen]="false"
+                                type="ball-spin-clockwise"
+                                size="default"
+                                bdColor="rgba(255, 255, 255, .8)"
+                                color="#7366ff">
+                            </ngx-spinner>
+                        } @else {
+                            <app-table [tableConfig]="tableConfig" [hasCheckbox]="true" [rowDetails]="true"
+                                [pageSize]="6" [paginateDetails]="true" [search]="false">
 
                                 <ng-template #rowDetailTemplate let-event>
                                     <div class="attendees-detail">
@@ -172,6 +182,7 @@
                                     </div>
                                 </ng-template>
                             </app-table>
+                        }
                         </div>
                     </div>
                 </div>

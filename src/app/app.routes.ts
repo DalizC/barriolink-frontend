@@ -20,6 +20,14 @@ export const routes: Routes = [
         },
       },
       {
+        path: "register",
+        loadComponent: () =>
+          import("./pages/users/users-form/users-form").then((m) => m.UsersForm),
+        data: {
+          title: "Crear Cuenta",
+        },
+      },
+      {
         path: "",
         redirectTo: "login",
         pathMatch: "full",

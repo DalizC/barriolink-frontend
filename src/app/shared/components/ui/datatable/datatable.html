@@ -239,6 +239,14 @@
                         [routerLink]="rows['path']">
                         <i class="fa-solid fa-eye"></i>
                     </a>
+                    } @else if (rows['label'] === 'Publish') {
+                    @if (!rows['condition'] || rows['condition'](details)) {
+                    <button class="btn btn-outline-success btn-square" type="button"
+                            (click)="handleAction(rows, details)"
+                            placement="top" [ngbTooltip]="'Publicar'">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                    }
                     } @else if (rows['label'] === 'Refresh') {
                     <a class="square-white" href="javascript:void(0)" placement="top" [ngbTooltip]="'Change Status'">
                         <i class="fa-solid fa-{{ rows['icon'] }}"></i>

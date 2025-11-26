@@ -48,6 +48,7 @@ export class EventsAdmin implements OnInit {
   // Cache de asistentes por evento para evitar requests duplicados
   private attendeesCache: Map<number, IAttendee[]> = new Map();
   public loadingAttendees: Set<number> = new Set();
+  public loading: boolean = false;
   public attendeesTableConfig: ITableConfigs<IAttendee> = {
     columns: [
       { title: 'Nombre', field_value: 'name', sort: true },
@@ -84,6 +85,7 @@ export class EventsAdmin implements OnInit {
    * Cargar eventos desde el API
    */
   private loadEvents(): void {
+    this.loading = true;
     this.spinner.show();
     this.eventService.getEvents().subscribe({
       next: (response) => {
@@ -107,10 +109,12 @@ export class EventsAdmin implements OnInit {
           data: eventData
         };
         this.allData = [...eventData];
+        this.loading = false;
         this.spinner.hide();
       },
       error: (error) => {
         console.error('Error al cargar eventos:', error);
+        this.loading = false;
         this.spinner.hide();
       }
     });

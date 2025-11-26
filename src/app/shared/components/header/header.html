@@ -14,13 +14,13 @@
     @if (authService.currentUser$ | async) {
       <!-- Usuario autenticado - mostrar widgets completos -->
       <ul class="nav-menus">
-        <li
+        <!-- <li
           class="language-nav"
           (click)="toggleLanguage()"
           (clickOutside)="clickOutside()"
         >
           <app-header-language />
-        </li>
+        </li> -->
 
         <li class="fullscreen-body">
           <app-toggle-screen />
@@ -30,17 +30,17 @@
           <app-svg-icon [icon]="'search'" (click)="openSearch()" />
         </li>
 
-        <li class="onhover-dropdown">
+        <!-- <li class="onhover-dropdown">
           <app-header-bookmark />
-        </li>
+        </li> -->
 
         <li>
           <app-mode />
         </li>
 
-        <li class="cart-nav onhover-dropdown">
+        <!-- <li class="cart-nav onhover-dropdown">
           <app-header-cart />
-        </li>
+        </li> -->
 
         <li class="onhover-dropdown">
           <app-header-notification />

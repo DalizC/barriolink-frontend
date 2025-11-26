@@ -285,53 +285,62 @@
                         <h6 class="mb-0">Seleccionar Recinto</h6>
                       </div>
 
-                      <div class="mb-3">
-                        <select class="form-select"
-                                [formControl]="$any(eventForm.get('facility_id'))"
-                                (change)="onFacilityChange($any($event.target).value)">
-                          <option [value]="null" disabled selected>Seleccione un recinto</option>
-                          @for (facility of facilities; track facility.id) {
-                            <option [value]="facility.id">{{ facility.name }}</option>
-                          }
-                        </select>
-                      </div>
-
-                      <!-- Facility Summary -->
-                      @if (selectedFacility) {
-                        <div class="facility-summary p-3 border rounded bg-light">
-                          <div class="row g-3">
-                            <div class="col-md-6">
-                              <div class="d-flex align-items-start">
-                                <i class="fas fa-map-marker-alt text-muted me-2 mt-1"></i>
-                                <div>
-                                  <small class="text-muted d-block">Ubicación</small>
-                                  <strong>{{ selectedFacility.address || 'No especificada' }}</strong>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="d-flex align-items-start">
-                                <i class="fas fa-users text-muted me-2 mt-1"></i>
-                                <div>
-                                  <small class="text-muted d-block">Capacidad de Aforo</small>
-                                  <strong class="text-primary fs-5">{{ selectedFacility.capacity || 0 }} personas</strong>
-                                </div>
-                              </div>
-                            </div>
-                            @if (selectedFacility.description) {
-                              <div class="col-12">
-                                <small class="text-muted d-block mb-1">Descripción</small>
-                                <p class="mb-0 small">{{ selectedFacility.description }}</p>
-                              </div>
-                            }
-                            @if (selectedFacility.amenities) {
-                              <div class="col-12">
-                                <small class="text-muted d-block mb-1">Amenidades</small>
-                                <p class="mb-0 small">{{ selectedFacility.amenities }}</p>
-                              </div>
-                            }
+                      @if (loadingFacilities) {
+                        <div class="text-center py-4">
+                          <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando recintos...</span>
                           </div>
+                          <p class="text-muted mt-2 small">Cargando recintos disponibles...</p>
                         </div>
+                      } @else {
+                        <div class="mb-3">
+                          <select class="form-select"
+                                  [formControl]="$any(eventForm.get('facility_id'))"
+                                  (change)="onFacilityChange($any($event.target).value)">
+                            <option [value]="null" disabled selected>Seleccione un recinto</option>
+                            @for (facility of facilities; track facility.id) {
+                              <option [value]="facility.id">{{ facility.name }}</option>
+                            }
+                          </select>
+                        </div>
+
+                        <!-- Facility Summary -->
+                        @if (selectedFacility) {
+                          <div class="facility-summary p-3 border rounded bg-light">
+                            <div class="row g-3">
+                              <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                  <i class="fas fa-map-marker-alt text-muted me-2 mt-1"></i>
+                                  <div>
+                                    <small class="text-muted d-block">Ubicación</small>
+                                    <strong>{{ selectedFacility.address || 'No especificada' }}</strong>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="col-md-6">
+                                <div class="d-flex align-items-start">
+                                  <i class="fas fa-users text-muted me-2 mt-1"></i>
+                                  <div>
+                                    <small class="text-muted d-block">Capacidad de Aforo</small>
+                                    <strong class="text-primary fs-5">{{ selectedFacility.capacity || 0 }} personas</strong>
+                                  </div>
+                                </div>
+                              </div>
+                              @if (selectedFacility.description) {
+                                <div class="col-12">
+                                  <small class="text-muted d-block mb-1">Descripción</small>
+                                  <p class="mb-0 small">{{ selectedFacility.description }}</p>
+                                </div>
+                              }
+                              @if (selectedFacility.amenities) {
+                                <div class="col-12">
+                                  <small class="text-muted d-block mb-1">Amenidades</small>
+                                  <p class="mb-0 small">{{ selectedFacility.amenities }}</p>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        }
                       }
                     </div>
                   </div>
@@ -512,7 +521,9 @@
                                            [class.other-month]="!day.isCurrentMonth"
                                            [class.selected]="day.isSelected"
                                            [class.has-event]="day.hasExistingEvent"
-                                           [class.conflict]="day.isSelected && day.hasExistingEvent">
+                                           [class.conflict]="day.isSelected && day.hasExistingEvent"
+                                           [class.calendar-day-clickable]="day.isCurrentMonth && day.hasExistingEvent"
+                                           (click)="onCalendarDayClick(day)">
                                         {{ day.date | date:'d' }}
                                       </div>
                                     </td>
@@ -542,6 +553,48 @@
                           <small class="text-muted">Posible conflicto</small>
                         </div>
                       </div>
+
+                      <!-- Eventos del Día Seleccionado -->
+                      @if (selectedCalendarDay) {
+                        <div class="mt-3 pt-3 border-top">
+                          <h6 class="small mb-2">
+                            <i class="fas fa-calendar-day me-1"></i>
+                            Eventos el {{ selectedCalendarDay | date:'dd/MM/yyyy' }}
+                          </h6>
+
+                          @if (loadingDayEvents) {
+                            <div class="text-center py-2">
+                              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                              </div>
+                            </div>
+                          } @else if (selectedDayEvents.length === 0) {
+                            <p class="small text-muted mb-0">
+                              <i class="fas fa-info-circle me-1"></i>
+                              No hay eventos programados para este día
+                            </p>
+                          } @else {
+                            <div class="day-events-list">
+                              @for (event of selectedDayEvents; track event.id) {
+                                <div class="small mb-2 p-2 border rounded bg-light">
+                                  <div class="d-flex justify-content-between align-items-start">
+                                    <div class="flex-grow-1">
+                                      <strong class="d-block text-truncate" [title]="event.title">
+                                        {{ event.title }}
+                                      </strong>
+                                      <div class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        {{ event.start_datetime | date:'HH:mm' }} -
+                                        {{ event.end_datetime | date:'HH:mm' }}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
 
                       <!-- Scheduled Times List -->
                       @if (eventType === 'one-time' && startDate && occurrences[0].startTime && occurrences[0].endTime) {

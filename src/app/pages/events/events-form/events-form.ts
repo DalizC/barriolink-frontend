@@ -53,6 +53,9 @@ export class EventsForm implements OnInit {
   currentMonth: Date = new Date();
   existingEvents: any[] = [];
   selectedFacility: Facility | null = null;
+  selectedCalendarDay: Date | null = null;
+  selectedDayEvents: any[] = [];
+  loadingDayEvents = false;
 
   // Conflict detection
   hasConflict: boolean = false;
@@ -64,6 +67,7 @@ export class EventsForm implements OnInit {
   eventId: number | null = null;
   loading = false;
   loadingEvents = false;
+  loadingFacilities = false;
   error: string | null = null;
   successMessage: string | null = null;
   facilities: Facility[] = [];
@@ -110,9 +114,41 @@ export class EventsForm implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadFacilities();
     // Generar calendario inicial
     this.generateCalendarDays();
+
+    // Verificar parámetros de query para preselección
+    this.route.queryParams.subscribe(params => {
+      const facilityIdParam = params['facility'] ? parseInt(params['facility'], 10) : null;
+
+      // Cargar facilities y luego aplicar preselección si hay facility en query params
+      this.loadFacilities(() => {
+        // Callback ejecutado después de cargar facilities
+        if (facilityIdParam) {
+          const facility = this.facilities.find(f => f.id === facilityIdParam);
+          if (facility) {
+            this.selectedFacility = facility;
+            this.eventForm.patchValue({
+              location: facility.name,
+              facility_id: facility.id
+            });
+            this.onFacilityChange(facilityIdParam);
+          }
+        }
+      });
+
+      // Preseleccionar tipo de evento si viene en query params
+      if (params['type'] === 'one-time') {
+        this.eventType = 'one-time';
+        this.currentStep = 3; // Ir directamente al paso 3
+
+        // Inicializar una ocurrencia vacía para evento único
+        this.occurrences = [{
+          startTime: '',
+          endTime: ''
+        }];
+      }
+    });
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -426,7 +462,37 @@ export class EventsForm implements OnInit {
         console.error('Status:', error.status);
         console.error('Error body:', error.error);
         console.error('=============================');
-        const errorMessage = error.error?.detail || error.error?.message || 'Error al crear el evento. Por favor intenta nuevamente.';
+
+        // Manejar errores de validación específicos
+        let errorMessage = 'Error al crear el evento. Por favor intenta nuevamente.';
+
+        if (error.status === 400 && error.error) {
+          // Errores de validación del modelo
+          if (error.error.facility) {
+            // Error de conflicto de facility
+            errorMessage = `❌ ${error.error.facility}`;
+          } else if (error.error.end_datetime) {
+            errorMessage = `❌ ${error.error.end_datetime}`;
+          } else if (error.error.detail) {
+            errorMessage = error.error.detail;
+          } else if (error.error.message) {
+            errorMessage = error.error.message;
+          } else {
+            // Concatenar todos los errores de validación
+            const errors = Object.entries(error.error)
+              .map(([field, msgs]: [string, any]) => {
+                const messages = Array.isArray(msgs) ? msgs : [msgs];
+                return messages.join(', ');
+              })
+              .join('. ');
+            errorMessage = errors || errorMessage;
+          }
+        } else if (error.error?.detail) {
+          errorMessage = error.error.detail;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+
         this.showNotification(errorMessage, 'error');
       }
     });
@@ -515,7 +581,15 @@ export class EventsForm implements OnInit {
         this.hasConflict = conflicts.length > 0;
 
         if (this.hasConflict) {
-          this.conflictMessage = `⚠️ Conflicto detectado: ${conflicts.length} evento(s) ya programados en este recinto para las fechas/horarios seleccionados`;
+          const conflictDetails = conflicts.map(c => {
+            const occDate = c.occurrence.start.toLocaleDateString('es-CL');
+            const occStart = c.occurrence.start.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+            const occEnd = c.occurrence.end.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+            return `"${c.event.title}" el ${occDate} (${occStart} - ${occEnd})`;
+          }).slice(0, 3).join(', ');
+
+          const moreConflicts = conflicts.length > 3 ? ` y ${conflicts.length - 3} más` : '';
+          this.conflictMessage = `⚠️ Conflicto de horario detectado con: ${conflictDetails}${moreConflicts}. Los eventos en el mismo recinto deben tener horarios que no se solapen.`;
         }
 
         this.checkingConflicts = false;
@@ -943,6 +1017,40 @@ export class EventsForm implements OnInit {
     this.generateCalendarDays();
   }
 
+  onCalendarDayClick(day: any): void {
+    // Si es del mes actual y tiene eventos, mostrar detalles
+    if (day.isCurrentMonth && day.hasExistingEvent && this.selectedFacility) {
+      this.selectedCalendarDay = day.date;
+      this.loadingDayEvents = true;
+
+      // Formatear fecha para la API (YYYY-MM-DD)
+      const dayDate = new Date(day.date);
+      const year = dayDate.getFullYear();
+      const month = String(dayDate.getMonth() + 1).padStart(2, '0');
+      const dayNum = String(dayDate.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${dayNum}`;
+
+      // Llamar a la API con filtros específicos para este día
+      this.eventService.getEvents({
+        facility: this.selectedFacility.id,
+        is_active: true,
+        start_date: dateStr,
+        end_date: dateStr,
+        page_size: 100
+      }).subscribe({
+        next: (response) => {
+          this.selectedDayEvents = response.results || [];
+          this.loadingDayEvents = false;
+        },
+        error: (error) => {
+          console.error('Error loading day events:', error);
+          this.selectedDayEvents = [];
+          this.loadingDayEvents = false;
+        }
+      });
+    }
+  }
+
   getWeeksArray(): any[][] {
     const weeks: any[][] = [];
     for (let i = 0; i < this.previewCalendarDays.length; i += 7) {
@@ -951,13 +1059,20 @@ export class EventsForm implements OnInit {
     return weeks;
   }
 
-  loadFacilities(): void {
+  loadFacilities(callback?: () => void): void {
+    this.loadingFacilities = true;
     this.facilityService.getFacilities({ is_active: true, page_size: 100 }).subscribe({
       next: (response) => {
         this.facilities = response.results;
+        this.loadingFacilities = false;
+        // Ejecutar callback si existe (para preselección)
+        if (callback) {
+          callback();
+        }
       },
       error: (error) => {
         console.error('Error loading facilities:', error);
+        this.loadingFacilities = false;
       }
     });
   }
@@ -1050,7 +1165,32 @@ export class EventsForm implements OnInit {
             this.router.navigate(['/events/my-events']);
           },
           error: (error) => {
-            this.error = error.error?.detail || 'Error al actualizar el evento';
+            // Manejar errores de validación específicos
+            let errorMessage = 'Error al actualizar el evento';
+
+            if (error.status === 400 && error.error) {
+              // Errores de validación del modelo
+              if (error.error.facility) {
+                errorMessage = error.error.facility;
+              } else if (error.error.end_datetime) {
+                errorMessage = error.error.end_datetime;
+              } else if (error.error.detail) {
+                errorMessage = error.error.detail;
+              } else {
+                // Concatenar todos los errores de validación
+                const errors = Object.entries(error.error)
+                  .map(([field, msgs]: [string, any]) => {
+                    const messages = Array.isArray(msgs) ? msgs : [msgs];
+                    return messages.join(', ');
+                  })
+                  .join('. ');
+                errorMessage = errors || errorMessage;
+              }
+            } else if (error.error?.detail) {
+              errorMessage = error.error.detail;
+            }
+
+            this.error = errorMessage;
             this.loading = false;
           }
         });

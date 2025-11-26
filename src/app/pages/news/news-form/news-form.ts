@@ -8,6 +8,7 @@ import { Select2Module } from 'ng-select2-component';
 import { NgxEditor as AppNgxEditor } from '../../../shared/components/ui/editor/ngx-editor';
 import { NewsService, NewsCreate } from '../../../core/services/news.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Category } from '../../../core/models/category.model';
 import { News } from '../../../core/models/news.model';
 
@@ -48,8 +49,16 @@ export class NewsForm implements OnInit, OnDestroy {
     private router: Router,
     private fb: FormBuilder,
     private newsService: NewsService,
-    private categoryService: CategoryService
+    private categoryService: CategoryService,
+    private authService: AuthService
   ) {}
+
+  /**
+   * Verifica si el usuario actual es administrador
+   */
+  get isAdmin(): boolean {
+    return this.authService.hasRole('admin');
+  }
 
   ngOnInit(): void {
     this.editor = new Editor();

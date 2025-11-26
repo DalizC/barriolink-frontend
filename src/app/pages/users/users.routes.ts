@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { adminGuard } from "../../core/guards/auth.guard";
 
 export const usersRoutes: Routes = [
   {
@@ -12,9 +13,18 @@ export const usersRoutes: Routes = [
   {
     path: "admin",
     loadComponent: () => import("./users-admin/users-admin").then((m) => m.UsersAdmin),
+    canActivate: [adminGuard],
     data: {
       title: "Gestión de Usuarios",
       breadcrumb: "Gestión",
+    },
+  },
+  {
+    path: "form",
+    loadComponent: () => import("./users-form/users-form").then((m) => m.UsersForm),
+    data: {
+      title: "Crear Cuenta",
+      breadcrumb: "Registro",
     },
   },
   {

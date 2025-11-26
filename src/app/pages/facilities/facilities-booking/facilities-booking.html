@@ -3,8 +3,16 @@
     <div class="col-lg-6">
       <div class="card calender-wrapper">
         <div class="card-header pb-0">
-          <h5>{{ facility?.name || 'Calendario de Reservas' }}</h5>
-          <p>Reserva esta instalación para eventos y actividades</p>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <h5 class="mb-1">{{ facility?.name || 'Calendario de Reservas' }}</h5>
+              <p class="mb-0 text-muted">Reserva esta instalación para eventos y actividades</p>
+            </div>
+            <button class="btn btn-primary" (click)="requestBooking()">
+              <i class="fas fa-calendar-plus me-2"></i>
+              Solicitar Reserva
+            </button>
+          </div>
         </div>
         <div class="card-body">
           @if (loading) {

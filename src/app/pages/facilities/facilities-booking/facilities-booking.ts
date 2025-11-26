@@ -1,6 +1,6 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CalendarEvent, CalendarView, CalendarModule, CalendarEventTimesChangedEvent } from 'angular-calendar';
 import { isSameMonth, isSameDay, startOfDay, endOfDay } from 'date-fns';
 import { Subject } from 'rxjs';
@@ -80,7 +80,8 @@ export class FacilitiesBooking implements OnInit {
     private modal: NgbModal,
     private eventService: EventService,
     private facilityService: FacilityService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -345,7 +346,17 @@ export class FacilitiesBooking implements OnInit {
 
   handleEvent(action: string, event: CalendarEvent): void {
     this.modalData = { event, action };
-    this.modal.open(this.modalContent, { size: "lg" });
+    this.modal.open(this.modalContent, { size: 'lg' });
+  }
+
+  requestBooking(): void {
+    // Navegar al formulario de eventos con el facility_id como query param
+    this.router.navigate(['/events/create'], {
+      queryParams: {
+        facility: this.facilityId,
+        type: 'one-time'
+      }
+    });
   }
 
   dayClicked({ date, events }: { date: Date; events: CalendarEvent[] }): void {

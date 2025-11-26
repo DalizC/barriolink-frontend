@@ -9,7 +9,7 @@
           <div class="col-xl-8 col-lg-7 col-md-12 mb-3 mb-lg-0">
             <div class="card news-hero h-100" [routerLink]="['/news', newsList[0].id]" style="cursor: pointer;">
               <img
-                [src]="newsList[0].image"
+                [src]="getImageUrl(newsList[0])"
                 class="card-img-top"
                 [alt]="newsList[0].title"
                 style="height: 400px; object-fit: cover;">
@@ -42,7 +42,7 @@
                     <div class="row g-0 h-100">
                       <div class="col-5">
                         <img
-                          [src]="news.image"
+                          [src]="getImageUrl(news)"
                           class="img-fluid h-100 w-100"
                           [alt]="news.title"
                           style="object-fit: cover;">
@@ -78,7 +78,7 @@
               <div class="col-lg-6 col-md-12 mb-3">
                 <div class="card news-featured h-100" [routerLink]="['/news', news.id]" style="cursor: pointer;">
                   <img
-                    [src]="news.image"
+                    [src]="getImageUrl(news)"
                     class="card-img-top"
                     [alt]="news.title"
                     style="height: 250px; object-fit: cover;">
@@ -205,7 +205,7 @@
                   <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
                     <div class="card news-grid-item h-100" [routerLink]="['/news', news.id]" style="cursor: pointer;">
                       <img
-                        [src]="news.image"
+                        [src]="getImageUrl(news)"
                         class="card-img-top"
                         [alt]="news.title"
                         style="height: 180px; object-fit: cover;">
@@ -243,7 +243,7 @@
                       <div class="row g-0">
                         <div class="col-md-3">
                           <img
-                            [src]="news.image"
+                            [src]="getImageUrl(news)"
                             class="img-fluid h-100 w-100"
                             [alt]="news.title"
                             style="object-fit: cover;">

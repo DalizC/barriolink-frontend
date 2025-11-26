@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { adminGuard } from "../../core/guards/auth.guard";
 
 export const projects: Routes = [
   {
@@ -20,6 +21,7 @@ export const projects: Routes = [
   {
     path: "admin",
     loadComponent: () => import("./projects-admin/projects-admin").then((m) => m.ProjectsAdmin),
+    canActivate: [adminGuard],
     data: {
       title: "Gestión de Proyectos",
       breadcrumb: "Gestión",

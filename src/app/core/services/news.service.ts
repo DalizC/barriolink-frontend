@@ -68,16 +68,18 @@ export class NewsService {
     return this.http.delete<void>(`${this.apiUrl}${id}/`);
   }
 
+  // TODO: Cambiar estos métodos a PATCH en lugar de POST para seguir convenciones REST
+  // El backend actualmente usa @action(detail=True, methods=['post']) pero debería ser methods=['patch']
   publishNews(id: number): Observable<News> {
-    return this.http.patch<News>(`${this.apiUrl}${id}/publish/`, {});
+    return this.http.post<News>(`${this.apiUrl}${id}/publish/`, {});
   }
 
   archiveNews(id: number): Observable<News> {
-    return this.http.patch<News>(`${this.apiUrl}${id}/archive/`, {});
+    return this.http.post<News>(`${this.apiUrl}${id}/archive/`, {});
   }
 
   draftNews(id: number): Observable<News> {
-    return this.http.patch<News>(`${this.apiUrl}${id}/draft/`, {});
+    return this.http.post<News>(`${this.apiUrl}${id}/draft/`, {});
   }
 
   uploadImage(id: number, imageFile: File): Observable<News> {

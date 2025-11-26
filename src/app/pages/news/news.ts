@@ -104,7 +104,7 @@ export class News implements OnInit {
       description: item.summary || '',
       author: item.author_name || 'Desconocido',
       date: new Date(item.published_at || item.created_at),
-      image: 'assets/images/placeholder.jpg', // Placeholder temporal por performance
+      image: item.image || item.cover_image || '',  // Usar imagen del backend
       tags: item.categories_detail?.map((c: any) => c.name) || [],
       pinned: false,
       hits: 0
@@ -371,12 +371,25 @@ export class News implements OnInit {
       date: new Date(),        // o new Date(api.created_at) cuando lo agregues al backend
       tags: [],
       pinned: false,
-      image: '',
+      image: api.image || api.cover_image || '',  // Usar image (nuevo) o cover_image (deprecado) como fallback
 
       // Campos requeridos por la UI
       author: api.author ?? 'Administrador',
       hits: 0,
     };
+  }
+
+  getImageUrl(news: NewsItem | any): string {
+    if (!news || !news.image) return 'assets/images/placeholder.jpg';
+
+    // Si la imagen ya es una URL completa (comienza con http), retornarla directamente
+    if (news.image.startsWith('http')) {
+      return news.image;
+    }
+
+    // Si es un path relativo, construir la URL completa
+    // Nota: El backend ya debe retornar la URL completa en el serializer
+    return news.image || 'assets/images/placeholder.jpg';
   }
 
 

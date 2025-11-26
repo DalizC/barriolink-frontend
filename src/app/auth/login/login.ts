@@ -28,17 +28,17 @@ export class Login {
   public loginForm: FormGroup;
   public validate: boolean = false;
   public loading: boolean = false;
-  private returnUrl: string = '/dashboard/default';
+  private returnUrl: string = '/news';
 
   constructor() {
     // Redirigir si ya está autenticado
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/dashboard/default']);
+      this.router.navigate(['/news']);
     }
 
     // Obtener URL de retorno si existe
     this.route.queryParams.subscribe(params => {
-      this.returnUrl = params['returnUrl'] || '/dashboard/default';
+      this.returnUrl = params['returnUrl'] || '/news';
     });
 
     this.loginForm = new FormGroup({

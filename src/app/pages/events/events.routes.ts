@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { adminGuard } from "../../core/guards/auth.guard";
 
 export const eventsRoutes: Routes = [
   {
@@ -28,6 +29,7 @@ export const eventsRoutes: Routes = [
   {
     path: "admin",
     loadComponent: () => import("./events-admin/events-admin").then((m) => m.EventsAdmin),
+    canActivate: [adminGuard],
     data: {
       title: "Gestión de Eventos",
       breadcrumb: "Gestión",

@@ -278,14 +278,16 @@
                     <i class="bi bi-file-earmark-text me-1"></i>
                     Guardar como Borrador
                   </button>
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    (click)="onSubmit('publish')"
-                    [disabled]="newsForm.invalid || loading">
-                    <i class="bi bi-send-fill me-1"></i>
-                    {{ isEditMode ? 'Actualizar y Publicar' : 'Crear y Publicar' }}
-                  </button>
+                  @if (isAdmin) {
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      (click)="onSubmit('publish')"
+                      [disabled]="newsForm.invalid || loading">
+                      <i class="bi bi-send-fill me-1"></i>
+                      {{ isEditMode ? 'Actualizar y Publicar' : 'Crear y Publicar' }}
+                    </button>
+                  }
                 </div>
               </div>
             </form>

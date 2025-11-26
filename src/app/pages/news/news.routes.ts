@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { adminGuard } from "../../core/guards/auth.guard";
 
 export const newsRoutes: Routes = [
   {
@@ -20,6 +21,7 @@ export const newsRoutes: Routes = [
   {
     path: "admin",
     loadComponent: () => import("./news-admin/news-admin").then((m) => m.NewsAdmin),
+    canActivate: [adminGuard],
     data: {
       title: "Gestión de Noticias",
       breadcrumb: "Gestión",

@@ -1,1 +1,196 @@
-<p>certificates-request works!</p>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card">
+        <div class="card-header pb-0">
+          <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-file-certificate text-primary me-2 fs-4"></i>
+            <h5 class="mb-0">Solicitar Certificado</h5>
+          </div>
+          <p class="text-muted mb-0">Completa el formulario para generar tu certificado</p>
+        </div>
+
+        <div class="card-body">
+          <!-- Mensajes de éxito/error -->
+          @if (successMessage) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="fas fa-check-circle me-2"></i>
+              {{ successMessage }}
+              <button type="button" class="btn-close" (click)="clearMessages()"></button>
+            </div>
+          }
+
+          @if (errorMessage) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="fas fa-exclamation-circle me-2"></i>
+              {{ errorMessage }}
+              <button type="button" class="btn-close" (click)="clearMessages()"></button>
+            </div>
+          }
+
+          <!-- Formulario -->
+          <form [formGroup]="certificateForm" (ngSubmit)="onSubmit()">
+            <!-- Tipo de Certificado -->
+            <div class="mb-3">
+              <label for="certificate_type" class="form-label">
+                <i class="fas fa-certificate me-1"></i>
+                Tipo de Certificado
+              </label>
+              <select
+                id="certificate_type"
+                class="form-select"
+                formControlName="certificate_type">
+                @for (type of certificateTypes; track type.value) {
+                  <option [value]="type.value">{{ type.label }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Nombre Completo -->
+            <div class="mb-3">
+              <label for="full_name" class="form-label">
+                <i class="fas fa-user me-1"></i>
+                Nombre Completo
+              </label>
+              <input
+                type="text"
+                id="full_name"
+                class="form-control"
+                formControlName="full_name"
+                [class.is-invalid]="certificateForm.get('full_name')?.invalid && certificateForm.get('full_name')?.touched"
+                placeholder="Ingresa tu nombre completo">
+              @if (isAuthenticated) {
+                <small class="text-muted">
+                  <i class="fas fa-lock me-1"></i>
+                  Información precargada de tu perfil
+                </small>
+              }
+              @if (certificateForm.get('full_name')?.invalid && certificateForm.get('full_name')?.touched) {
+                <div class="invalid-feedback">
+                  El nombre completo es requerido
+                </div>
+              }
+            </div>
+
+            <!-- Dirección de Residencia -->
+            <div class="mb-3">
+              <label for="address" class="form-label">
+                <i class="fas fa-map-marker-alt me-1"></i>
+                Dirección de Residencia
+              </label>
+              <input
+                type="text"
+                id="address"
+                class="form-control"
+                formControlName="address"
+                [class.is-invalid]="certificateForm.get('address')?.invalid && certificateForm.get('address')?.touched"
+                placeholder="Ingresa tu dirección">
+              @if (certificateForm.get('address')?.invalid && certificateForm.get('address')?.touched) {
+                <div class="invalid-feedback">
+                  La dirección es requerida
+                </div>
+              }
+            </div>
+
+            <!-- Email de Recepción -->
+            <div class="mb-3">
+              <label for="email" class="form-label">
+                <i class="fas fa-envelope me-1"></i>
+                Email de Recepción
+              </label>
+              <input
+                type="email"
+                id="email"
+                class="form-control"
+                formControlName="email"
+                [class.is-invalid]="certificateForm.get('email')?.invalid && certificateForm.get('email')?.touched"
+                placeholder="correo@ejemplo.com">
+              @if (certificateForm.get('email')?.invalid && certificateForm.get('email')?.touched) {
+                <div class="invalid-feedback">
+                  @if (certificateForm.get('email')?.hasError('required')) {
+                    El email es requerido
+                  }
+                  @if (certificateForm.get('email')?.hasError('email')) {
+                    Ingresa un email válido
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Información adicional -->
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              <small>
+                Una vez generado el certificado, podrás descargarlo inmediatamente o enviarlo a tu correo electrónico.
+              </small>
+            </div>
+
+            <!-- Botón Generar -->
+            <div class="d-grid">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg"
+                [disabled]="loading || certificateForm.invalid || showActions">
+                @if (loading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Generando...
+                } @else {
+                  <i class="fas fa-paper-plane me-2"></i>
+                  Solicitar Certificado
+                }
+              </button>
+            </div>
+          </form>
+
+          <!-- Botones de Acción (después de crear el certificado) -->
+          @if (showActions && createdCertificateId) {
+            <div class="mt-4 pt-3 border-top">
+              <h6 class="mb-3">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                Certificado Generado
+              </h6>
+              <p class="text-muted small mb-3">
+                Tu certificado está listo. Puedes descargarlo o enviarlo por email.
+              </p>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <button
+                    type="button"
+                    class="btn btn-success w-100"
+                    (click)="downloadCertificate()">
+                    <i class="fas fa-download me-2"></i>
+                    Ver Certificado
+                  </button>
+                </div>
+                <div class="col-md-6">
+                  <button
+                    type="button"
+                    class="btn btn-info w-100"
+                    [disabled]="sendingEmail"
+                    (click)="sendCertificateEmail()">
+                    @if (sendingEmail) {
+                      <span class="spinner-border spinner-border-sm me-2"></span>
+                      Enviando...
+                    } @else {
+                      <i class="fas fa-envelope me-2"></i>
+                      Enviar por Email
+                    }
+                  </button>
+                </div>
+              </div>
+              <div class="d-grid mt-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary btn-sm"
+                  (click)="resetForm()">
+                  <i class="fas fa-redo me-2"></i>
+                  Solicitar Otro Certificado
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

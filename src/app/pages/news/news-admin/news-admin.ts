@@ -1,333 +1,234 @@
-import { Component, OnInit } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
-import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
-import { CarouselModule, OwlOptions } from "ngx-owl-carousel-o";
-import { NewsService } from "../../../core/services/news.service";
-import { NewsItem, NEWS_MOCK_DATA } from "../../../shared/data/news-mock.data";
-import { ICardToggleOptions } from "../../../shared/interface/common";
+import { ITableConfigs, ICardToggleOptions } from '../../../shared/interface/common';
+import { DataTable } from '../../../shared/components/ui/datatable/datatable';
 import { CardDropdownButton } from '../../../shared/components/ui/card/card-dropdown-button/card-dropdown-button';
-
+import { NewsService } from '../../../core/services/news.service';
+import { News } from '../../../core/models/news.model';
 
 @Component({
   selector: 'app-news-admin',
-  imports: [CommonModule, FormsModule, RouterLink, NgbModule, CarouselModule, CardDropdownButton],
+  imports: [CommonModule, FormsModule, NgbNavModule, DataTable, NgxSpinnerModule, CardDropdownButton],
   templateUrl: './news-admin.html',
   styleUrl: './news-admin.scss'
 })
-export class NewsAdmin {
-  // Expose Math to template
-  Math = Math;
+export class NewsAdmin implements OnInit {
+  private newsService = inject(NewsService);
+  private spinner = inject(NgxSpinnerService);
+  private toastr = inject(ToastrService);
+  private router = inject(Router);
 
-  // UI state
-  searchText: string = '';
-  sortOrder: 'asc' | 'desc' = 'desc';
-  loading: boolean = false;
-  viewMode: 'grid' | 'list' = 'grid';
+  public activeTab: string = 'all';
+  public searchText: string = '';
+  public loading: boolean = false;
+  private allData: any[] = [];
 
-  // Mock data (local) - used for grid rendering instead of backend while refactoring
-  mockNewsItems: NewsItem[] = NEWS_MOCK_DATA;
+  // Opciones del menú dropdown
+  public filterMenuOptions: ICardToggleOptions[] = [
+    { id: 1, title: 'Exportar Excel' },
+    { id: 2, title: 'Exportar PDF' },
+    { id: 3, title: 'Limpiar filtros' },
+  ];
 
-  // Data exposed to template
-  carouselItems: NewsItem[] = [];
-  pinnedItems: NewsItem[] = [];
-  newsList: NewsItem[] = [];
-
-  // Pagination
-  currentPage: number = 1;
-  pageSize: number = 10;
-  totalItems: number = 0;
-  totalPages: number = 0;
-
-  // Available tags for filters (loaded dynamically)
-  availableTags: string[] = [];
-  options: { value: string; label: string; selected: boolean }[] = [];
-
-  carouselOptions: OwlOptions = {
-    loop: true,
-    autoplay: true,
-    autoplayTimeout: 7000,
-    mouseDrag: false,
-    touchDrag: false,
-    pullDrag: false,
-    nav: true,
-    dots: true,
-    navText: ['<i class="icon-angle-left"></i>', '<i class="icon-angle-right"></i>'],
-    animateOut: 'fadeOut',
-    animateIn: 'fadeIn',
-    responsive: { 0: { items: 1 } },
+  public tableConfig: ITableConfigs<any> = {
+    columns: [
+      { title: 'Título', field_value: 'title', sort: true },
+      { title: 'Autor', field_value: 'author_name', sort: true },
+      { title: 'Resumen', field_value: 'summary', sort: true },
+      { title: 'Estado', field_value: 'status_badge', sort: true },
+      { title: 'Categorías', field_value: 'categories_names', sort: true },
+      { title: 'Fecha Creación', field_value: 'created_at', sort: true },
+      { title: 'Fecha Publicación', field_value: 'published_at', sort: true },
+    ],
+    row_action: [
+      { label: 'View', icon: 'eye', path: '/news/', action_to_perform: 'view' },
+      { label: 'Edit', icon: 'edit', path: '/news/form/', action_to_perform: 'edit' },
+      {
+        label: 'Publish',
+        icon: 'paper-plane',
+        action_to_perform: 'publish',
+        condition: (row: any) => row._raw.status !== 'published'
+      },
+      { label: 'Delete', icon: 'trash', action_to_perform: 'delete', modal: true },
+    ],
+    data: []
   };
 
-  constructor(private newsService: NewsService) { }
-
   ngOnInit(): void {
-    this.loadAllData();
+    this.loadNews();
   }
 
-  private loadAllData(): void {
+  /**
+   * Cargar noticias desde el API
+   */
+  private loadNews(status?: string): void {
     this.loading = true;
+    this.spinner.show('news-table');
 
-    this.newsService.getNews({ status: 'published' }).subscribe({
+    const params: any = {};
+    if (status) {
+      params.status = status;
+    }
+
+    this.newsService.getNews(params).subscribe({
       next: (response) => {
-        console.log("Datos reales desde backend:", response);
+        // Mapear noticias del API a formato de la tabla
+        const newsData = response.results.map(news => ({
+          id: news.id,
+          title: news.title,
+          author_name: news.author?.name || 'Desconocido',
+          summary: this.truncateText(news.summary, 60),
+          status_badge: this.formatStatus(news.status),
+          categories_names: this.formatCategories(news.categories_detail),
+          created_at: this.formatDateTime(news.created_at),
+          published_at: news.published_at ? this.formatDateTime(news.published_at) : '-',
+          // Datos adicionales para acciones
+          _raw: news
+        }));
 
-        // Usar los datos del backend directamente
-        this.newsList = response.results.map(item => this.adaptBackendToNewsItem(item));
-        this.totalItems = response.count;
-        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-
-        // Carousel: usar las 5 más recientes
-        this.carouselItems = [...this.newsList]
-          .sort((a, b) => b.date.getTime() - a.date.getTime())
-          .slice(0, 5);
-
+        // Crear nueva referencia para detectar cambios
+        this.tableConfig = {
+          ...this.tableConfig,
+          data: newsData
+        };
+        this.allData = [...newsData];
         this.loading = false;
+        this.spinner.hide('news-table');
       },
-      error: (err) => {
-        console.error("Error cargando noticias reales:", err);
-        this.initializeFromMock();
+      error: (error) => {
+        console.error('Error al cargar noticias:', error);
+        this.toastr.error('Error al cargar noticias', 'Error');
         this.loading = false;
+        this.spinner.hide('news-table');
       }
     });
   }
 
   /**
-   * Adaptar noticia del backend al formato NewsItem del frontend
+   * Formatear fecha y hora
    */
-  private adaptBackendToNewsItem(item: any): NewsItem {
-    return {
-      id: item.id,
-      title: item.title || 'Sin título',
-      description: item.summary || '',
-      author: item.author_name || 'Desconocido',
-      date: new Date(item.published_at || item.created_at),
-      image: 'assets/images/placeholder.jpg', // Placeholder temporal por performance
-      tags: item.categories_detail?.map((c: any) => c.name) || [],
-      pinned: false,
-      hits: 0
-    };
-  }
-
-  /**
-   * Initialize data from local mock dataset (acts as backend substitute)
-   */
-  private initializeFromMock(): void {
-    // Carousel: 5 most recent
-    this.carouselItems = [...this.mockNewsItems]
-      .sort((a, b) => b.date.getTime() - a.date.getTime())
-      .slice(0, 5);
-
-    // Pinned: up to 2 pinned most recent
-    this.pinnedItems = this.mockNewsItems
-      .filter(n => n.pinned)
-      .sort((a, b) => b.date.getTime() - a.date.getTime())
-      .slice(0, 2);
-
-    // Tags -> options
-    const tagSet = new Set<string>();
-    this.mockNewsItems.forEach(n => n.tags.forEach(t => tagSet.add(t)));
-    this.availableTags = Array.from(tagSet.values()).sort();
-    this.options = this.availableTags.map(tag => ({
-      value: tag,
-      label: tag.charAt(0).toUpperCase() + tag.slice(1),
-      selected: false
-    }));
-
-    // Compute initial filtered list
-    this.applyFilters();
-  }
-
-  /**
-   * Load carousel news (5 most recent)
-   */
-  // Service methods retained for future use (currently unused while using local mock)
-  private loadCarouselNews(): void { /* no-op during mock phase */ }
-
-  /**
-   * Load pinned news (2 most recent with pinned=true)
-   */
-  private loadPinnedNews(): void { /* no-op during mock phase */ }
-
-  /**
-   * Load all available tags for filter options
-   */
-  private loadTags(): void { /* no-op during mock phase */ }
-
-  /**
-   * Load paginated news list
-   */
-  private loadNewsList(): void { /* no-op during mock phase */ }
-
-  get selectedValues(): string[] {
-    return this.options
-      .filter(opt => opt.selected)
-      .map(opt => opt.value);
-  }
-
-  /**
-   * Apply filters and reload news list
-   */
-  applyFilters(): void {
-    this.currentPage = 1; // Reset to first page when applying filters
-    this.recomputeFromMock();
-  }
-
-  /**
-   * Recompute filtered + sorted + paginated list from mock dataset
-   */
-  private recomputeFromMock(): void {
-    this.loading = true;
-    // 1. Filter by search text
-    const search = this.searchText.trim().toLowerCase();
-    let filtered = this.mockNewsItems.filter(item => {
-      const matchesSearch = !search ||
-        item.title.toLowerCase().includes(search) ||
-        item.description.toLowerCase().includes(search) ||
-        item.tags.some(t => t.toLowerCase().includes(search));
-      // 2. Filter by selected tags (AND logic: item must contain all selected)
-      const selected = this.selectedValues;
-      const matchesTags = selected.length === 0 || selected.every(tag => item.tags.includes(tag));
-      return matchesSearch && matchesTags;
-    });
-
-    // 3. Sort
-    filtered.sort((a, b) => {
-      const diff = a.date.getTime() - b.date.getTime();
-      return this.sortOrder === 'asc' ? diff : -diff;
-    });
-
-    // 4. Pagination
-    this.totalItems = filtered.length;
-    this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
-    const start = (this.currentPage - 1) * this.pageSize;
-    this.newsList = filtered.slice(start, start + this.pageSize);
-    this.loading = false;
-  }
-
-  /**
-   * Refresh all data
-   */
-  refresh(): void {
-    this.initializeFromMock();
-  }
-
-  /**
-   * Toggle filters panel (placeholder for future implementation)
-   */
-  toggleFilters(): void {
-    console.log('Toggle de panel de filtros solicitado');
-    // TODO: Abrir/cerrar panel lateral o mostrar modal según diseño futuro
-  }
-
-  /**
-   * Navigate to create news form
-   */
-  createNews(): void {
-    console.log('Navegar a crear nueva noticia');
-    // TODO: Implementar navegación a formulario de creación
-  }
-
-  /**
-   * Edit an existing news item (placeholder for routing to edit form)
-   */
-  editNews(item: NewsItem): void {
-    console.log('Editar noticia', item?.id);
-    // TODO: Implementar navegación a formulario de edición
-  }
-
-  /**
-   * Delete a news item (placeholder - confirm and remove from local list during mock phase)
-   */
-  deleteNews(item: NewsItem): void {
-    const ok = confirm(`¿Eliminar la noticia "${item?.title}"?`);
-    if (!ok) return;
-    // Durante la fase mock, eliminamos del arreglo local y recomputamos
-    this.mockNewsItems = this.mockNewsItems.filter(n => n.id !== item.id);
-    this.applyFilters();
-  }
-
-  /**
-   * Go to specific page
-   */
-  goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.currentPage = page;
-      this.recomputeFromMock();
-    }
-  }
-
-  /**
-   * Go to previous page
-   */
-  previousPage(): void {
-    if (this.currentPage > 1) {
-      this.goToPage(this.currentPage - 1);
-    }
-  }
-
-  /**
-   * Go to next page
-   */
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.goToPage(this.currentPage + 1);
-    }
-  }
-
-  /**
-   * Get array of page numbers for pagination
-   */
-  get pageNumbers(): number[] {
-    const pages: number[] = [];
-    const maxVisible = 5;
-
-    let start = Math.max(1, this.currentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(this.totalPages, start + maxVisible - 1);
-
-    // Adjust start if we're near the end
-    if (end - start < maxVisible - 1) {
-      start = Math.max(1, end - maxVisible + 1);
-    }
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    return pages;
-  }
-
-  /**
-   * Format date for display
-   */
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('es-ES', {
+  private formatDateTime(datetime: string): string {
+    const date = new Date(datetime);
+    return date.toLocaleString('es-CL', {
       year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   }
 
-  public cardToggleOptions: ICardToggleOptions[] = [
-    { id: 1, title: 'Editar', iconHtml: '<i class="fa-solid fa-pencil-square"></i>' },
-    { id: 2, title: 'Eliminar', iconHtml: '<i class="fas fa-trash-alt"></i>', itemClass: 'text-danger' },
-  ];
-
-
-  private adaptBackendNewsItem(api: any): NewsItem {
-    return {
-      id: api.id,
-      title: api.title,
-      description: api.content ?? '',
-      date: new Date(),        // o new Date(api.created_at) cuando lo agregues al backend
-      tags: [],
-      pinned: false,
-      image: '',
-
-      // Campos requeridos por la UI
-      author: api.author ?? 'Administrador',
-      hits: 0,
+  /**
+   * Formatear estado con badge HTML
+   */
+  private formatStatus(status: string): string {
+    const statusMap: { [key: string]: { class: string; label: string } } = {
+      draft: { class: 'badge-light-secondary', label: 'Borrador' },
+      published: { class: 'badge-light-success', label: 'Publicado' },
+      archived: { class: 'badge-light-warning', label: 'Archivado' }
     };
+    const mapped = statusMap[status] || { class: 'badge-light-secondary', label: status };
+    return `<span class="badge ${mapped.class}">${mapped.label}</span>`;
+  }
+
+  /**
+   * Formatear categorías
+   */
+  private formatCategories(categories: any[]): string {
+    if (!categories || categories.length === 0) return '-';
+    return categories.map(c => c.name).join(', ');
+  }
+
+  /**
+   * Truncar texto
+   */
+  private truncateText(text: string, maxLength: number): string {
+    if (!text) return '-';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  }
+
+  /**
+   * Filtrar por estado (tabs)
+   */
+  public filterByStatus(status: string): void {
+    this.activeTab = status;
+    if (status === 'all') {
+      this.loadNews();
+    } else {
+      this.loadNews(status);
+    }
+  }
+
+  /**
+   * Obtener conteo de noticias por estado
+   */
+  public getStatusCount(status: string): number {
+    if (status === 'all') return this.allData.length;
+    return this.allData.filter(news => news._raw.status === status).length;
+  }
+
+  /**
+   * Maneja las acciones de la tabla (view, edit, delete, publish)
+   */
+  handleTableAction(event: any): void {
+    const action = event.action_to_perform;
+    const data = event.data;
+
+    if (action === 'delete') {
+      this.deleteNews(data._raw.id);
+    } else if (action === 'publish') {
+      this.publishNews(data._raw.id);
+    }
+    // Las acciones 'view' y 'edit' son manejadas por routerLink automáticamente
+  }
+
+  /**
+   * Publicar noticia
+   */
+  public publishNews(newsId: number): void {
+    if (!confirm('¿Estás seguro de que deseas publicar esta noticia?')) {
+      return;
+    }
+
+    this.spinner.show('news-table');
+    this.newsService.publishNews(newsId).subscribe({
+      next: () => {
+        this.toastr.success('Noticia publicada exitosamente', 'Éxito');
+        this.loadNews(this.activeTab === 'all' ? undefined : this.activeTab);
+      },
+      error: (error) => {
+        console.error('Error al publicar noticia:', error);
+        this.toastr.error('Error al publicar noticia', 'Error');
+        this.spinner.hide('news-table');
+      }
+    });
+  }
+
+  /**
+   * Eliminar noticia
+   */
+  public deleteNews(newsId: number): void {
+    if (!confirm('¿Estás seguro de que deseas ELIMINAR esta noticia? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    this.spinner.show('news-table');
+    this.newsService.deleteNews(newsId).subscribe({
+      next: () => {
+        this.toastr.success('Noticia eliminada exitosamente', 'Éxito');
+        this.loadNews(this.activeTab === 'all' ? undefined : this.activeTab);
+      },
+      error: (error) => {
+        console.error('Error al eliminar noticia:', error);
+        this.toastr.error('Error al eliminar noticia', 'Error');
+        this.spinner.hide('news-table');
+      }
+    });
   }
 }

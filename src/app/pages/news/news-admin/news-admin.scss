@@ -1,4 +1,65 @@
+// Estilos para News Admin Dashboard
+.candidate-wrapper {
+  padding-top: 20px;
+}
+
+.table-news-admin {
+  min-height: 500px;
+  position: relative;
+
+  // Estilos para el spinner
+  ngx-spinner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  table {
+    margin-bottom: 0;
+
+    thead th {
+      background-color: var(--light-background);
+      font-weight: 600;
+      border-bottom: 2px solid var(--light-border);
+    }
+
+    tbody tr {
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--light-background);
+      }
+    }
+  }
+}
+
+.nav-tabs.border-tab {
+  border-bottom-color: var(--light-border);
+
+  .nav-link {
+    color: var(--body-font-color);
+
+    &.active {
+      color: var(--theme-default);
+      border-color: var(--light-border) var(--light-border) var(--white-color);
+    }
+
+    &:hover:not(.active) {
+      border-color: transparent;
+      color: var(--theme-default);
+    }
+  }
+}
+
+// Mantener algunos estilos originales si son necesarios
 .blog-box .blog-details-main .blog-social li {
+
   padding: 0 12px;
 }
 

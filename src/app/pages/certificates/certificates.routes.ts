@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { adminGuard } from "../../core/guards/auth.guard";
 
 export const certificatesRoutes: Routes = [
   {
@@ -28,6 +29,7 @@ export const certificatesRoutes: Routes = [
   {
     path: "admin",
     loadComponent: () => import("./certificates-admin/certificates-admin").then((m) => m.CertificatesAdmin),
+    canActivate: [adminGuard],
     data: {
       title: "Gestión de Certificaciones",
       breadcrumb: "Gestión",

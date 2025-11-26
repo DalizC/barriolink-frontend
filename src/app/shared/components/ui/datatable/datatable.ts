@@ -271,6 +271,12 @@ export class DataTable<TData extends IHasId = IHasId, TValue = unknown> {
                 data: details,
             });
         }
+        if (value['action_to_perform'] == 'publish') {
+            this.action.emit({
+                action_to_perform: value['action_to_perform'],
+                data: details,
+            });
+        }
     }
 
     openRowDetails(id: number) {
