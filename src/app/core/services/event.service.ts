@@ -30,7 +30,7 @@ export interface EventFilters {
   providedIn: 'root'
 })
 export class EventService {
-  private apiUrl = 'http://127.0.0.1:8000/api/event/';
+  private apiUrl = 'https://chequered-hortense-homeomorphic.ngrok-free.dev/api/event/';
 
   constructor(private http: HttpClient) {}
 

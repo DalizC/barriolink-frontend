@@ -15,7 +15,7 @@ interface PaginatedResponse<T> {
   providedIn: 'root',
 })
 export class CategoryService {
-  private apiUrl = 'http://127.0.0.1:8000/api/categories/';
+  private apiUrl = 'https://chequered-hortense-homeomorphic.ngrok-free.dev/api/categories/';
 
   constructor(private http: HttpClient) {}
 
