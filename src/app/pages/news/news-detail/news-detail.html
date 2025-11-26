@@ -39,7 +39,7 @@
           <div class="blog-single">
             <div class="blog-box blog-details">
               <div class="news-detail-image-container">
-                <img alt="blog-main" class="news-detail-image" [src]="newsItem.cover_image || 'assets/images/placeholder.jpg'">
+                <img alt="blog-main" class="news-detail-image" [src]="getImageUrl(newsItem) || 'assets/images/placeholder.jpg'" loading="lazy">
               </div>
 
               <div class="blog-details">

@@ -59,15 +59,64 @@
                   <div class="card border border-1 mb-3">
                     <div class="card-header border-0 pb-1">
                       <h5 class="mb-0">Imagen de Portada</h5>
-                      <small class="text-muted">(Funcionalidad pendiente - se agregará próximamente)</small>
+                      <small class="text-muted">Tamaño máximo: 5MB. Formatos: JPG, PNG, GIF</small>
                     </div>
                     <div class="card-body">
-                      <app-dropzone
-                        formControlName="images"
-                        [config]="dropzoneConfig"
-                        [message]="dropzoneMessage"
-                        [disabled]="true">
-                      </app-dropzone>
+                      <!-- Input file oculto -->
+                      <input
+                        type="file"
+                        id="coverImageInput"
+                        accept="image/*"
+                        (change)="onCoverImageSelected($event)"
+                        class="d-none">
+
+                      <!-- Vista previa o botón para seleccionar -->
+                      @if (coverImagePreview) {
+                        <div class="cover-image-preview position-relative">
+                          <!-- Placeholder mientras carga -->
+                          @if (imageLoading) {
+                            <div class="d-flex justify-content-center align-items-center bg-light rounded"
+                                 style="min-height: 300px;">
+                              <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando imagen...</span>
+                              </div>
+                            </div>
+                          }
+
+                          <!-- Imagen con lazy loading -->
+                          <img
+                            [src]="coverImagePreview"
+                            alt="Preview de imagen de portada"
+                            class="img-fluid rounded"
+                            [class.d-none]="imageLoading"
+                            style="max-height: 300px; object-fit: contain;"
+                            loading="lazy"
+                            (load)="onImageLoad()"
+                            (error)="onImageError()">
+
+                          <button
+                            type="button"
+                            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
+                            (click)="removeCoverImage()"
+                            [disabled]="imageLoading">
+                            <i class="bi bi-x-lg"></i> Remover
+                          </button>
+                        </div>
+                      } @else {
+                        <div class="text-center border rounded p-4" style="cursor: pointer;"
+                             (click)="openFileSelector()">
+                          <i class="bi bi-cloud-upload" style="font-size: 3rem; color: var(--theme-default);"></i>
+                          <h6 class="mt-3">Click para seleccionar imagen</h6>
+                          <p class="text-muted mb-0">o arrastra y suelta aquí</p>
+                        </div>
+                      }
+
+                      @if (uploadingImage) {
+                        <div class="alert alert-info mt-2 mb-0">
+                          <i class="bi bi-hourglass-split me-2"></i>
+                          Subiendo imagen...
+                        </div>
+                      }
                     </div>
                   </div>
 

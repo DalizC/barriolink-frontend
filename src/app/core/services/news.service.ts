@@ -24,7 +24,7 @@ export interface NewsCreate {
   content: string;
   summary: string;
   link?: string;
-  cover_image?: string;
+  image?: string;
   status?: 'draft' | 'published';
   categories: number[];
 }
@@ -78,5 +78,11 @@ export class NewsService {
 
   draftNews(id: number): Observable<News> {
     return this.http.patch<News>(`${this.apiUrl}${id}/draft/`, {});
+  }
+
+  uploadImage(id: number, imageFile: File): Observable<News> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    return this.http.post<News>(`${this.apiUrl}${id}/upload-image/`, formData);
   }
 }

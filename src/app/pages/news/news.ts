@@ -8,12 +8,11 @@ import { CarouselModule, OwlOptions } from "ngx-owl-carousel-o";
 import { NewsService } from "../../core/services/news.service";
 import { NewsItem, NEWS_MOCK_DATA } from "../../shared/data/news-mock.data";
 import { ICardToggleOptions } from "../../shared/interface/common";
-import { CardDropdownButton } from '../../shared/components/ui/card/card-dropdown-button/card-dropdown-button';
 
 @Component({
   selector: 'app-news',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NgbModule, CarouselModule, CardDropdownButton],
+  imports: [CommonModule, FormsModule, RouterLink, NgbModule, CarouselModule],
   templateUrl: "./news-magazine.html",
   styleUrl: "./news.scss"
 })

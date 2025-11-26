@@ -77,6 +77,12 @@ export class NewsDetail implements OnInit {
     });
   }
 
+  // Obtiene la URL de la imagen, priorizando 'image' sobre 'cover_image' (legacy)
+  getImageUrl(news: News | null): string | null {
+    if (!news) return null;
+    return news.image || news.cover_image || null;
+  }
+
   // Mapea cada tag a una clase de badge de Bootstrap
   tagBadgeClass(tag: string): string {
     const t = (tag || '').toLowerCase();

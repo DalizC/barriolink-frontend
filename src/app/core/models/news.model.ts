@@ -14,7 +14,8 @@ export interface News {
   content: string;
   summary: string;
   link: string | null;
-  cover_image: string | null;
+  image: string | null;
+  cover_image: string | null; // Deprecated, mantener por compatibilidad
   status: 'draft' | 'published' | 'archived';
   categories: number[];
   categories_detail: Category[];

@@ -2,14 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { Editor, NgxEditorModule } from 'ngx-editor';
 import { Select2Module } from 'ng-select2-component';
-import { DropzoneConfigInterface } from 'ngx-dropzone-wrapper';
-import { DropzoneComponent } from '../../../shared/components/ui/dropzone/dropzone';
 import { NgxEditor as AppNgxEditor } from '../../../shared/components/ui/editor/ngx-editor';
 import { NewsService, NewsCreate } from '../../../core/services/news.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { Category } from '../../../core/models/category.model';
+import { News } from '../../../core/models/news.model';
 
 @Component({
   selector: 'app-news-form',
@@ -19,7 +19,6 @@ import { Category } from '../../../core/models/category.model';
     ReactiveFormsModule,
     NgxEditorModule,
     Select2Module,
-    DropzoneComponent,
     AppNgxEditor
   ],
   templateUrl: './news-form.html',
@@ -39,26 +38,10 @@ export class NewsForm implements OnInit, OnDestroy {
   error: string | null = null;
   successMessage: string | null = null;
 
-  dropzoneConfig: DropzoneConfigInterface = {
-    url: 'https://httpbin.org/post',
-    addRemoveLinks: true,
-    maxFiles: 10,
-    acceptedFiles: 'image/*',
-    clickable: true,
-  };
-
-  dropzoneMessage = `
-    <i class="icon-cloud-up" style="font-size: 48px; color: var(--theme-default);"></i>
-    <h6 style="margin-top: 1rem;">Drop files here or click to upload</h6>
-    <span class="note needsclick" style="color: var(--bs-secondary);">(Select images for your news article)</span>
-  `;
-
-  blogType = [
-    { id: '1', title: 'Text', checked: true },
-    { id: '2', title: 'Image', checked: false },
-    { id: '3', title: 'Audio', checked: false },
-    { id: '4', title: 'Video', checked: false },
-  ];
+  selectedCoverImage: File | null = null;
+  coverImagePreview: string | null = null;
+  uploadingImage = false;
+  imageLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -186,15 +169,25 @@ export class NewsForm implements OnInit, OnDestroy {
       // Crear nueva noticia
       this.newsService.createNews(newsData).subscribe({
         next: (news) => {
-          this.successMessage = 'Noticia creada exitosamente';
-          this.loading = false;
-
-          // Si se publicó directamente, navegar al detalle
-          if (action === 'publish') {
-            setTimeout(() => this.router.navigate(['/news', news.id]), 1500);
+          // Si hay imagen de portada, subirla
+          if (this.selectedCoverImage) {
+            this.uploadCoverImage(news.id).subscribe({
+              next: () => {
+                this.successMessage = 'Noticia creada exitosamente con imagen de portada';
+                this.loading = false;
+                this.navigateAfterSuccess(action, news.id);
+              },
+              error: () => {
+                // Noticia creada pero error al subir imagen
+                this.successMessage = 'Noticia creada, pero hubo un error al subir la imagen';
+                this.loading = false;
+                this.navigateAfterSuccess(action, news.id);
+              }
+            });
           } else {
-            // Si es borrador, navegar a "mis noticias"
-            setTimeout(() => this.router.navigate(['/news/my-news']), 1500);
+            this.successMessage = 'Noticia creada exitosamente';
+            this.loading = false;
+            this.navigateAfterSuccess(action, news.id);
           }
         },
         error: (err) => {
@@ -203,6 +196,16 @@ export class NewsForm implements OnInit, OnDestroy {
           this.loading = false;
         }
       });
+    }
+  }
+
+  private navigateAfterSuccess(action: 'draft' | 'publish', newsId: number): void {
+    // Si se publicó directamente, navegar al detalle
+    if (action === 'publish') {
+      setTimeout(() => this.router.navigate(['/news', newsId]), 1500);
+    } else {
+      // Si es borrador, navegar a "mis noticias"
+      setTimeout(() => this.router.navigate(['/news/my-news']), 1500);
     }
   }
 
@@ -229,7 +232,107 @@ export class NewsForm implements OnInit, OnDestroy {
     }
   }
 
+  openFileSelector(): void {
+    const input = document.getElementById('coverImageInput') as HTMLInputElement;
+    if (input) {
+      input.click();
+    }
+  }
+
+  onCoverImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        this.error = 'Por favor selecciona un archivo de imagen válido';
+        return;
+      }
+
+      // Validar tamaño (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        this.error = 'La imagen no debe superar los 5MB';
+        return;
+      }
+
+      // Limpiar preview anterior si existe
+      if (this.coverImagePreview) {
+        URL.revokeObjectURL(this.coverImagePreview);
+      }
+
+      this.selectedCoverImage = file;
+
+      // Mostrar indicador de carga
+      this.imageLoading = true;
+
+      // Crear preview usando Object URL (más eficiente que base64)
+      this.coverImagePreview = URL.createObjectURL(file);
+
+      this.error = null;
+    }
+  }
+
+  onImageLoad(): void {
+    // Imagen cargada exitosamente
+    this.imageLoading = false;
+  }
+
+  onImageError(): void {
+    // Error al cargar imagen
+    this.imageLoading = false;
+    this.error = 'Error al cargar la imagen. Por favor intenta con otra.';
+    this.removeCoverImage();
+  }
+
+  removeCoverImage(): void {
+    // Liberar memoria del Object URL
+    if (this.coverImagePreview) {
+      URL.revokeObjectURL(this.coverImagePreview);
+    }
+
+    this.selectedCoverImage = null;
+    this.coverImagePreview = null;
+    this.imageLoading = false;
+
+    // Limpiar input file
+    const input = document.getElementById('coverImageInput') as HTMLInputElement;
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  uploadCoverImage(newsId: number): Observable<News | void> {
+    if (!this.selectedCoverImage) {
+      return new Observable(observer => {
+        observer.next(undefined);
+        observer.complete();
+      });
+    }
+
+    this.uploadingImage = true;
+    return new Observable(observer => {
+      this.newsService.uploadImage(newsId, this.selectedCoverImage!).subscribe({
+        next: (news) => {
+          this.uploadingImage = false;
+          observer.next(news);
+          observer.complete();
+        },
+        error: (err) => {
+          this.uploadingImage = false;
+          this.error = 'Error al subir la imagen de portada';
+          observer.error(err);
+        }
+      });
+    });
+  }
+
   ngOnDestroy(): void {
+    // Limpiar Object URL para liberar memoria
+    if (this.coverImagePreview) {
+      URL.revokeObjectURL(this.coverImagePreview);
+    }
+
     this.editor.destroy();
     this.editor2.destroy();
   }
