@@ -1,4 +1,15 @@
-<div class="container-fluid news-detail-container">
+<div class="container-fluid news-detail-container page-container">
+  @if (loading) {
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 400px;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+  } @else if (error) {
+  <div class="alert alert-danger m-4" role="alert">
+    <i class="fa fa-exclamation-triangle me-2"></i>{{ error }}
+  </div>
+  } @else if (newsItem) {
   <div class="row">
     <div class="col-sm-12">
       <div class="card mb-0">
@@ -11,63 +22,30 @@
             <!-- Sin etiquetas -->
             }
           </div>
-          <h4 class="display-4 mb-2 f-w-500">{{ newsItem?.title || 'Este es el Título de la Noticia Detallada' }}</h4>
+          <h4 class="display-4 mb-2 f-w-500">{{ newsItem.title }}</h4>
           <div class="d-flex align-items-center gap-3 flex-wrap">
             <div class="media-size-email">
-              <img class="rounded-circle img-50" src="assets/images/avatar/11.jpg" alt="Emay Walter">
+              <img class="rounded-circle img-50" src="assets/images/avatar/11.jpg" [alt]="authorName">
             </div>
             <div class="d-flex flex-column justify-content-center me-4">
-              <h6 class="mb-0">Emay Walter</h6>
-              <p class="mb-0 c-o-light lh-1">emaywalter@jourrapide.com</p>
+              <h6 class="mb-0">{{ authorName }}</h6>
             </div>
             <ul class="d-flex list-unstyled gap-3 mb-0 c-o-light">
-              <li><i class="fa-regular fa-calendar"></i> 25 julio 2025</li>
-              <li><i class="icofont icofont-thumbs-up"></i> 02 Hits </li>
-              <li><i class="icofont icofont-ui-chat"></i> 598 Comments </li>
+              <li><i class="fa-regular fa-calendar"></i> {{ formattedDate }}</li>
             </ul>
-
           </div>
         </div>
         <div class="card-body">
           <div class="blog-single">
             <div class="blog-box blog-details">
-              <!--
-                OPCIÓN 1: Contenedor con clases específicas del componente
-                (aspect ratios responsive + altura máxima fija)
-
-                CARACTERÍSTICAS:
-                - Altura máxima: 500px (desktop), 400px (tablet), 350px (móvil)
-                - Sin overflow horizontal en dispositivos pequeños
-                - Todas las imágenes se normalizan a la misma altura
-                - object-fit: cover evita distorsión
-              -->
               <div class="news-detail-image-container">
-                <img alt="blog-main" class="news-detail-image" src="assets/images/news/news1.jpg">
+                <img alt="blog-main" class="news-detail-image" [src]="newsItem.cover_image || 'assets/images/placeholder.jpg'">
               </div>
-
-              <!--
-                OPCIÓN 2 (comentada): Usar clases globales utilitarias de app.scss
-                Descomenta para usar clases reutilizables en cualquier parte de la app
-              -->
-              <!--
-              <div class="img-container-16-9 rounded mb-4">
-                <img alt="blog-main" class="img-responsive" src="assets/images/news/news1.jpg">
-              </div>
-              -->
 
               <div class="blog-details">
-                <h5 class="mb-3 text-center">La Fotografía como Arte y Medio de Comunicación</h5>
+                <h5 class="mb-3 text-center">{{ newsItem.summary }}</h5>
                 <div class="single-blog-content-top">
-                  <p>To produce aesthetically striking photos, it entails the deft use of light, composition, and
-                    subject matter. Technology breakthroughs have made photography more widely available to the
-                    public, enabling people to express their creativity and share their own viewpoints with a global
-                    audience.They use meticulous attention to details like colour balance, depth of focus, and framing
-                    to produce aesthetically stunning photos that arouse feelings and convey tales.</p>
-                  <p>There are many diverse genres within the area of photography, such as fashion, landscape,
-                    portrait, and documentary photography, each needing a unique blend of technical abilities and
-                    creative vision. Expert photographers have a thorough grasp of their gear and know how to get the
-                    best results by experimenting with different lenses, lighting setups, and post-processing
-                    software.</p><!---->
+                  <p [innerHTML]="newsItem.content"></p>
                 </div>
               </div>
 
@@ -92,7 +70,7 @@
           </div>
         </div>
 
-        @if (showAlert) {
+        @if (showAlert && newsItem.status === 'draft') {
         <ngb-alert role="alert" [type]="alertType" class="p-0 alert show fade ng-star-inserted" [ngClass]="alertBorderClass" [dismissible]="false">
           <div class="d-flex align-items-center w-100 gap-3 p-3 py-4">
             <div class="flex-grow-1">
@@ -110,10 +88,8 @@
           </div>
         </ngb-alert>
         }
-
-
       </div>
-
     </div>
   </div>
+  }
 </div>

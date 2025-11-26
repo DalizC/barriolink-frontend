@@ -1,4 +1,6 @@
 import { Component, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { Router, RouterModule } from "@angular/router";
 
 import { SvgIcon } from "../ui/svg-icon/svg-icon";
 import { HeaderBookmark } from "./widgets/header-bookmark/header-bookmark";
@@ -12,10 +14,13 @@ import { Profile } from "./widgets/profile/profile";
 import { Search } from "./widgets/search/search";
 import { ToggleScreen } from "./widgets/toggle-screen/toggle-screen";
 import { NavService } from "../../services/nav.service";
+import { AuthService } from "../../../core/services/auth.service";
 
 @Component({
   selector: "app-header",
   imports: [
+    CommonModule,
+    RouterModule,
     HeaderLogo,
     HeaderNotice,
     HeaderLanguage,
@@ -33,6 +38,8 @@ import { NavService } from "../../services/nav.service";
 })
 export class Header {
   private navService = inject(NavService);
+  private router = inject(Router);
+  public authService = inject(AuthService);
 
   toggleLanguage() {
     this.navService.isLanguage = !this.navService.isLanguage;
@@ -44,5 +51,17 @@ export class Header {
 
   openSearch() {
     this.navService.isSearchOpen = true;
+  }
+
+  goToLogin() {
+    const currentUrl = this.router.url.split('?')[0];
+    console.log('Navegando a login desde:', currentUrl);
+    this.router.navigate(['/auth/login'], {
+      queryParams: { returnUrl: currentUrl }
+    }).then(success => {
+      console.log('Navegación exitosa:', success);
+    }).catch(err => {
+      console.error('Error en navegación:', err);
+    });
   }
 }

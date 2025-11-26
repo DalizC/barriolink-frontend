@@ -7,6 +7,9 @@ import { Select2Module } from 'ng-select2-component';
 import { DropzoneConfigInterface } from 'ngx-dropzone-wrapper';
 import { DropzoneComponent } from '../../../shared/components/ui/dropzone/dropzone';
 import { NgxEditor as AppNgxEditor } from '../../../shared/components/ui/editor/ngx-editor';
+import { NewsService, NewsCreate } from '../../../core/services/news.service';
+import { CategoryService } from '../../../core/services/category.service';
+import { Category } from '../../../core/models/category.model';
 
 @Component({
   selector: 'app-news-form',
@@ -25,11 +28,16 @@ import { NgxEditor as AppNgxEditor } from '../../../shared/components/ui/editor/
 export class NewsForm implements OnInit, OnDestroy {
   isEditMode = false;
   newsId: string | null = null;
-  activeTab = 'editor'; // Tab activo por defecto
+  activeTab = 'editor';
   newsForm!: FormGroup;
 
   editor!: Editor;
   editor2!: Editor;
+
+  categories: Category[] = [];
+  loading = false;
+  error: string | null = null;
+  successMessage: string | null = null;
 
   dropzoneConfig: DropzoneConfigInterface = {
     url: 'https://httpbin.org/post',
@@ -52,15 +60,12 @@ export class NewsForm implements OnInit, OnDestroy {
     { id: '4', title: 'Video', checked: false },
   ];
 
-  addBlogCategory = [
-    { value: '1', label: 'Lifestyle' },
-    { value: '2', label: 'Travel' },
-  ];
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private newsService: NewsService,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit(): void {
@@ -69,6 +74,9 @@ export class NewsForm implements OnInit, OnDestroy {
 
     // Inicializar formulario reactivo
     this.initForm();
+
+    // Cargar categorías desde el backend
+    this.loadCategories();
 
     // Detectar si es modo edición o creación
     this.newsId = this.route.snapshot.paramMap.get('id');
@@ -82,12 +90,24 @@ export class NewsForm implements OnInit, OnDestroy {
   initForm(): void {
     this.newsForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.required, Validators.maxLength(300)]],
+      summary: ['', [Validators.required, Validators.maxLength(300)]],
       content: ['', Validators.required],
-      category: ['', Validators.required],
+      link: [''],
+      categories: [[], Validators.required],
       images: [[]],
       pinned: [false],
-      published: [false]
+    });
+  }
+
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (err) => {
+        console.error('Error al cargar categorías:', err);
+        this.error = 'No se pudieron cargar las categorías';
+      }
     });
   }
 
@@ -95,47 +115,118 @@ export class NewsForm implements OnInit, OnDestroy {
   get titleLength(): number {
     return (this.newsForm.get('title')?.value || '').length;
   }
-  get descriptionLength(): number {
-    return (this.newsForm.get('description')?.value || '').length;
+  get summaryLength(): number {
+    return (this.newsForm.get('summary')?.value || '').length;
   }
   get contentTextLength(): number {
     const html: string = this.newsForm.get('content')?.value || '';
-    // Remover etiquetas HTML para contar solo texto plano
     const text = html.replace(/<[^>]*>/g, '').trim();
     return text.length;
   }
 
   loadNewsData(id: string | null): void {
-    // TODO: Cargar datos de la noticia desde el backend
-    console.log('Cargando noticia con ID:', id);
-    // Ejemplo de cómo poblar el form:
-    // this.newsForm.patchValue(newsData);
+    if (!id) return;
+
+    this.loading = true;
+    this.newsService.getNewsById(+id).subscribe({
+      next: (news) => {
+        this.newsForm.patchValue({
+          title: news.title,
+          summary: news.summary,
+          content: news.content,
+          link: news.link || '',
+          categories: news.categories || [],
+        });
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar noticia:', err);
+        this.error = 'No se pudo cargar la noticia';
+        this.loading = false;
+      }
+    });
   }
 
-  onSubmit(): void {
+  onSubmit(action: 'draft' | 'publish' = 'draft'): void {
     if (this.newsForm.invalid) {
       this.newsForm.markAllAsTouched();
-      console.error('Formulario inválido');
+      this.error = 'Por favor completa todos los campos requeridos';
       return;
     }
 
-    const formData = this.newsForm.value;
-    console.log('Datos del formulario:', formData);
+    this.loading = true;
+    this.error = null;
+    this.successMessage = null;
 
-    if (this.isEditMode) {
-      // TODO: Actualizar noticia existente
-      console.log('Actualizando noticia:', this.newsId, formData);
+    const formValue = this.newsForm.value;
+    const newsData: NewsCreate = {
+      title: formValue.title,
+      content: formValue.content,
+      summary: formValue.summary,
+      link: formValue.link || '',
+      categories: formValue.categories,
+      status: action === 'publish' ? 'published' : 'draft',
+    };
+
+    if (this.isEditMode && this.newsId) {
+      // Actualizar noticia existente
+      this.newsService.updateNews(+this.newsId, newsData).subscribe({
+        next: (news) => {
+          this.successMessage = 'Noticia actualizada exitosamente';
+          this.loading = false;
+          setTimeout(() => this.router.navigate(['/news', news.id]), 1500);
+        },
+        error: (err) => {
+          console.error('Error al actualizar noticia:', err);
+          this.error = err.error?.detail || 'Error al actualizar la noticia';
+          this.loading = false;
+        }
+      });
     } else {
-      // TODO: Crear nueva noticia
-      console.log('Creando nueva noticia:', formData);
-    }
+      // Crear nueva noticia
+      this.newsService.createNews(newsData).subscribe({
+        next: (news) => {
+          this.successMessage = 'Noticia creada exitosamente';
+          this.loading = false;
 
-    // Ejemplo de navegación después del submit:
-    // this.router.navigate(['/news']);
+          // Si se publicó directamente, navegar al detalle
+          if (action === 'publish') {
+            setTimeout(() => this.router.navigate(['/news', news.id]), 1500);
+          } else {
+            // Si es borrador, navegar a "mis noticias"
+            setTimeout(() => this.router.navigate(['/news/my-news']), 1500);
+          }
+        },
+        error: (err) => {
+          console.error('Error al crear noticia:', err);
+          this.error = err.error?.detail || 'Error al crear la noticia';
+          this.loading = false;
+        }
+      });
+    }
   }
 
   onCancel(): void {
     this.router.navigate(['/news']);
+  }
+
+  onCategoryChange(event: Event, categoryId: number): void {
+    const checkbox = event.target as HTMLInputElement;
+    const currentCategories = this.newsForm.get('categories')?.value || [];
+
+    if (checkbox.checked) {
+      // Agregar categoría si no existe
+      if (!currentCategories.includes(categoryId)) {
+        this.newsForm.patchValue({
+          categories: [...currentCategories, categoryId]
+        });
+      }
+    } else {
+      // Remover categoría
+      this.newsForm.patchValue({
+        categories: currentCategories.filter((id: number) => id !== categoryId)
+      });
+    }
   }
 
   ngOnDestroy(): void {

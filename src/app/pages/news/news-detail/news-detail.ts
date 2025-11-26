@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { CarouselModule, OwlOptions } from "ngx-owl-carousel-o";
 
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { NewsService } from '../../../core/services/news.service';
+import { News } from '../../../core/models/news.model';
 
 @Component({
   selector: 'app-news-detail',
@@ -15,7 +17,9 @@ import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 })
 export class NewsDetail implements OnInit {
   newsId: string | null = null;
-  newsItem: any = null;
+  newsItem: News | null = null;
+  loading: boolean = false;
+  error: string | null = null;
   showAlert: boolean = true; // Control de visibilidad de la alerta
 
   // Configuración de alerta (tipo y estilo)
@@ -52,37 +56,35 @@ export class NewsDetail implements OnInit {
     // }
   ];
 
-  // Etiquetas calculadas para la noticia actual (deriva de newsItem.tags o de category/status)
+  // Etiquetas calculadas para la noticia actual (deriva de categories_detail)
   get computedTags(): string[] {
     if (!this.newsItem) return [];
-    const base: string[] = Array.isArray(this.newsItem.tags) && this.newsItem.tags.length
-      ? this.newsItem.tags
-      : [this.newsItem.category, this.newsItem.status];
-    // Normaliza: elimina falsos, trim y evita duplicados (case-insensitive)
-    const seen = new Set<string>();
-    return base
-      .filter(Boolean)
-      .map((t: string) => String(t).trim())
-      .filter((t: string) => {
-        const key = t.toLowerCase();
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return t.length > 0;
-      });
+    return this.newsItem.categories_detail?.map(c => c.name) || [];
+  }
+
+  // Getters para facilitar el acceso en el template
+  get authorName(): string {
+    return (this.newsItem as any)?.author_name || 'Desconocido';
+  }
+
+  get formattedDate(): string {
+    const date = this.newsItem?.published_at || this.newsItem?.created_at;
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   // Mapea cada tag a una clase de badge de Bootstrap
   tagBadgeClass(tag: string): string {
     const t = (tag || '').toLowerCase();
-    // Mapeo simple; ajusta según tu paleta/semántica
-    if (['seguridad', 'security'].includes(t)) return 'bg-primary';
-    if (['comunidad', 'community'].includes(t)) return 'bg-success';
-    if (['anuncio', 'aviso', 'scheduled', 'programado'].includes(t)) return 'bg-warning text-dark';
-    if (['infraestructura', 'infrastructure'].includes(t)) return 'bg-info';
-    if (['servicios', 'services'].includes(t)) return 'bg-secondary';
-    if (['publicado', 'published'].includes(t)) return 'bg-success';
-    if (['borrador', 'draft'].includes(t)) return 'bg-secondary';
-    if (['urgente', 'important', 'alerta'].includes(t)) return 'bg-danger';
+    if (['seguridad', 'seguridad vecinal'].includes(t)) return 'bg-primary';
+    if (['eventos', 'eventos comunitarios', 'comunidad'].includes(t)) return 'bg-success';
+    if (['avisos', 'avisos importantes'].includes(t)) return 'bg-warning text-dark';
+    if (['infraestructura', 'mejoras de infraestructura'].includes(t)) return 'bg-info';
+    if (['cultura', 'cultura y recreación'].includes(t)) return 'bg-secondary';
     return 'bg-light text-dark';
   }
 
@@ -116,65 +118,33 @@ export class NewsDetail implements OnInit {
     { image: 'assets/images/slider/4.jpg', title: 'Slide 4', description: 'Description for Slide 4' }
   ];
 
-  // Array de noticias (temporalmente aquí, luego podrías usar un servicio)
-  readonly news = [
-    {
-      id: 1,
-      title: "Nuevo Sistema de Seguridad",
-      summary: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut libero libero. Aliquam dictum nibh non sapien efficitur, vel auctor lacus consequat. Suspendisse potenti. Donec pretium consequat libero, in bibendum arcu feugiat at. Pellentesque aliquam augue sem, eget lacinia nibh tempor in. Proin congue lectus turpis, a fringilla arcu congue sed. Mauris eu eros finibus enim viverra interdum vel a magna. Donec vitae risus pulvinar, tincidunt risus ac, pharetra ante. Nullam blandit tortor est, non placerat erat condimentum non. Integer vel malesuada est. Quisque congue augue justo, id placerat dolor ultrices eget. Praesent at velit accumsan, egestas est eu, pharetra felis.",
-      content: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam ut libero libero. Aliquam dictum nibh non sapien efficitur, vel auctor lacus consequat. Suspendisse potenti. Donec pretium consequat libero, in bibendum arcu feugiat at. Pellentesque aliquam augue sem, eget lacinia nibh tempor in. Proin congue lectus turpis, a fringilla arcu congue sed. Mauris eu eros finibus enim viverra interdum vel a magna. Donec vitae risus pulvinar, tincidunt risus ac, pharetra ante. Nullam blandit tortor est, non placerat erat condimentum non. Integer vel malesuada est. Quisque congue augue justo, id placerat dolor ultrices eget. Praesent at velit accumsan, egestas est eu, pharetra felis.",
-      author: "Administrador",
-      date: "2024-10-18",
-      category: "Seguridad",
-      status: "Publicado",
-      image: "assets/images/blog/blog-2.jpg",
-      tags: ["Seguridad", "Anuncio"]
-    },
-    {
-      id: 2,
-      title: "Mejoras en el Alumbrado Público",
-      summary: "Reemplazo de luminarias LED en toda la zona residencial.",
-      content: "Como parte del plan de modernización urbana...",
-      author: "María García",
-      date: "2024-10-15",
-      category: "Infraestructura",
-      status: "Publicado",
-      image: "assets/images/blog/blog-2.jpg",
-      tags: ["Infraestructura", "Comunidad"]
-    },
-    {
-      id: 3,
-      title: "Próximo Corte de Agua Programado",
-      summary: "Mantenimiento de la red de agua potable el próximo fin de semana.",
-      content: "La empresa de servicios públicos anuncia...",
-      author: "Carlos López",
-      date: "2024-10-20",
-      category: "Servicios",
-      status: "Borrador",
-      image: "assets/images/blog/blog-3.jpg",
-      tags: ["Servicios", "Programado"]
-    },
-    {
-      id: 4,
-      title: "Feria Gastronómica Comunitaria",
-      summary: "Los emprendedores locales se reúnen para compartir sabores.",
-      content: "La feria contará con más de 40 stands de comida...",
-      author: "Ana Torres",
-      date: "2024-10-22",
-      category: "Comunidad",
-      status: "Programado",
-      image: "assets/images/blog/blog-4.jpg",
-      tags: ["Comunidad", "Anuncio"]
-    },
-  ];
-
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private newsService: NewsService
+  ) {}
 
   ngOnInit() {
     this.newsId = this.route.snapshot.paramMap.get('id');
     if (this.newsId) {
-      this.newsItem = this.news.find(n => n.id === +this.newsId!);
+      this.loadNewsDetail(+this.newsId);
     }
+  }
+
+  private loadNewsDetail(id: number): void {
+    this.loading = true;
+    this.error = null;
+
+    this.newsService.getNewsById(id).subscribe({
+      next: (news) => {
+        this.newsItem = news;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error cargando detalle de noticia:', err);
+        this.error = 'No se pudo cargar la noticia. Intenta nuevamente.';
+        this.loading = false;
+      }
+    });
   }
 
   // Cierra la alerta y remueve completamente del DOM

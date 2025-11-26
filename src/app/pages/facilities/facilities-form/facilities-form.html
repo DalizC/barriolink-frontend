@@ -1,1 +1,191 @@
-<p>facilities-form works!</p>
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/facilities">Instalaciones</a></li>
+          <li class="breadcrumb-item active">{{ isEditMode ? 'Editar' : 'Nueva' }} Instalación</li>
+        </ol>
+      </nav>
+      <h2>{{ isEditMode ? 'Editar' : 'Nueva' }} Instalación</h2>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="row" *ngIf="!loading">
+    <div class="col-lg-8 mx-auto">
+      <div class="card">
+        <div class="card-body">
+          <!-- Error Message -->
+          <div class="alert alert-danger" *ngIf="errorMessage">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            {{ errorMessage }}
+          </div>
+
+          <form [formGroup]="facilityForm" (ngSubmit)="onSubmit()">
+            <!-- Name -->
+            <div class="mb-3">
+              <label for="name" class="form-label">
+                Nombre <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                formControlName="name"
+                [class.is-invalid]="isFieldInvalid('name')"
+                placeholder="Ej: Salón de Eventos Principal"
+              >
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
+                {{ getFieldError('name') }}
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label for="description" class="form-label">
+                Descripción <span class="text-danger">*</span>
+              </label>
+              <textarea
+                class="form-control"
+                id="description"
+                formControlName="description"
+                rows="4"
+                [class.is-invalid]="isFieldInvalid('description')"
+                placeholder="Describe la instalación, sus características principales y usos..."
+              ></textarea>
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+                {{ getFieldError('description') }}
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+              <label for="address" class="form-label">
+                Dirección <span class="text-danger">*</span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="address"
+                formControlName="address"
+                [class.is-invalid]="isFieldInvalid('address')"
+                placeholder="Ej: Av. Principal 123, Quilpué"
+              >
+              <div class="invalid-feedback" *ngIf="isFieldInvalid('address')">
+                {{ getFieldError('address') }}
+              </div>
+            </div>
+
+            <!-- Capacity -->
+            <div class="mb-3">
+              <label for="capacity" class="form-label">
+                Capacidad (personas)
+              </label>
+              <input
+                type="number"
+                class="form-control"
+                id="capacity"
+                formControlName="capacity"
+                min="0"
+                placeholder="Dejar vacío para capacidad ilimitada"
+              >
+              <small class="form-text text-muted">
+                Indica el número máximo de personas que puede albergar. Dejar vacío si no tiene límite.
+              </small>
+            </div>
+
+            <!-- Amenities -->
+            <div class="mb-3">
+              <label for="amenities" class="form-label">
+                Servicios y Comodidades
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="amenities"
+                formControlName="amenities"
+                placeholder="Ej: WiFi, Proyector, Aire acondicionado, Estacionamiento"
+              >
+              <small class="form-text text-muted">
+                Separa los servicios con comas. Ejemplo: WiFi, Proyector, Aire acondicionado
+              </small>
+            </div>
+
+            <!-- Is Active -->
+            <div class="mb-4">
+              <div class="form-check form-switch">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="is_active"
+                  formControlName="is_active"
+                >
+                <label class="form-check-label" for="is_active">
+                  <strong>Instalación Activa</strong>
+                  <br>
+                  <small class="text-muted">
+                    Solo las instalaciones activas están disponibles para reservar
+                  </small>
+                </label>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="d-flex gap-2 justify-content-end">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="onCancel()"
+                [disabled]="submitting"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="facilityForm.invalid || submitting"
+              >
+                <span *ngIf="!submitting">
+                  <i class="bi bi-check-circle me-2"></i>
+                  {{ isEditMode ? 'Actualizar' : 'Crear' }} Instalación
+                </span>
+                <span *ngIf="submitting">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Guardando...
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Help Card -->
+      <div class="card mt-3">
+        <div class="card-body">
+          <h6 class="card-title">
+            <i class="bi bi-info-circle text-primary me-2"></i>
+            Información Importante
+          </h6>
+          <ul class="mb-0 small text-muted">
+            <li>Los campos marcados con <span class="text-danger">*</span> son obligatorios</li>
+            <li>El nombre debe ser único y descriptivo</li>
+            <li>La capacidad se usa para controlar reservas y evitar sobrecupo</li>
+            <li>Las instalaciones inactivas no aparecerán en el sistema de reservas</li>
+            <li>Solo administradores pueden crear y editar instalaciones</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

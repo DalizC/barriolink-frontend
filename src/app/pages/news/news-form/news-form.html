@@ -11,6 +11,30 @@
         </div>
         <div class="card-body">
 
+          <!-- Mensajes de estado -->
+          @if (loading) {
+            <div class="alert alert-info d-flex align-items-center">
+              <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              Guardando noticia...
+            </div>
+          }
+          @if (error) {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              {{ error }}
+              <button type="button" class="btn-close" (click)="error = null"></button>
+            </div>
+          }
+          @if (successMessage) {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              {{ successMessage }}
+              <button type="button" class="btn-close" (click)="successMessage = null"></button>
+            </div>
+          }
+
           <div class="card-header d-flex justify-content-center align-items-center flex-wrap gap-2 pb-2 p-0 border-0">
             <ul class="nav nav-pills nav-primary" role="tablist">
               <li class="nav-item" role="presentation">
@@ -34,13 +58,15 @@
                   <!-- Imágenes -->
                   <div class="card border border-1 mb-3">
                     <div class="card-header border-0 pb-1">
-                      <h5 class="mb-0">Imágen de Portada</h5>
+                      <h5 class="mb-0">Imagen de Portada</h5>
+                      <small class="text-muted">(Funcionalidad pendiente - se agregará próximamente)</small>
                     </div>
                     <div class="card-body">
                       <app-dropzone
                         formControlName="images"
                         [config]="dropzoneConfig"
-                        [message]="dropzoneMessage">
+                        [message]="dropzoneMessage"
+                        [disabled]="true">
                       </app-dropzone>
                     </div>
                   </div>
@@ -67,24 +93,24 @@
                     </div>
                   </div>
 
-                  <!-- Descripción breve -->
+                  <!-- Descripción breve (summary) -->
                   <div class="card border border-1 mb-3">
                     <div class="card-header border-0 pb-1">
-                      <h5 class="mb-0">Subtítulo de la Noticia</h5>
+                      <h5 class="mb-0">Resumen de la Noticia</h5>
                     </div>
                     <div class="card-body">
-                      <div class="form-text text-muted small mb-1">{{ descriptionLength }}/300 caracteres</div>
+                      <div class="form-text text-muted small mb-1">{{ summaryLength }}/300 caracteres</div>
                       <textarea
                         class="form-control"
                         rows="3"
-                        formControlName="description"
+                        formControlName="summary"
                         maxlength="300"
-                        placeholder="Breve descripción de la noticia"
-                        [class.is-invalid]="newsForm.get('description')?.invalid && newsForm.get('description')?.touched">
+                        placeholder="Breve resumen de la noticia (se mostrará en las tarjetas de vista previa)"
+                        [class.is-invalid]="newsForm.get('summary')?.invalid && newsForm.get('summary')?.touched">
                       </textarea>
-                      @if (newsForm.get('description')?.invalid && newsForm.get('description')?.touched) {
+                      @if (newsForm.get('summary')?.invalid && newsForm.get('summary')?.touched) {
                         <div class="invalid-feedback">
-                          La descripción es requerida
+                          El resumen es requerido (máximo 300 caracteres)
                         </div>
                       }
                     </div>
@@ -114,26 +140,55 @@
                 <!-- Opciones Tab -->
                 @if (activeTab === 'options') {
                 <div class="tab-pane fade show active">
-                  <!-- Categoría -->
+                  <!-- Categorías (múltiple selección) -->
                   <div class="card border border-1 mb-3">
                     <div class="card-header">
-                      <h5 class="mb-0">Categoría</h5>
+                      <h5 class="mb-0">Categorías</h5>
                     </div>
                     <div class="card-body">
-                      <select
-                        class="form-select"
-                        formControlName="category"
-                        [class.is-invalid]="newsForm.get('category')?.invalid && newsForm.get('category')?.touched">
-                        <option value="">Selecciona una categoría</option>
-                        @for (cat of addBlogCategory; track cat.value) {
-                          <option [value]="cat.value">{{ cat.label }}</option>
-                        }
-                      </select>
-                      @if (newsForm.get('category')?.invalid && newsForm.get('category')?.touched) {
-                        <div class="invalid-feedback">
-                          La categoría es requerida
+                      <small class="text-muted d-block mb-2">Selecciona una o más categorías para esta noticia</small>
+
+                      @if (categories.length === 0) {
+                        <div class="text-muted">Cargando categorías...</div>
+                      } @else {
+                        <div class="d-flex flex-wrap gap-2">
+                          @for (cat of categories; track cat.id) {
+                            <div class="form-check">
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                [value]="cat.id"
+                                [id]="'cat-' + cat.id"
+                                [checked]="newsForm.get('categories')?.value?.includes(cat.id)"
+                                (change)="onCategoryChange($event, cat.id)">
+                              <label class="form-check-label" [for]="'cat-' + cat.id">
+                                {{ cat.name }}
+                              </label>
+                            </div>
+                          }
                         </div>
                       }
+
+                      @if (newsForm.get('categories')?.invalid && newsForm.get('categories')?.touched) {
+                        <div class="text-danger small mt-2">
+                          Selecciona al menos una categoría
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Link (opcional) -->
+                  <div class="card border border-1 mb-3">
+                    <div class="card-header">
+                      <h5 class="mb-0">Enlace Externo (Opcional)</h5>
+                    </div>
+                    <div class="card-body">
+                      <input
+                        type="url"
+                        class="form-control"
+                        formControlName="link"
+                        placeholder="https://ejemplo.com/mas-informacion">
+                      <small class="text-muted">Agrega un enlace si la noticia requiere más información externa</small>
                     </div>
                   </div>
 
@@ -152,16 +207,7 @@
                         <label class="form-check-label" for="pinnedCheck">
                           Destacar esta noticia
                         </label>
-                      </div>
-                      <div class="form-check">
-                        <input
-                          class="form-check-input"
-                          type="checkbox"
-                          formControlName="published"
-                          id="publishedCheck">
-                        <label class="form-check-label" for="publishedCheck">
-                          Publicar inmediatamente
-                        </label>
+                        <small class="d-block text-muted">Las noticias destacadas aparecerán primero</small>
                       </div>
                     </div>
                   </div>
@@ -172,17 +218,24 @@
               <!-- Botones de acción -->
               <div class="card border-0 mt-3">
                 <div class="card-body d-flex justify-content-end gap-2">
-                  <button type="button" class="btn btn-secondary" (click)="onCancel()">
+                  <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
                     Cancelar
                   </button>
-                  <button type="submit" class="btn btn-primary">
-                    Guardar Borrador
+                  <button
+                    type="button"
+                    class="btn btn-outline-primary"
+                    (click)="onSubmit('draft')"
+                    [disabled]="newsForm.invalid || loading">
+                    <i class="bi bi-file-earmark-text me-1"></i>
+                    Guardar como Borrador
                   </button>
-                  <button type="submit" class="btn btn-primary" [disabled]="newsForm.invalid">
-                    {{ isEditMode ? 'Actualizar' : 'Crear' }} Noticia
-                  </button>
-                  <button type="submit" class="btn btn-primary" [disabled]="newsForm.invalid">
-                    Publicar
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="onSubmit('publish')"
+                    [disabled]="newsForm.invalid || loading">
+                    <i class="bi bi-send-fill me-1"></i>
+                    {{ isEditMode ? 'Actualizar y Publicar' : 'Crear y Publicar' }}
                   </button>
                 </div>
               </div>

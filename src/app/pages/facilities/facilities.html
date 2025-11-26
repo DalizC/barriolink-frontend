@@ -1,1 +1,239 @@
-<p>facilities works!</p>
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Instalaciones</h2>
+        <a routerLink="/facilities/create" class="btn btn-primary">
+          <i class="bi bi-plus-circle me-2"></i>
+          Nueva Instalación
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row g-3">
+            <!-- Search -->
+            <div class="col-md-4">
+              <label class="form-label">Buscar</label>
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Nombre, descripción o dirección..."
+                  [(ngModel)]="searchText"
+                  (keyup.enter)="onSearch()"
+                >
+                <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Sort Order -->
+            <div class="col-md-3">
+              <label class="form-label">Ordenar por</label>
+              <select class="form-select" [(ngModel)]="sortOrder" (change)="onSortChange()">
+                <option value="-created_at">Más recientes</option>
+                <option value="created_at">Más antiguos</option>
+                <option value="name">Nombre (A-Z)</option>
+                <option value="-name">Nombre (Z-A)</option>
+                <option value="capacity">Capacidad (menor)</option>
+                <option value="-capacity">Capacidad (mayor)</option>
+              </select>
+            </div>
+
+            <!-- Active Filter -->
+            <div class="col-md-3">
+              <label class="form-label">Estado</label>
+              <div class="form-check form-switch mt-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="activeFilter"
+                  [(ngModel)]="showActiveOnly"
+                  (change)="onActiveFilterChange()"
+                >
+                <label class="form-check-label" for="activeFilter">
+                  Solo activas
+                </label>
+              </div>
+            </div>
+
+            <!-- Results Count -->
+            <div class="col-md-2 d-flex align-items-end">
+              <span class="text-muted">
+                {{ totalItems }} instalacion{{ totalItems !== 1 ? 'es' : '' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="row" *ngIf="loading">
+    <div class="col-12 text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-3 text-muted">Cargando instalaciones...</p>
+    </div>
+  </div>
+
+  <!-- Facilities Grid -->
+  <div class="row g-4" *ngIf="!loading && filteredFacilities.length > 0">
+    <div class="col-md-6 col-lg-4" *ngFor="let facility of filteredFacilities">
+      <div class="card h-100 facility-card" [class.inactive]="!facility.is_active">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <h5 class="card-title mb-0">{{ facility.name }}</h5>
+            <div class="dropdown">
+              <button
+                class="btn btn-sm btn-link text-muted p-0"
+                type="button"
+                data-bs-toggle="dropdown"
+              >
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" [routerLink]="['/facilities/edit', facility.id]">
+                    <i class="bi bi-pencil me-2"></i>Editar
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <button
+                    class="dropdown-item text-danger"
+                    (click)="deleteFacility(facility.id, facility.name)"
+                  >
+                    <i class="bi bi-trash me-2"></i>Eliminar
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Status Badge -->
+          <div class="mb-3">
+            <span
+              class="badge"
+              [class.bg-success]="facility.is_active"
+              [class.bg-secondary]="!facility.is_active"
+            >
+              {{ facility.is_active ? 'Activa' : 'Inactiva' }}
+            </span>
+          </div>
+
+          <!-- Description -->
+          <p class="card-text text-muted small mb-3">
+            {{ facility.description || 'Sin descripción' }}
+          </p>
+
+          <!-- Details -->
+          <div class="facility-details">
+            <!-- Address -->
+            <div class="d-flex align-items-start mb-2">
+              <i class="bi bi-geo-alt text-primary me-2 mt-1"></i>
+              <small class="text-muted">{{ facility.address || 'Sin dirección' }}</small>
+            </div>
+
+            <!-- Capacity -->
+            <div class="d-flex align-items-center mb-2">
+              <i class="bi bi-people text-primary me-2"></i>
+              <small class="text-muted">{{ getCapacityDisplay(facility.capacity) }}</small>
+            </div>
+
+            <!-- Amenities -->
+            <div class="d-flex align-items-start" *ngIf="facility.amenities">
+              <i class="bi bi-star text-primary me-2 mt-1"></i>
+              <div class="d-flex flex-wrap gap-1">
+                <span
+                  class="badge bg-light text-dark"
+                  *ngFor="let amenity of getAmenitiesArray(facility.amenities)"
+                >
+                  {{ amenity }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="mt-3 pt-3 border-top">
+            <small class="text-muted">
+              <i class="bi bi-person me-1"></i>
+              {{ facility.author_name }}
+            </small>
+            <br>
+            <small class="text-muted">
+              <i class="bi bi-calendar me-1"></i>
+              {{ facility.created_at | date:'dd/MM/yyyy' }}
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="row" *ngIf="!loading && filteredFacilities.length === 0">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="bi bi-building display-1 text-muted mb-3"></i>
+          <h4 class="text-muted">No se encontraron instalaciones</h4>
+          <p class="text-muted mb-4">
+            {{ searchText ? 'Intenta con otros términos de búsqueda' : 'Comienza creando una nueva instalación' }}
+          </p>
+          <a routerLink="/facilities/create" class="btn btn-primary" *ngIf="!searchText">
+            <i class="bi bi-plus-circle me-2"></i>
+            Crear Primera Instalación
+          </a>
+          <button class="btn btn-outline-secondary" (click)="searchText = ''; onSearch()" *ngIf="searchText">
+            <i class="bi bi-x-circle me-2"></i>
+            Limpiar Búsqueda
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="row mt-4" *ngIf="!loading && totalPages > 1">
+    <div class="col-12">
+      <nav>
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <button class="page-link" (click)="onPageChange(currentPage - 1)">
+              Anterior
+            </button>
+          </li>
+
+          <li
+            class="page-item"
+            *ngFor="let page of [].constructor(totalPages); let i = index"
+            [class.active]="currentPage === i + 1"
+          >
+            <button class="page-link" (click)="onPageChange(i + 1)">
+              {{ i + 1 }}
+            </button>
+          </li>
+
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <button class="page-link" (click)="onPageChange(currentPage + 1)">
+              Siguiente
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>

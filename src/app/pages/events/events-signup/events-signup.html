@@ -1,1 +1,244 @@
-<p>events-signup works!</p>
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+
+      <!-- Loading State -->
+      @if (loading && !event) {
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      }
+
+      <!-- Success Message -->
+      @if (success) {
+        <div class="alert alert-success" role="alert">
+          <i class="bi bi-check-circle me-2"></i>
+          ¡Registro exitoso! Redirigiendo...
+        </div>
+      }
+
+      <!-- Event Registration Form -->
+      @if (event && !success) {
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h4 class="card-title mb-1">Event Registration</h4>
+            <p class="text-muted small mb-4">Complete your registration for this amazing event</p>
+
+            <!-- Event Info Card -->
+            <div class="event-info-card mb-4">
+              <div class="row g-0">
+                <div class="col-md-4">
+                  <div class="event-image">
+                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">
+                      {{ event.status }}
+                    </span>
+                    <i class="bi bi-calendar-event"></i>
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <div class="event-details p-3">
+                    <h5 class="mb-3">{{ event.title }}</h5>
+
+                    <div class="detail-item">
+                      <i class="bi bi-calendar3 text-primary"></i>
+                      <span>{{ formatDate(event.start_datetime) }}</span>
+                    </div>
+
+                    <div class="detail-item">
+                      <i class="bi bi-clock text-primary"></i>
+                      <span>{{ formatTime(event.start_datetime) }} - {{ formatTime(event.end_datetime!) }}</span>
+                    </div>
+
+                    @if (getDuration()) {
+                      <div class="detail-item">
+                        <i class="bi bi-hourglass-split text-primary"></i>
+                        <span>{{ getDuration() }}</span>
+                      </div>
+                    }
+
+                    @if (event.location || event.address) {
+                      <div class="detail-item">
+                        <i class="bi bi-geo-alt text-primary"></i>
+                        <span>{{ event.location || event.address }}</span>
+                      </div>
+                    }
+
+                    @if (event.has_cost) {
+                      <div class="detail-item">
+                        <i class="bi bi-currency-dollar text-success"></i>
+                        <span class="fw-bold">{{ event.cost_currency }} {{ event.cost_amount }}</span>
+                      </div>
+                    }
+
+                    @if (event.capacity) {
+                      <div class="detail-item">
+                        <i class="bi bi-people text-primary"></i>
+                        <span class="text-success fw-bold">{{ getAvailableSpots() }} of {{ event.capacity }} tickets available</span>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Registration Form -->
+            <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+              <h6 class="mb-3">Your Information</h6>
+              <p class="text-muted small mb-3">Please provide your details to complete the registration</p>
+
+              @if (error) {
+                <div class="alert alert-danger" role="alert">
+                  <i class="bi bi-exclamation-triangle me-2"></i>
+                  {{ error }}
+                </div>
+              }
+
+              <!-- First Name & Due -->
+              <div class="row mb-3">
+                <div class="col-md-8">
+                  <label for="participant_name" class="form-label">
+                    First Name <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="participant_name"
+                    formControlName="participant_name"
+                    placeholder="John"
+                    [class.is-invalid]="registrationForm.get('participant_name')?.invalid && registrationForm.get('participant_name')?.touched">
+                  @if (registrationForm.get('participant_name')?.invalid && registrationForm.get('participant_name')?.touched) {
+                    <div class="invalid-feedback">
+                      El nombre es requerido
+                    </div>
+                  }
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Due</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="Due"
+                    readonly>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="participant_email" class="form-label">
+                  Email Address <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="email"
+                  class="form-control"
+                  id="participant_email"
+                  formControlName="participant_email"
+                  placeholder="john@example.com"
+                  [class.is-invalid]="registrationForm.get('participant_email')?.invalid && registrationForm.get('participant_email')?.touched">
+                @if (registrationForm.get('participant_email')?.invalid && registrationForm.get('participant_email')?.touched) {
+                  <div class="invalid-feedback">
+                    @if (registrationForm.get('participant_email')?.errors?.['required']) {
+                      El email es requerido
+                    } @else if (registrationForm.get('participant_email')?.errors?.['email']) {
+                      Ingrese un email válido
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Phone Number -->
+              <div class="mb-3">
+                <label for="participant_phone" class="form-label">
+                  Phone Number <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="participant_phone"
+                  formControlName="participant_phone"
+                  placeholder="+1 (555) 123-4567"
+                  [class.is-invalid]="registrationForm.get('participant_phone')?.invalid && registrationForm.get('participant_phone')?.touched">
+                @if (registrationForm.get('participant_phone')?.invalid && registrationForm.get('participant_phone')?.touched) {
+                  <div class="invalid-feedback">
+                    El teléfono es requerido
+                  </div>
+                }
+              </div>
+
+              <!-- Special Requirements -->
+              <div class="mb-3">
+                <label for="notes" class="form-label">
+                  Special Requirements <span class="text-muted">(Optional)</span>
+                </label>
+                <textarea
+                  class="form-control"
+                  id="notes"
+                  formControlName="notes"
+                  rows="3"
+                  placeholder="Let us know if you have any dietary restrictions, accessibility needs, or other requirements..."></textarea>
+              </div>
+
+              <!-- Checkboxes -->
+              <div class="mb-3">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="terms"
+                    formControlName="terms"
+                    [class.is-invalid]="registrationForm.get('terms')?.invalid && registrationForm.get('terms')?.touched">
+                  <label class="form-check-label" for="terms">
+                    I agree to the <a href="#" class="text-primary">terms and conditions</a> and <a href="#" class="text-primary">privacy policy</a> <span class="text-danger">*</span>
+                  </label>
+                  @if (registrationForm.get('terms')?.invalid && registrationForm.get('terms')?.touched) {
+                    <div class="invalid-feedback d-block">
+                      Debe aceptar los términos y condiciones
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="updates"
+                    formControlName="updates">
+                  <label class="form-check-label" for="updates">
+                    Send me updates about similar events and special offers
+                  </label>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="d-flex gap-2">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="onCancel()"
+                  [disabled]="loading">
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-primary flex-grow-1"
+                  [disabled]="registrationForm.invalid || loading">
+                  @if (loading) {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Procesando...
+                  } @else {
+                    <i class="bi bi-check2-circle me-2"></i>
+                    Confirm Registration
+                  }
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>

@@ -5,8 +5,26 @@ import { content } from "./shared/routes/content.routes";
 export const routes: Routes = [
   {
     path: "",
-    redirectTo: "/pages/sample-page1",
+    redirectTo: "/news",
     pathMatch: "full",
+  },
+  {
+    path: "auth",
+    children: [
+      {
+        path: "login",
+        loadComponent: () =>
+          import("./auth/login/login").then((m) => m.Login),
+        data: {
+          title: "Iniciar Sesión",
+        },
+      },
+      {
+        path: "",
+        redirectTo: "login",
+        pathMatch: "full",
+      },
+    ],
   },
   {
     path: "",

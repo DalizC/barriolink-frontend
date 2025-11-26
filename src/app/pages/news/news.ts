@@ -5,7 +5,7 @@ import { RouterLink } from "@angular/router";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 import { CarouselModule, OwlOptions } from "ngx-owl-carousel-o";
-import { NewsService, NewsFilters } from "../../shared/services/news.service";
+import { NewsService } from "../../core/services/news.service";
 import { NewsItem, NEWS_MOCK_DATA } from "../../shared/data/news-mock.data";
 import { ICardToggleOptions } from "../../shared/interface/common";
 import { CardDropdownButton } from '../../shared/components/ui/card/card-dropdown-button/card-dropdown-button';
@@ -14,7 +14,7 @@ import { CardDropdownButton } from '../../shared/components/ui/card/card-dropdow
   selector: 'app-news',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, NgbModule, CarouselModule, CardDropdownButton],
-  templateUrl: "./news.html",
+  templateUrl: "./news-magazine.html",
   styleUrl: "./news.scss"
 })
 export class News implements OnInit {
@@ -34,6 +34,8 @@ export class News implements OnInit {
   carouselItems: NewsItem[] = [];
   pinnedItems: NewsItem[] = [];
   newsList: NewsItem[] = [];
+  // Full filtered (pre-paginated) list for counts & hero sections
+  allFilteredNews: NewsItem[] = [];
 
   // Pagination
   currentPage: number = 1;
@@ -66,13 +68,48 @@ export class News implements OnInit {
     this.loadAllData();
   }
 
-  /**
-   * Load all initial data: carousel, pinned, and news list
-   */
   private loadAllData(): void {
-    // During refactor we derive everything from mock data locally.
-    // Keep service methods commented for future backend reintegration.
-    this.initializeFromMock();
+    this.loading = true;
+
+    this.newsService.getNews({ status: 'published' }).subscribe({
+      next: (response) => {
+        console.log("Datos reales desde backend:", response);
+
+        // Usar los datos del backend directamente
+        this.newsList = response.results.map(item => this.adaptBackendToNewsItem(item));
+        this.totalItems = response.count;
+        this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+
+        // Carousel: usar las 5 más recientes
+        this.carouselItems = [...this.newsList]
+          .sort((a, b) => b.date.getTime() - a.date.getTime())
+          .slice(0, 5);
+
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error("Error cargando noticias reales:", err);
+        this.initializeFromMock();
+        this.loading = false;
+      }
+    });
+  }
+
+  /**
+   * Adaptar noticia del backend al formato NewsItem del frontend
+   */
+  private adaptBackendToNewsItem(item: any): NewsItem {
+    return {
+      id: item.id,
+      title: item.title || 'Sin título',
+      description: item.summary || '',
+      author: item.author_name || 'Desconocido',
+      date: new Date(item.published_at || item.created_at),
+      image: 'assets/images/placeholder.jpg', // Placeholder temporal por performance
+      tags: item.categories_detail?.map((c: any) => c.name) || [],
+      pinned: false,
+      hits: 0
+    };
   }
 
   /**
@@ -163,11 +200,13 @@ export class News implements OnInit {
       return this.sortOrder === 'asc' ? diff : -diff;
     });
 
-    // 4. Pagination
-    this.totalItems = filtered.length;
+    // Preserve full filtered list for hero sections & counters
+    this.allFilteredNews = filtered;
+    // 4. Pagination (slice from full filtered list)
+    this.totalItems = this.allFilteredNews.length;
     this.totalPages = Math.max(1, Math.ceil(this.totalItems / this.pageSize));
     const start = (this.currentPage - 1) * this.pageSize;
-    this.newsList = filtered.slice(start, start + this.pageSize);
+    this.newsList = this.allFilteredNews.slice(start, start + this.pageSize);
     this.loading = false;
   }
 
@@ -264,6 +303,51 @@ export class News implements OnInit {
   }
 
   /**
+   * Getter: full filtered list (pre-pagination) exposed as filteredNews in template
+   */
+  get filteredNews(): NewsItem[] {
+    return this.allFilteredNews.length ? this.allFilteredNews : this.newsList;
+  }
+
+  /**
+   * Getter: paginated subset for current page
+   */
+  get paginatedNews(): NewsItem[] {
+    return this.newsList;
+  }
+
+  /**
+   * Hero section: latest (first item of filtered list)
+   */
+  get latestNews(): NewsItem[] {
+    return this.filteredNews.slice(0,1);
+  }
+
+  /**
+   * Hero section: secondary (next two items)
+   */
+  get secondaryNews(): NewsItem[] {
+    return this.filteredNews.slice(1,3);
+  }
+
+  /**
+   * Featured section: items 4 & 5 of filtered list
+   */
+  get featuredNews(): NewsItem[] {
+    return this.filteredNews.slice(3,5);
+  }
+
+  /**
+   * Clear all filters and reset list
+   */
+  clearFilters(): void {
+    this.searchText = '';
+    this.sortOrder = 'desc';
+    this.options.forEach(o => o.selected = false);
+    this.applyFilters();
+  }
+
+  /**
    * Format date for display
    */
   formatDate(date: Date): string {
@@ -278,4 +362,25 @@ export class News implements OnInit {
     { id: 1, title: 'Editar', iconHtml: '<i class="fa-solid fa-pencil-square"></i>' },
     { id: 2, title: 'Eliminar', iconHtml: '<i class="fas fa-trash-alt"></i>', itemClass: 'text-danger' },
   ];
+
+
+  private adaptBackendNewsItem(api: any): NewsItem {
+    return {
+      id: api.id,
+      title: api.title,
+      description: api.content ?? '',
+      date: new Date(),        // o new Date(api.created_at) cuando lo agregues al backend
+      tags: [],
+      pinned: false,
+      image: '',
+
+      // Campos requeridos por la UI
+      author: api.author ?? 'Administrador',
+      hits: 0,
+    };
+  }
+
+
+
+
 }

@@ -23,32 +23,32 @@
               [formGroup]="loginForm"
               (ngSubmit)="login()"
             >
-              <h4>Sign in to account</h4>
-              <p>Enter your email & password to login</p>
+              <h4>Iniciar Sesión</h4>
+              <p>Ingresa tu email y contraseña para acceder</p>
               <div class="form-group">
-                <label class="col-form-label">Email Address</label>
+                <label class="col-form-label">Correo Electrónico</label>
                 <input
                   class="form-control"
                   type="email"
                   required=""
-                  placeholder="test@gmail.com"
+                  placeholder="correo@ejemplo.com"
                   formControlName="email"
                 />
                 @if (
                   loginForm.controls["email"].touched &&
                   loginForm.controls["email"].errors?.["required"]
                 ) {
-                  <div class="text text-danger mt-1">Email is required</div>
+                  <div class="text text-danger mt-1">El email es requerido</div>
                 }
                 @if (
                   loginForm.controls["email"].touched &&
                   loginForm.controls["email"].errors?.["email"]
                 ) {
-                  <div class="text text-danger mt-1">Invalid Email</div>
+                  <div class="text text-danger mt-1">Email inválido</div>
                 }
               </div>
               <div class="form-group">
-                <label class="col-form-label">Password</label>
+                <label class="col-form-label">Contraseña</label>
                 <div class="form-input position-relative">
                   <input
                     class="form-control"
@@ -73,7 +73,15 @@
                     loginForm.controls["password"].errors?.["required"]
                   ) {
                     <div class="text text-danger mt-1">
-                      Password is required
+                      La contraseña es requerida
+                    </div>
+                  }
+                  @if (
+                    loginForm.controls["password"].touched &&
+                    loginForm.controls["password"].errors?.["minlength"]
+                  ) {
+                    <div class="text text-danger mt-1">
+                      La contraseña debe tener al menos 5 caracteres
                     </div>
                   }
                 </div>
@@ -86,59 +94,31 @@
                     type="checkbox"
                   />
                   <label class="text-muted form-check-label" for="checkbox1"
-                    >Remember password</label
+                    >Recordar contraseña</label
                   >
                 </div>
                 <a class="link" [routerLink]="['/auth/forgot-password']"
-                  >Forgot password?</a
+                  >¿Olvidaste tu contraseña?</a
                 >
                 <div class="text-end">
                   <button
                     class="btn btn-primary btn-block w-100 mt-3"
                     type="submit"
-                    [disabled]="!loginForm.valid"
+                    [disabled]="!loginForm.valid || loading"
                   >
-                    Sign in
+                    @if (loading) {
+                      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Iniciando sesión...
+                    } @else {
+                      Iniciar Sesión
+                    }
                   </button>
                 </div>
               </div>
-              <h6 class="text-muted mt-4 or">Or Sign in with</h6>
-              <div class="social mt-4">
-                <div class="btn-showcase">
-                  <a
-                    class="btn btn-light"
-                    href="https://www.linkedin.com/login"
-                    target="_blank"
-                  >
-                    <i class="fa-brands fa-linkedin-in"></i>
-                  </a>
-                  <a
-                    class="btn btn-light"
-                    href="https://twitter.com/login?lang=en"
-                    target="_blank"
-                  >
-                    <i class="fa-brands fa-x-twitter"></i>
-                  </a>
-                  <a
-                    class="btn btn-light"
-                    href="https://www.facebook.com/"
-                    target="_blank"
-                  >
-                    <i class="fa-brands fa-facebook-f"></i>
-                  </a>
-                  <a
-                    class="btn btn-light"
-                    href="https://www.google.com/"
-                    target="_blank"
-                  >
-                    <i class="fa-brands fa-google"></i>
-                  </a>
-                </div>
-              </div>
               <p class="mt-4 mb-0 text-center">
-                Don't have account?
+                ¿No tienes cuenta?
                 <a class="ms-2" [routerLink]="['/auth/register']"
-                  >Create Account</a
+                  >Crear Cuenta</a
                 >
               </p>
             </form>

@@ -138,9 +138,17 @@
   background-color: transparent;
   margin-bottom: 20px;
 
+  // Laptops/monitores estándar (xl)
+  @media (min-width: 1200px) {
+    //width: 100%;
+    max-width: 1200px;
+    padding: 5px;
+  }
+
+
   // Desktop y tablet: contenedor centrado con ancho controlado
   @media (min-width: 992px) {
-    width: 80%;
+    width: 100%;
     max-width: 1400px; // Límite máximo para pantallas muy grandes
     margin-left: auto;
     margin-right: auto;

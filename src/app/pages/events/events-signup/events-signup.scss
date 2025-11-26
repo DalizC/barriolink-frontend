@@ -1,0 +1,176 @@
+.card {
+  border: none;
+  border-radius: 12px;
+
+  .card-body {
+    padding: 2rem;
+  }
+}
+
+.event-info-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .event-image {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100%;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    i {
+      font-size: 4rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .event-details {
+    h5 {
+      color: #2d3748;
+      font-weight: 600;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+
+      i {
+        font-size: 1.1rem;
+        width: 20px;
+      }
+
+      span {
+        color: #4a5568;
+      }
+    }
+  }
+}
+
+.form-label {
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  padding: 0.625rem 0.75rem;
+
+  &:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+
+  &.is-invalid {
+    border-color: #e53e3e;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+    }
+  }
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-check-input {
+  border-radius: 4px;
+  border: 1px solid #cbd5e0;
+
+  &:checked {
+    background-color: #667eea;
+    border-color: #667eea;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+}
+
+.form-check-label {
+  color: #4a5568;
+  margin-left: 0.25rem;
+
+  a {
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.btn {
+  border-radius: 6px;
+  padding: 0.625rem 1.25rem;
+  font-weight: 500;
+  transition: all 0.2s;
+
+  &.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &.btn-outline-secondary {
+    border-color: #cbd5e0;
+    color: #4a5568;
+
+    &:hover:not(:disabled) {
+      background-color: #f7fafc;
+      border-color: #a0aec0;
+    }
+  }
+}
+
+.invalid-feedback {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  border-radius: 4px;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .card-body {
+    padding: 1.5rem !important;
+  }
+
+  .event-info-card {
+    .event-image {
+      min-height: 150px;
+    }
+  }
+
+  .detail-item {
+    font-size: 0.85rem !important;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}

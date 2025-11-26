@@ -1,0 +1,64 @@
+.facility-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &.inactive {
+    opacity: 0.7;
+    background-color: #f8f9fa;
+  }
+}
+
+.facility-details {
+  font-size: 0.875rem;
+
+  i {
+    width: 20px;
+    flex-shrink: 0;
+  }
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.dropdown-menu {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+// Pagination
+.pagination {
+  .page-link {
+    color: #6c757d;
+
+    &:hover {
+      color: #0d6efd;
+    }
+  }
+
+  .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+
+  .page-item.disabled .page-link {
+    cursor: not-allowed;
+  }
+}
+
+// Empty state
+.bi-building {
+  font-size: 4rem;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .facility-card {
+    margin-bottom: 1rem;
+  }
+}

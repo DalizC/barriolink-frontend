@@ -11,42 +11,63 @@
   <div
     class="nav-right col-xxl-7 col-xl-6 col-md-7 col-8 pull-right right-header p-0 ms-auto"
   >
-    <ul class="nav-menus">
-      <li
-        class="language-nav"
-        (click)="toggleLanguage()"
-        (clickOutside)="clickOutside()"
-      >
-        <app-header-language />
-      </li>
+    @if (authService.currentUser$ | async) {
+      <!-- Usuario autenticado - mostrar widgets completos -->
+      <ul class="nav-menus">
+        <li
+          class="language-nav"
+          (click)="toggleLanguage()"
+          (clickOutside)="clickOutside()"
+        >
+          <app-header-language />
+        </li>
 
-      <li class="fullscreen-body">
-        <app-toggle-screen />
-      </li>
+        <li class="fullscreen-body">
+          <app-toggle-screen />
+        </li>
 
-      <li>
-        <app-svg-icon [icon]="'search'" (click)="openSearch()" />
-      </li>
+        <li>
+          <app-svg-icon [icon]="'search'" (click)="openSearch()" />
+        </li>
 
-      <li class="onhover-dropdown">
-        <app-header-bookmark />
-      </li>
+        <li class="onhover-dropdown">
+          <app-header-bookmark />
+        </li>
 
-      <li>
-        <app-mode />
-      </li>
+        <li>
+          <app-mode />
+        </li>
 
-      <li class="cart-nav onhover-dropdown">
-        <app-header-cart />
-      </li>
+        <li class="cart-nav onhover-dropdown">
+          <app-header-cart />
+        </li>
 
-      <li class="onhover-dropdown">
-        <app-header-notification />
-      </li>
+        <li class="onhover-dropdown">
+          <app-header-notification />
+        </li>
 
-      <li class="profile-nav onhover-dropdown pe-0 py-0">
-        <app-profile />
-      </li>
-    </ul>
+        <li class="profile-nav onhover-dropdown pe-0 py-0">
+          <app-profile />
+        </li>
+      </ul>
+    } @else {
+      <!-- Usuario no autenticado - mostrar solo botón de login -->
+      <ul class="nav-menus">
+        <li>
+          <app-mode />
+        </li>
+
+        <li class="d-flex align-items-center">
+          <button
+            class="btn btn-primary btn-sm px-4"
+            (click)="goToLogin()"
+            type="button"
+          >
+            <i class="fa fa-sign-in me-2"></i>
+            Iniciar Sesión
+          </button>
+        </li>
+      </ul>
+    }
   </div>
 </div>

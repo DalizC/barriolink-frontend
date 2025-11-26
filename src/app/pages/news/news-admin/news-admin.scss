@@ -1,0 +1,357 @@
+.blog-box .blog-details-main .blog-social li {
+  padding: 0 12px;
+}
+
+.pinned-news>div.row {
+  height: 100%;
+  margin-top: 0px;
+}
+
+/* Solo desde XL: la columna derecha llena el alto y reparte A arriba / B abajo */
+@media (min-width: 1200px) {
+  .pinned-news {
+    display: flex;
+  }
+
+  /* hace que la col sea flex */
+  .pinned-news .pinned-stack {
+    display: flex;
+    /* el "row" se vuelve columna flex */
+    flex-direction: column;
+    justify-content: space-between;
+    /* A arriba, B abajo */
+    flex: 1 1 auto;
+    /* que llene el alto del padre */
+  }
+
+  /* (opcional) evita problemas de overflow en algunos navegadores */
+  .pinned-news .pinned-stack {
+    min-height: 0;
+  }
+}
+
+/* Alinear bordes: quitar margen superior del primer .pinned y margen inferior del último .pinned */
+.pinned-news .pinned-stack>.pinned:first-child {
+  margin-top: 0 !important;
+}
+
+.pinned-news .pinned-stack>.pinned:last-child {
+  margin-bottom: 0 !important;
+}
+
+.pinned-news .pinned-stack>.pinned:last-child>.card {
+  margin-bottom: 10px !important;
+}
+
+/*Ajuste a altura del carrusel*/
+//owl-carousel-o { align-self: stretch; }
+
+/* Carousel rounded corners */
+.rounded-carousel {
+  border-radius: 15px;
+  overflow: hidden;
+  /* ensure children respect rounding */
+}
+
+.rounded-carousel .carousel-inner,
+.rounded-carousel .carousel-item,
+.rounded-carousel .carousel-item img {
+  border-radius: 15px;
+}
+
+.carousel-caption {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+/*.blog-list {
+  img {
+    height: 350px;
+    object-fit: cover;
+
+    @media (max-width: 1999px) {
+      height: 300px;
+    }
+
+    @media (max-width: 1199px) {
+      height: 200px;
+    }
+
+    @media (max-width: 992px) {
+      height: 195px;
+    }
+
+    @media (max-width: 767px) {
+      height: 150px;
+    }
+
+
+
+    @media (max-width: 576px) {
+      height: 100px;
+      margin-bottom: 0px !important;
+    }
+  }
+  margin-bottom: 0px !important;
+
+  // Sobrescribir el comportamiento del tema que oculta el contenido
+  .blog-bottom-content {
+    display: block !important;
+  }
+}*/
+/*
+.d-flex small > span {
+  margin-left: 5px;
+}
+
+.badge-spacing .badge {
+  padding: 1px 10px;
+  font-size: 12px;
+}
+
+h1 > span.badge {
+  margin-left: 10px;
+}
+
+.card.b-r-0 {
+  padding-left: 0px;
+}
+*/
+:host ::ng-deep .news-select2 {
+  .select2-container {
+    width: 100% !important;
+  }
+
+  .select2-container--default .select2-selection--multiple {
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    min-height: 42px;
+    padding: 6px 10px;
+  }
+
+  .select2-selection__placeholder {
+    display: none !important;
+  }
+
+  .select2-search__field::placeholder {
+    color: transparent;
+  }
+
+  .select2-selection__rendered {
+    display: flex !important;
+    gap: 8px;
+  }
+
+  .select2-option-checkbox {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .form-check-input {
+      pointer-events: none;
+      margin: 0;
+    }
+
+    .select2-option-label {
+      flex: 1;
+    }
+  }
+}
+
+.d-inline-block.select2-secondary.dropdown {
+  button {
+    width: 100%;
+    border: 0;
+    min-width: 120px;
+  }
+
+  i {
+    margin-right: 5px;
+  }
+}
+
+/* Equal-height cards in news grid */
+/*.product-wrapper-grid {
+  .row > [class*='col-'] {
+    display: flex;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-box {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+  }
+
+  .product-details {
+    margin-top: auto;
+  }
+}
+  */
+
+.news-img {
+  height: 220px;
+  /* ajusta este valor a lo que te guste */
+  overflow: hidden;
+  /* recorta lo que se salga */
+  position: relative;
+  /* mantiene referencia para ribbon u otros overlays dentro de la imagen */
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* recorta por los bordes pero no deforma */
+    display: block;
+    /* evita espacios raros debajo de la imagen */
+    /* hover-1 effect base: smooth scale */
+    transition: transform .35s ease-in-out;
+  }
+}
+
+/* hover-1 effect: al hacer hover sobre el card, escalar la imagen ligeramente */
+/* Importante: el hover de la imagen NO debe actuar por sí solo */
+.product-wrapper-grid .news-img img:hover {
+  transform: none !important;
+}
+
+/* hover-1 effect: solo cuando el card está en hover o activo por menú */
+.product-wrapper-grid .card:hover .news-img img,
+.product-wrapper-grid .card.dropdown-active .news-img img {
+  transform: scale(1.08) !important;
+}
+
+/* En vista de filas (rows/list), desactivar el hover de la imagen incluso si el card está en hover o activo */
+.product-wrapper-grid.list-view .card:hover .news-img img,
+.product-wrapper-grid.list-view .card.dropdown-active .news-img img {
+  transform: none !important;
+}
+
+/* Escalar el card completo (y su contenido) ligeramente al hacer hover */
+.product-wrapper-grid .card.hover-shadow-boost {
+  transform-origin: center center;
+  /* Sincronizar timing con la imagen para evitar desfases */
+  transition: transform .3s ease-in-out, box-shadow .3s ease-in-out;
+}
+
+/* Estado activo unificado (hover o menú abierto) */
+.product-wrapper-grid .card.hover-shadow-boost:hover,
+.product-wrapper-grid .card.hover-shadow-boost.dropdown-active {
+  /* Combinamos el lift existente (-2px) con un scale sutil */
+  transform: translateY(-2px) scale(1.02);
+  /* Eliminar borde visible sin provocar reflow */
+  border-color: transparent !important;
+  /* Sombra consistente con hover global + borde interior para evitar línea fina */
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, .25), 0 0.3rem 0.6rem rgba(0, 0, 0, .18), inset 0 0 0 1px var(--bs-card-bg, #fff);
+}
+
+/* En vista de lista, mantenemos el zoom pero forzamos renderizado nítido */
+.product-wrapper-grid.list-view .card.hover-shadow-boost:hover,
+.product-wrapper-grid.list-view .card.hover-shadow-boost.dropdown-active {
+  //transform: translateY(-2px) scale(1.05);
+  -ms-transform: translateY(-2px) scale(1.02);
+  /* IE 9 */
+  -webkit-transform: translateY(-2px) scale(1.02);
+  transform: translateY(-2px) scale(1.02);
+  /* Safari 3-8 */
+  /* Hacks para evitar texto borroso en Chrome/Edge durante transformaciones */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  //filter: blur(0);
+  /* Fuerza aceleración de hardware sin desenfoque */
+
+  //backface-visibility: hidden;
+  //-webkit-font-smoothing: subpixel-antialiased;
+  //transform: translateZ(0);
+}
+
+/* Asegurar que el contenido de texto tenga su propio contexto de renderizado */
+.product-wrapper-grid.list-view .product-details {
+  transform: translateZ(0);
+  will-change: transform;
+  /* Indica al navegador que este elemento cambiará */
+}
+
+/* Quitar el borde del card al hacer hover (sin variar el grosor → evitar "saltos") */
+.product-wrapper-grid .card.hover-shadow-boost:hover {
+  border-color: transparent !important;
+  /* redundante, mantenido por especificidad */
+}
+
+/* Mejorar el anti-aliasing al escalar para evitar halos */
+.product-wrapper-grid .card.hover-shadow-boost {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  background-clip: padding-box;
+}
+
+/* Botón de menú de opciones anclado al card */
+.product-wrapper-grid .card {
+  position: relative;
+  /* establece el contexto de posicionamiento */
+}
+
+.news-card-menu {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+}
+
+.news-card-menu .btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.news-card-menu .btn:hover {
+  background: #ffffff;
+}
+
+
+.product-box .product-details h6,
+.product-box .product-details .h6 {
+  color: var(--bs-heading-color);
+  text-transform: none;
+  margin-bottom: 5px;
+}
+
+.product-box .product-details {
+  padding: 25px 25px 35px 25px;
+}
+
+.product-wrapper-grid .card.card-body {
+  padding: 0;
+}
+
+.card-header-right-icon .icon-dropdown.dropdown {
+  width: fit-content;
+}
+
+.product-box> :last-child {
+  margin-left: auto;
+}
+
+/* ===== Estado global cuando hay un dropdown activo (suprimir hovers en otras cards) ===== */
+.product-wrapper-grid.has-active-dropdown .card.hover-shadow-boost:not(.dropdown-active):hover {
+  /* Cancelar transform y sombra adicional en cards que no estén activas */
+  transform: none;
+  box-shadow: none;
+  border-color: inherit !important;
+}
+
+.product-wrapper-grid.has-active-dropdown .card.hover-shadow-boost:not(.dropdown-active) .news-img img {
+  /* Asegurar que la imagen tampoco escale */
+  transform: none !important;
+}
+
+/* En vista de lista mantiene prioridad de no escalar (regla existente ya cubre), pero añadimos especificidad para claridad */
+.product-wrapper-grid.list-view.has-active-dropdown .card.hover-shadow-boost:not(.dropdown-active) .news-img img {
+  transform: none !important;
+}
