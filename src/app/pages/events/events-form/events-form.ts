@@ -63,6 +63,7 @@ export class EventsForm implements OnInit {
   isEditMode = false;
   eventId: number | null = null;
   loading = false;
+  loadingEvents = false;
   error: string | null = null;
   successMessage: string | null = null;
   facilities: Facility[] = [];
@@ -110,6 +111,8 @@ export class EventsForm implements OnInit {
 
   ngOnInit(): void {
     this.loadFacilities();
+    // Generar calendario inicial
+    this.generateCalendarDays();
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -259,6 +262,8 @@ export class EventsForm implements OnInit {
         location: facility.name
       });
     }
+    // Generar calendario inicial antes de cargar eventos
+    this.generateCalendarDays();
     // Cargar eventos existentes de la facility para mostrar en calendario
     console.log('Llamando loadExistingEvents()...');
     this.loadExistingEvents();
@@ -656,20 +661,19 @@ export class EventsForm implements OnInit {
     if (this.currentStep < 5) {
       this.currentStep++;
 
-      // Al entrar al paso 3: cargar eventos existentes
+      // Al entrar al paso 3: generar calendario y cargar eventos existentes
       if (this.currentStep === 3) {
         console.log('=== ENTRANDO AL PASO 3 ===');
         console.log('selectedFacility:', this.selectedFacility?.name);
         console.log('eventType:', this.eventType);
 
-        // Cargar eventos existentes de la facility (esto generará el calendario cuando termine)
+        // Siempre generar calendario primero (mostrará días vacíos)
+        this.generateCalendarDays();
+
+        // Luego cargar eventos existentes si hay facility seleccionada
         if (this.selectedFacility) {
           console.log('Cargando eventos de la facility...');
           this.loadExistingEvents();
-        } else {
-          console.log('⚠️ No hay facility seleccionada, generando calendario vacío');
-          // Si no hay facility, generar calendario vacío
-          this.generateCalendarDays();
         }
       }
     }
@@ -710,10 +714,16 @@ export class EventsForm implements OnInit {
       this.currentStep = step;
 
       // Initialize data when entering certain steps
-      if (step === 3 && this.eventType === 'periodic') {
-        this.initializeOccurrences();
-        this.loadExistingEvents();
-        setTimeout(() => this.generateCalendarDays(), 100);
+      if (step === 3) {
+        if (this.eventType === 'periodic') {
+          this.initializeOccurrences();
+        }
+        // Siempre generar calendario primero
+        this.generateCalendarDays();
+        // Luego cargar eventos si hay facility
+        if (this.selectedFacility) {
+          this.loadExistingEvents();
+        }
       }
     }
   }
@@ -763,12 +773,16 @@ export class EventsForm implements OnInit {
     if (!this.selectedFacility) {
       console.log('❌ No hay facility seleccionada, limpiando eventos');
       this.existingEvents = [];
+      this.loadingEvents = false;
       this.generateCalendarDays();
       return;
     }
 
     console.log('✓ Facility seleccionada:', this.selectedFacility.name, 'ID:', this.selectedFacility.id);
     console.log('Haciendo petición a API...');
+
+    // Activar loader
+    this.loadingEvents = true;
 
     // Cargar eventos de la facility seleccionada
     this.eventService.getEvents({
@@ -783,11 +797,13 @@ export class EventsForm implements OnInit {
         if (this.existingEvents.length > 0) {
           console.log('Eventos:', this.existingEvents);
         }
+        this.loadingEvents = false;
         this.generateCalendarDays();
       },
       error: (error) => {
         console.error('Error loading events:', error);
         this.existingEvents = [];
+        this.loadingEvents = false;
         this.generateCalendarDays();
       }
     });

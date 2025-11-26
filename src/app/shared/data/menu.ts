@@ -10,7 +10,7 @@ export const menuItems: IMenu[] = [
     title: "Inicio",
     icon: "home",
     type: "link",
-    path: "/home",
+    path: "/news",
     active: false,
     level: 1,
   },

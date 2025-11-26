@@ -1,1 +1,149 @@
-<p>my-news works!</p>
+<div class="container-fluid candidate-wrapper">
+    <div class="row g-3">
+        <div class="col-12">
+            <!-- Card con filtros y búsqueda -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-xl col-md-4 col-sm-6">
+                            <label class="form-label">Buscar Noticia</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Buscar por título, categoría..."
+                                [(ngModel)]="searchText"
+                                (keyup)="onSearch()">
+                        </div>
+                        <div class="col-xl col-md-4 col-sm-6">
+                            <label class="form-label">Rango de Fechas de Creación</label>
+                            <div class="input-group">
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    [value]="getDateRangeText()"
+                                    (click)="toggleDatePicker()"
+                                    readonly
+                                    placeholder="Seleccionar rango">
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    (click)="clearDateRange()"
+                                    *ngIf="fromDate">
+                                    <i class="icofont icofont-close"></i>
+                                </button>
+                            </div>
+
+                            <!-- DatePicker desplegable -->
+                            <div class="position-relative" *ngIf="showDatePicker">
+                                <div class="dropdown-menu show" style="position: absolute; z-index: 1050; margin-top: 4px;">
+                                    <ngb-datepicker
+                                        #dp
+                                        (dateSelect)="onDateSelection($event)"
+                                        [displayMonths]="2"
+                                        [dayTemplate]="dayTemplate"
+                                        outsideDays="hidden">
+                                    </ngb-datepicker>
+
+                                    <ng-template #dayTemplate let-date let-focused="focused">
+                                        <span
+                                            class="custom-day"
+                                            [class.focused]="focused"
+                                            [class.range]="isRange(date)"
+                                            [class.faded]="isHovered(date) || isInside(date)"
+                                            (mouseenter)="hoveredDate = date"
+                                            (mouseleave)="hoveredDate = null">
+                                            {{ date.day }}
+                                        </span>
+                                    </ng-template>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl col-md-4 col-sm-6">
+                            <label class="form-label">Categoría</label>
+                            <select class="form-select" [(ngModel)]="selectedCategory">
+                                <option [value]="null">Todas las categorías</option>
+                                @for (category of categories; track category.id) {
+                                    <option [value]="category.id">{{ category.name }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-primary" (click)="applyServerFilters()">
+                                <i class="icofont icofont-filter"></i>
+                                Filtrar
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <app-card-dropdown-button
+                                [dropdownType]="'simple'"
+                                [options]="filterMenuOptions"
+                                dropdownClass="btn btn-outline-secondary">
+                            </app-card-dropdown-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs fuera del card -->
+            <ul class="nav nav-tabs border-tab nav-primary mb-0 mt-3" ngbNav #nav="ngbNav"
+                [(activeId)]="activeTab">
+                <li [ngbNavItem]="'all'">
+                    <a class="nav-link" ngbNavLink (click)="filterByStatus('all')">
+                        <i class="icofont icofont-file-text"></i>
+                        Todas
+                        <span class="badge badge-light-primary ms-2">{{ getStatusCount('all') }}</span>
+                    </a>
+                </li>
+                <li [ngbNavItem]="'draft'">
+                    <a class="nav-link" ngbNavLink (click)="filterByStatus('draft')">
+                        <i class="icofont icofont-edit"></i>
+                        Borradores
+                        <span class="badge badge-light-secondary ms-2">{{ getStatusCount('draft') }}</span>
+                    </a>
+                </li>
+                <li [ngbNavItem]="'published'">
+                    <a class="nav-link" ngbNavLink (click)="filterByStatus('published')">
+                        <i class="icofont icofont-check-circled"></i>
+                        Publicadas
+                        <span class="badge badge-light-success ms-2">{{ getStatusCount('published') }}</span>
+                    </a>
+                </li>
+                <li [ngbNavItem]="'archived'">
+                    <a class="nav-link" ngbNavLink (click)="filterByStatus('archived')">
+                        <i class="icofont icofont-archive"></i>
+                        Archivadas
+                        <span class="badge badge-light-danger ms-2">{{ getStatusCount('archived') }}</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Card con la tabla -->
+            <div class="card mt-0">
+                <div class="card-body candidates-box px-0 pt-0">
+                    <div class="table-responsive table-events-admin custom-scrollbar position-relative" style="min-height: 300px;">
+                        @if (isLoading) {
+                            <div class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
+                                <ngx-spinner
+                                    [fullScreen]="false"
+                                    type="ball-spin-clockwise"
+                                    size="medium"
+                                    bdColor="rgba(255, 255, 255, .8)"
+                                    color="#7366ff">
+                                    <p class="loading-text">Cargando noticias...</p>
+                                </ngx-spinner>
+                            </div>
+                        } @else {
+                            <app-table
+                                [tableConfig]="tableConfig"
+                                [hasCheckbox]="true"
+                                [pageSize]="10"
+                                [paginateDetails]="true"
+                                [search]="false">
+                            </app-table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
