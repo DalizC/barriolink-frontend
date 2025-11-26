@@ -54,6 +54,11 @@ export class EventsForm implements OnInit {
   existingEvents: any[] = [];
   selectedFacility: Facility | null = null;
 
+  // Conflict detection
+  hasConflict: boolean = false;
+  conflictMessage: string | null = null;
+  checkingConflicts: boolean = false;
+
   eventForm!: FormGroup;
   isEditMode = false;
   eventId: number | null = null;
@@ -242,19 +247,35 @@ export class EventsForm implements OnInit {
   }
 
   onFacilityChange(facilityId: string | number): void {
+    console.log('=== onFacilityChange ===');
+    console.log('facilityId recibido:', facilityId, 'tipo:', typeof facilityId);
     const id = typeof facilityId === 'string' ? parseInt(facilityId, 10) : facilityId;
+    console.log('ID parseado:', id);
     const facility = this.facilities.find(f => f.id === id);
+    console.log('Facility encontrada:', facility?.name);
     this.selectedFacility = facility || null;
     if (facility) {
       this.eventForm.patchValue({
         location: facility.name
       });
     }
+    // Cargar eventos existentes de la facility para mostrar en calendario
+    console.log('Llamando loadExistingEvents()...');
+    this.loadExistingEvents();
+    // Verificar conflictos al cambiar facility
+    this.checkForConflicts();
+  }
+
+  onDateTimeChange(): void {
+    // Verificar conflictos al cambiar fechas/horarios
+    this.checkForConflicts();
   }
 
   onDaySelected(): void {
     // Regenerate calendar when a day is selected
     this.generateCalendarDays();
+    // Verificar conflictos al seleccionar días
+    this.checkForConflicts();
   }
 
   toggleEndDate(): void {
@@ -262,11 +283,25 @@ export class EventsForm implements OnInit {
     if (!this.hasEndDate) {
       this.endDate = null;
     }
+    // Verificar conflictos al cambiar fecha fin
+    this.checkForConflicts();
   }
 
   submitEvent(): void {
     if (this.eventForm.invalid) {
       this.showNotification('Por favor completa todos los campos requeridos', 'error');
+      return;
+    }
+
+    // Validar que hay una facility seleccionada
+    if (!this.selectedFacility) {
+      this.showNotification('Por favor selecciona un recinto para el evento', 'error');
+      return;
+    }
+
+    // Verificar si hay conflictos antes de enviar
+    if (this.hasConflict) {
+      this.showNotification('No se puede crear el evento. Existe un conflicto de horario con otro evento en el mismo recinto.', 'error');
       return;
     }
 
@@ -351,7 +386,7 @@ export class EventsForm implements OnInit {
       title: this.eventForm.value.title,
       description: this.eventForm.value.description,
       location: this.eventForm.value.location,
-      facility_id: this.selectedFacility?.id || null,
+      facility_id: this.selectedFacility.id, // Ya validamos que existe
       start_datetime: startDatetime,
       end_datetime: endDatetime,
       is_public: true,
@@ -367,6 +402,7 @@ export class EventsForm implements OnInit {
     // Log del payload antes de enviar
     console.log('=== DATOS DEL EVENTO A ENVIAR ===');
     console.log('Event Type:', this.eventType);
+    console.log('Selected Facility:', this.selectedFacility.name, 'ID:', this.selectedFacility.id);
     console.log('Payload completo:', JSON.stringify(eventData, null, 2));
     console.log('=================================');
 
@@ -391,6 +427,191 @@ export class EventsForm implements OnInit {
     });
   }
 
+  checkForConflicts(): void {
+    // VALIDACIÓN PREVIA: Solo validar si tenemos TODOS los datos necesarios
+    if (!this.selectedFacility) {
+      this.hasConflict = false;
+      this.conflictMessage = null;
+      return;
+    }
+
+    // Para eventos únicos: necesitamos fecha Y horarios
+    if (this.eventType === 'one-time') {
+      if (!this.startDate || !this.occurrences[0]?.startTime || !this.occurrences[0]?.endTime) {
+        // No tenemos datos completos, no validar aún
+        this.hasConflict = false;
+        this.conflictMessage = null;
+        return;
+      }
+    }
+
+    // Para eventos periódicos: necesitamos fecha inicio Y al menos una ocurrencia configurada
+    if (this.eventType === 'periodic') {
+      if (!this.startDate) {
+        // No tenemos fecha de inicio, no validar aún
+        this.hasConflict = false;
+        this.conflictMessage = null;
+        return;
+      }
+
+      const hasConfiguredOccurrence = this.occurrences.some(occ =>
+        occ.startTime && occ.endTime && (this.recurrencePeriod !== 'weekly' || occ.day)
+      );
+
+      if (!hasConfiguredOccurrence) {
+        // No hay ocurrencias configuradas, no validar aún
+        this.hasConflict = false;
+        this.conflictMessage = null;
+        return;
+      }
+    }
+
+    // AHORA SÍ: Tenemos facility + fechas/horas completas, validar
+    this.checkingConflicts = true;
+    this.hasConflict = false;
+    this.conflictMessage = null;
+
+    // Construir rango de fechas a validar
+    let startDateTime: Date | null = null;
+    let endDateTime: Date | null = null;
+
+    if (this.eventType === 'one-time') {
+      if (this.startDate && this.occurrences[0]?.startTime && this.occurrences[0]?.endTime) {
+        const dateStr = this.startDate instanceof Date
+          ? this.startDate.toISOString().split('T')[0]
+          : this.startDate;
+        startDateTime = new Date(`${dateStr}T${this.occurrences[0].startTime}:00`);
+        endDateTime = new Date(`${dateStr}T${this.occurrences[0].endTime}:00`);
+      }
+    } else if (this.eventType === 'periodic' && this.startDate) {
+      const dateStr = this.startDate instanceof Date
+        ? this.startDate.toISOString().split('T')[0]
+        : this.startDate;
+      startDateTime = new Date(dateStr);
+      endDateTime = this.endDate
+        ? new Date(this.endDate instanceof Date ? this.endDate.toISOString().split('T')[0] : this.endDate)
+        : new Date(startDateTime.getTime() + 365 * 24 * 60 * 60 * 1000); // +1 año por defecto
+    }
+
+    if (!startDateTime) {
+      this.checkingConflicts = false;
+      return;
+    }
+
+    // Consultar eventos en la facility en ese rango
+    this.eventService.getEvents({
+      facility: this.selectedFacility.id,
+      start_date: startDateTime.toISOString().split('T')[0],
+      end_date: endDateTime!.toISOString().split('T')[0],
+      is_active: true
+    }).subscribe({
+      next: (response) => {
+        const conflicts = this.detectTimeConflicts(response.results, startDateTime!, endDateTime!);
+        this.hasConflict = conflicts.length > 0;
+
+        if (this.hasConflict) {
+          this.conflictMessage = `⚠️ Conflicto detectado: ${conflicts.length} evento(s) ya programados en este recinto para las fechas/horarios seleccionados`;
+        }
+
+        this.checkingConflicts = false;
+      },
+      error: (error) => {
+        console.error('Error checking conflicts:', error);
+        this.checkingConflicts = false;
+      }
+    });
+  }
+
+  detectTimeConflicts(existingEvents: any[], newStart: Date, newEnd: Date): any[] {
+    const conflicts: any[] = [];
+
+    existingEvents.forEach(event => {
+      // Expandir eventos recurrentes a ocurrencias
+      const occurrences = this.expandEventOccurrences(event, newStart, newEnd);
+
+      occurrences.forEach(occ => {
+        // Verificar si hay solapamiento
+        if (this.eventType === 'one-time') {
+          // Para eventos únicos, verificar solapamiento directo
+          if (this.timeRangesOverlap(newStart, newEnd, occ.start, occ.end)) {
+            conflicts.push({ event, occurrence: occ });
+          }
+        } else if (this.eventType === 'periodic') {
+          // Para eventos periódicos, verificar cada ocurrencia planificada
+          this.occurrences.forEach(newOcc => {
+            if (newOcc.day && newOcc.startTime && newOcc.endTime) {
+              // Verificar si el día coincide y hay solapamiento de horarios
+              const occDayOfWeek = (occ.start.getDay() + 6) % 7; // Convertir a lunes=0
+              const daysMap: { [key: string]: number } = {
+                'Lunes': 0, 'Martes': 1, 'Miércoles': 2, 'Jueves': 3,
+                'Viernes': 4, 'Sábado': 5, 'Domingo': 6
+              };
+              const newOccDayOfWeek = daysMap[newOcc.day];
+
+              if (occDayOfWeek === newOccDayOfWeek) {
+                // Mismo día de la semana, verificar horarios
+                const occStartMinutes = occ.start.getHours() * 60 + occ.start.getMinutes();
+                const occEndMinutes = occ.end.getHours() * 60 + occ.end.getMinutes();
+                const [newStartHour, newStartMin] = newOcc.startTime.split(':').map(Number);
+                const [newEndHour, newEndMin] = newOcc.endTime.split(':').map(Number);
+                const newStartMinutes = newStartHour * 60 + newStartMin;
+                const newEndMinutes = newEndHour * 60 + newEndMin;
+
+                if (this.minuteRangesOverlap(newStartMinutes, newEndMinutes, occStartMinutes, occEndMinutes)) {
+                  conflicts.push({ event, occurrence: occ, day: newOcc.day });
+                }
+              }
+            }
+          });
+        }
+      });
+    });
+
+    return conflicts;
+  }
+
+  expandEventOccurrences(event: any, rangeStart: Date, rangeEnd: Date): { start: Date; end: Date }[] {
+    const occurrences: { start: Date; end: Date }[] = [];
+    const eventStart = new Date(event.start_datetime);
+    const eventEnd = event.end_datetime ? new Date(event.end_datetime) : eventStart;
+
+    if (!event.recurrence_type || event.recurrence_type === 'none') {
+      // Evento único
+      if (eventStart >= rangeStart && eventStart <= rangeEnd) {
+        occurrences.push({ start: eventStart, end: eventEnd });
+      }
+    } else if (event.recurrence_type === 'weekly' && event.recurrence_days_of_week) {
+      // Evento semanal recurrente
+      const daysOfWeek = event.recurrence_days_of_week.split(',').map((d: string) => parseInt(d.trim()));
+      const recurrenceEnd = event.recurrence_end_date ? new Date(event.recurrence_end_date) : rangeEnd;
+
+      let currentDate = new Date(Math.max(eventStart.getTime(), rangeStart.getTime()));
+      currentDate.setHours(0, 0, 0, 0);
+
+      while (currentDate <= recurrenceEnd && currentDate <= rangeEnd) {
+        const dayOfWeek = (currentDate.getDay() + 6) % 7;
+        if (daysOfWeek.includes(dayOfWeek)) {
+          const occStart = new Date(currentDate);
+          occStart.setHours(eventStart.getHours(), eventStart.getMinutes(), 0, 0);
+          const occEnd = new Date(currentDate);
+          occEnd.setHours(eventEnd.getHours(), eventEnd.getMinutes(), 0, 0);
+          occurrences.push({ start: occStart, end: occEnd });
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    return occurrences;
+  }
+
+  timeRangesOverlap(start1: Date, end1: Date, start2: Date, end2: Date): boolean {
+    return start1 < end2 && end1 > start2;
+  }
+
+  minuteRangesOverlap(start1: number, end1: number, start2: number, end2: number): boolean {
+    return start1 < end2 && end1 > start2;
+  }
+
   showNotification(message: string, type: 'success' | 'error' | 'info' = 'info'): void {
     // Create notification element
     const notification = document.createElement('div');
@@ -413,9 +634,7 @@ export class EventsForm implements OnInit {
         document.body.removeChild(notification);
       }, 150);
     }, 5000);
-  }
-
-  nextStep(): void {
+  }  nextStep(): void {
     // Validaciones antes de avanzar
     if (this.currentStep === 1 && !this.eventType) {
       return; // No puede avanzar sin tipo de evento
@@ -432,15 +651,26 @@ export class EventsForm implements OnInit {
     // Inicializar occurrences al pasar del paso 2 al 3
     if (this.currentStep === 2 && this.recurrencePeriod) {
       this.initializeOccurrences();
-      this.loadExistingEvents();
     }
 
     if (this.currentStep < 5) {
       this.currentStep++;
 
-      // Generar calendario al entrar al paso 3 (solo para eventos periódicos)
-      if (this.currentStep === 3 && this.eventType === 'periodic') {
-        setTimeout(() => this.generateCalendarDays(), 0);
+      // Al entrar al paso 3: cargar eventos existentes
+      if (this.currentStep === 3) {
+        console.log('=== ENTRANDO AL PASO 3 ===');
+        console.log('selectedFacility:', this.selectedFacility?.name);
+        console.log('eventType:', this.eventType);
+
+        // Cargar eventos existentes de la facility (esto generará el calendario cuando termine)
+        if (this.selectedFacility) {
+          console.log('Cargando eventos de la facility...');
+          this.loadExistingEvents();
+        } else {
+          console.log('⚠️ No hay facility seleccionada, generando calendario vacío');
+          // Si no hay facility, generar calendario vacío
+          this.generateCalendarDays();
+        }
       }
     }
   }
@@ -526,14 +756,39 @@ export class EventsForm implements OnInit {
   }
 
   loadExistingEvents(): void {
-    this.eventService.getEvents({ page_size: 100, is_active: true }).subscribe({
+    console.log('=== CARGANDO EVENTOS EXISTENTES ===');
+    console.log('selectedFacility actual:', this.selectedFacility);
+
+    // Solo cargar eventos si hay una facility seleccionada
+    if (!this.selectedFacility) {
+      console.log('❌ No hay facility seleccionada, limpiando eventos');
+      this.existingEvents = [];
+      this.generateCalendarDays();
+      return;
+    }
+
+    console.log('✓ Facility seleccionada:', this.selectedFacility.name, 'ID:', this.selectedFacility.id);
+    console.log('Haciendo petición a API...');
+
+    // Cargar eventos de la facility seleccionada
+    this.eventService.getEvents({
+      facility: this.selectedFacility.id,
+      is_active: true,
+      page_size: 100
+    }).subscribe({
       next: (response) => {
+        console.log('✓ Respuesta de API recibida:', response);
         this.existingEvents = response.results || [];
+        console.log('✓ Eventos cargados:', this.existingEvents.length);
+        if (this.existingEvents.length > 0) {
+          console.log('Eventos:', this.existingEvents);
+        }
         this.generateCalendarDays();
       },
       error: (error) => {
         console.error('Error loading events:', error);
         this.existingEvents = [];
+        this.generateCalendarDays();
       }
     });
   }
@@ -541,6 +796,11 @@ export class EventsForm implements OnInit {
   generateCalendarDays(): void {
     const year = this.currentMonth.getFullYear();
     const month = this.currentMonth.getMonth();
+
+    console.log('=== GENERANDO CALENDARIO ===');
+    console.log('Mes actual:', this.currentMonth);
+    console.log('Eventos existentes:', this.existingEvents.length);
+    console.log('Facility seleccionada:', this.selectedFacility?.name);
 
     // Get first day of month and last day of month
     const firstDay = new Date(year, month, 1);
@@ -570,11 +830,17 @@ export class EventsForm implements OnInit {
     }
 
     // Add days from current month
+    let daysWithEvents = 0;
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       const dayName = this.getDayNameFromDate(date);
       const isSelected = this.isDaySelectedInOccurrences(dayName);
       const hasExistingEvent = this.hasEventOnDate(date);
+
+      if (hasExistingEvent) {
+        daysWithEvents++;
+        console.log(`Día ${day}: ${date.toISOString().split('T')[0]} - TIENE EVENTO`);
+      }
 
       this.previewCalendarDays.push({
         date: date,
@@ -583,6 +849,9 @@ export class EventsForm implements OnInit {
         hasExistingEvent: hasExistingEvent
       });
     }
+
+    console.log('Total días con eventos existentes en mes actual:', daysWithEvents);
+    console.log('=== FIN GENERACIÓN CALENDARIO ===');
 
     // Add days from next month to complete the grid
     const remainingDays = 42 - this.previewCalendarDays.length; // 6 weeks * 7 days
@@ -606,10 +875,47 @@ export class EventsForm implements OnInit {
   }
 
   hasEventOnDate(date: Date): boolean {
-    return this.existingEvents.some(event => {
-      const eventDate = new Date(event.start_date);
-      return eventDate.toDateString() === date.toDateString();
+    if (this.existingEvents.length === 0) {
+      return false;
+    }
+
+    const dateStr = date.toISOString().split('T')[0];
+    console.log(`Verificando fecha ${dateStr} contra ${this.existingEvents.length} eventos...`);
+
+    // Verificar si hay algún evento existente en esta fecha
+    const hasEvent = this.existingEvents.some(event => {
+      // Para eventos no recurrentes
+      if (!event.recurrence_type || event.recurrence_type === 'none') {
+        const eventDate = new Date(event.start_datetime);
+        const eventDateStr = eventDate.toISOString().split('T')[0];
+        if (eventDateStr === dateStr) {
+          console.log(`  ✓ Match con evento único: ${event.title}`);
+          return true;
+        }
+        return false;
+      }
+
+      // Para eventos recurrentes, verificar si esta fecha cae en alguna ocurrencia
+      if (event.recurrence_type === 'weekly' && event.recurrence_days_of_week) {
+        const daysOfWeek = event.recurrence_days_of_week.split(',').map((d: string) => parseInt(d.trim()));
+        const dayOfWeek = (date.getDay() + 6) % 7; // Convertir a lunes=0
+
+        // Verificar si la fecha está dentro del rango del evento
+        const eventStart = new Date(event.start_datetime);
+        const eventEnd = event.recurrence_end_date
+          ? new Date(event.recurrence_end_date)
+          : new Date(eventStart.getTime() + 365 * 24 * 60 * 60 * 1000); // +1 año
+
+        if (date >= eventStart && date <= eventEnd && daysOfWeek.includes(dayOfWeek)) {
+          console.log(`  ✓ Match con evento semanal: ${event.title} (día ${dayOfWeek})`);
+          return true;
+        }
+      }
+
+      return false;
     });
+
+    return hasEvent;
   }
 
   changeMonth(direction: number): void {
