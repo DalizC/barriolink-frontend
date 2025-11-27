@@ -24,7 +24,7 @@ export interface FacilityFilters {
   providedIn: 'root',
 })
 export class FacilityService {
-  private apiUrl = 'https://chequered-hortense-homeomorphic.ngrok-free.dev/api/facilities/';
+  private apiUrl = 'http://127.0.0.1:8000/api/facilities/';
 
   constructor(private http: HttpClient) {}
 

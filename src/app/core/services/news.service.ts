@@ -33,7 +33,7 @@ export interface NewsCreate {
   providedIn: 'root',
 })
 export class NewsService {
-  private apiUrl = 'https://chequered-hortense-homeomorphic.ngrok-free.dev/api/news/';
+  private apiUrl = 'http://127.0.0.1:8000/api/news/';
 
   constructor(private http: HttpClient) {}
 

@@ -8,7 +8,7 @@ import { User, LoginCredentials, LoginResponse, RegisterData } from '../models/u
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://chequered-hortense-homeomorphic.ngrok-free.dev/api/user';
+  private apiUrl = 'http://127.0.0.1:8000/api/user';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

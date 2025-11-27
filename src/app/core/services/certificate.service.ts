@@ -22,7 +22,7 @@ export interface CertificateResponse {
   providedIn: 'root'
 })
 export class CertificateService {
-  private apiUrl = 'https://chequered-hortense-homeomorphic.ngrok-free.dev/api/certificates';
+  private apiUrl = 'http://127.0.0.1:8000/api/certificates';
 
   constructor(private http: HttpClient) {}
 
